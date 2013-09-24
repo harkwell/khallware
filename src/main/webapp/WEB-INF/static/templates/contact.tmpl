@@ -1,0 +1,26 @@
+<script id="contact_template" type="text/template">
+   {{#contacts}}
+   <div class="col-xs-12 col-sm-6 col-lg-4">
+      <div class="panel panel-default">
+         <div class="panel-heading">
+            <h3 class="panel-title">{{#maxlen}}{{name}}{{/maxlen}}</h3>
+            <div>{{#maxlen}}{{title}}{{/maxlen}}</div>
+            <div>{{#maxlen}}{{organization}}{{/maxlen}}</div>
+         </div>
+         <div class="panel-body">
+            <a href="/apis/v1/contacts/{{id}}.vcf">
+               <span class="glyphicon glyphicon-list-alt btn-lg black">
+               </span>
+            </a>
+            <div>{{#maxlen}}{{email}}{{/maxlen}}</div>
+            <div>{{phone}}</div>
+            <div>{{#maxlen}}{{address}}{{/maxlen}}</div>
+            <div>{{#maxlen}}{{description}}{{/maxlen}}</div>
+            <div><span class="label label-default">Created</span>
+               {{dateAsString}}
+            </div>
+         </div>
+      </div>
+   </div>
+   {{/contacts}}
+</script>

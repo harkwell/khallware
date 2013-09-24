@@ -1,0 +1,27 @@
+<script id="bookmark_template" type="text/template">
+   <div class="row">
+      <ul class="list-inline">
+      {{#bookmarks}}
+         <li class="thumbnail">
+            <div class="panel panel-default">
+               <div class="panel-heading">
+                  <div class="panel-title">
+                     <a href="{{url}}">{{#maxlen}}{{name}}{{/maxlen}}</a>
+                  </div>
+               </div>
+               <div class="panel-body">
+                  <span title="{{url}}">{{#maxlen}}{{url}}{{/maxlen}}</span>
+                  <div>{{#maxlen}}{{description}}{{/maxlen}}</div>
+                  <div><span class="label label-default">Created</span>
+                     {{dateAsString}}
+                  </div>
+                  <div><span class="label label-default">Rating</span>
+                     {{rating}}
+                  </div>
+               </div>
+            </div>
+         </li>
+      {{/bookmarks}}
+      </ul>
+   </div>
+</script>

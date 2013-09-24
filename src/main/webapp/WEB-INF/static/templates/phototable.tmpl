@@ -1,0 +1,18 @@
+<script id="phototable_template" type="text/template">
+   {{#photos}}
+   <tr class="tr_item">
+      <td><input type="checkbox"></td>
+      <td><span class="item_id">{{id}}</span></td>
+      <td><div onclick="javascript:toggleThumb({{id}})">
+         <img src="/apis/v1/photos/{{id}}.jpg?thumb=true" style="display:none">
+         thumb</div></td>
+      <td>{{name}}</td>
+      <td>{{path}}</td>
+      <td>{{dateAsString}}</td>
+      <td>{{#maxlen}}{{description}}{{/maxlen}}</td>
+      <td>{{_group}}</td>
+      <td>{{mask}}</td>
+      <td><button onclick="deletePhoto({{id}})">delete</button></td>
+   </tr>
+   {{/photos}}
+</script>

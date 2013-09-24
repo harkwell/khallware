@@ -1,0 +1,47 @@
+!define TEST_SYSTEM {slim}
+!c !1 VIDEOS
+
+## create, read, update and delete a video
+!3 create
+
+| Table:smartrics.rest.fitnesse.fixture.RestFixture | http://localhost:8080 |
+| setHeaders |!-
+Authorization:Basic a2hhbGw6a2hhbGw=
+Accept:application/json
+Content-Type:application/json
+-!|
+| setBody | {"name":"video1","path":"/tmp/video1.mp4","description":"good day"} |
+| POST | /apis/v1/videos | 200 | Content-Type: application/json | |
+| let | id | js | var video = JSON.parse(response.body); video.id; | |
+
+!3 read
+
+| Table:smartrics.rest.fitnesse.fixture.RestFixture | http://localhost:8080 |
+| setHeaders |!-
+Authorization:Basic a2hhbGw6a2hhbGw=
+Accept:application/json
+Content-Type:application/json
+-!|
+| GET | /apis/v1/videos/%id% | 200 | Content-Type: application/json | jsonbody.name == "video1" |
+
+!3 update
+
+| Table:smartrics.rest.fitnesse.fixture.RestFixture | http://localhost:8080 |
+| setHeaders |!-
+Authorization:Basic a2hhbGw6a2hhbGw=
+Accept:application/json
+Content-Type:application/json
+-!|
+| setBody | {"name":"deleteme","path":"/tmp/video1.mp4","description":"good day"} |
+| PUT | /apis/v1/videos/%id% | 200 | Content-Type: application/json | |
+| GET | /apis/v1/videos/%id% | 200 | Content-Type: application/json | jsonbody.name == "deleteme" |
+
+!3 delete
+
+| Table:smartrics.rest.fitnesse.fixture.RestFixture | http://localhost:8080 |
+| setHeaders |!-
+Authorization:Basic a2hhbGw6a2hhbGw=
+Accept:application/json
+Content-Type:application/json
+-!|
+| DELETE | /apis/v1/videos/%id% | 200 | | |

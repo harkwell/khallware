@@ -1,0 +1,724 @@
+# $Id: ad22e1c8cb6f3403f7b8afec192fffce3984c99f $
+#-------------------------------------------------------------------------------
+#############
+### BUILD ###
+#############
+### ONE-TIME
+## jvorbiscomment
+# visit: https://code.google.com/p/jvorbiscomment/
+cd /tmp/ && wget -c 'https://jvorbiscomment.googlecode.com/files/jvorbiscomment-1.0.3.zip' -O jvorbiscomment-1.0.3.zip
+unzip -j ~/tmp/jvorbiscomment-1.0.3.zip jvorbiscomment-1.0.3/jvorbiscomment-1.0.3.jar
+mvn install:install-file -Dfile=/tmp/jvorbiscomment-1.0.3.jar -DgroupId=adamb.vorbis -DartifactId=jvorbis -Dversion=1.0.3 -Dpackaging=jar
+
+
+# build
+REPOTOP=/home/khall/project/homepage/
+REPO=khallware
+TOP=/home/khall/tmp/blah/$REPO
+# cd $REPOTOP/$REPO && git checkout webapp
+rm -rf $TOP && mkdir -p $TOP
+cp -r $REPOTOP/$REPO/* $TOP
+cd $TOP && mvn package 2>&1 >/tmp/build.out && ls -ld target/apis.war
+
+
+##############
+### DEPLOY ###
+##############
+copy to tomcat8 webapps
+
+# from scratch
+mysql -uroot -pmypasswd website < db_schema.sql
+mysql -uroot -pmypasswd website < db_load.sql
+
+# not from scratch
+DELETE FROM fileitem_tags;
+DELETE FROM bookmark_tags;
+DELETE FROM location_tags;
+DELETE FROM contact_tags;
+DELETE FROM credentials;
+DELETE FROM video_tags;
+DELETE FROM photo_tags;
+DELETE FROM sound_tags;
+DELETE FROM blog_tags;
+DELETE FROM bookmarks;
+DELETE FROM locations;
+DELETE FROM fileitems;
+DELETE FROM contacts;
+DELETE FROM comments;
+DELETE FROM events;
+DELETE FROM videos;
+DELETE FROM photos;
+DELETE FROM sounds;
+DELETE FROM blogs;
+DELETE FROM tags;
+ALTER TABLE bookmark_tags AUTO_INCREMENT = 1;
+ALTER TABLE fileitem_tags AUTO_INCREMENT = 1;
+ALTER TABLE location_tags AUTO_INCREMENT = 1;
+ALTER TABLE contact_tags AUTO_INCREMENT = 1;
+ALTER TABLE credentials AUTO_INCREMENT = 1;
+ALTER TABLE photo_tags AUTO_INCREMENT = 1;
+ALTER TABLE video_tags AUTO_INCREMENT = 1;
+ALTER TABLE sound_tags AUTO_INCREMENT = 1;
+ALTER TABLE bookmarks AUTO_INCREMENT = 1;
+ALTER TABLE blog_tags AUTO_INCREMENT = 1;
+ALTER TABLE locations AUTO_INCREMENT = 1;
+ALTER TABLE contacts AUTO_INCREMENT = 1;
+ALTER TABLE comments AUTO_INCREMENT = 1;
+ALTER TABLE events AUTO_INCREMENT = 1;
+ALTER TABLE photos AUTO_INCREMENT = 1;
+ALTER TABLE sounds AUTO_INCREMENT = 1;
+ALTER TABLE blogs AUTO_INCREMENT = 1;
+ALTER TABLE tags AUTO_INCREMENT = 1;
+DELETE FROM credentials;
+DELETE FROM edges;
+DELETE FROM groups;
+
+# now...
+INSERT INTO groups (name, description) VALUES ('root', 'root group');
+UPDATE groups SET id=0 WHERE name = 'root';
+INSERT INTO groups (name, description) VALUES ('guest', 'guest group');
+INSERT INTO groups (name, description) VALUES ('family', 'family group');
+INSERT INTO groups (name, description) VALUES ('friends', 'friends group');
+INSERT INTO edges (_group, parent) VALUES ((SELECT id FROM groups WHERE name = 'guest'), (SELECT id FROM groups WHERE name = 'root'));
+INSERT INTO edges (_group, parent) VALUES ((SELECT id FROM groups WHERE name = 'guest'), (SELECT id FROM groups WHERE name = 'family'));
+INSERT INTO credentials (username, password, email, _group) VALUES ('guest', '84983c60f7daadc1cb8698621f802c0d9f9a3c3c295c810748fb048115c186ec','guest@myhost.com',(SELECT id FROM groups WHERE name = 'guest'));
+INSERT INTO landing (url, _group) VALUES ("/apis/v1/static/family.html",(SELECT id FROM groups WHERE name = 'family'));
+INSERT INTO landing (url, _group) VALUES ("/apis/v1/static/friends.html",(SELECT id FROM groups WHERE name = 'friends'));
+INSERT INTO quota (user, available, used) SELECT id AS user, 1024, 0 FROM credentials;
+
+# echo -n guest |sha256sum
+
+# now prime the tags, etc...
+mysql -uroot -pmypasswd website <db_load.sql
+
+
+##########################
+### ANDROID DEPLOYMENT ###
+##########################
+adb uninstall com.khallware.apis
+adb install Khallware-debug.apk
+adb shell
+am start -n com.khallware.apis/.Khallware
+cd /data/data/com.khallware.apis/databases
+sqlite3 khallware.db
+INSERT INTO connect (user, pass, url) VALUES ('guest','','http://tomcat-server:8080');
+am start -e tag 0 -n com.khallware.apis/.ContactsActivity
+am kill com.khallware.apis/.ContactsActivity
+am kill com.khallware.apis/.Khallware
+
+
+####################
+### REQUIREMENTS ###
+####################
+* implement basic auth and sessions for RESTful services
+* implement atom feed for: bookmarks, locations, contacts, calendar, photo, etc.
+* bookmark management, organization -tagging- and ranking (a-la delicio.us)
+* geolocation management and tagging
+* contact management with tagging
+* calendar event management (and todos) with tagging
+* photo management and tagging
+* miscellaneous file management and tagging
+* blog entry management with tagging (utilize atom hopper or apache abdera)
+* music/audio media upload/download with tagging
+* metadata management via tags which ties all of the above together
+* paging mechanism for: bookmarks, locations, contacts, photos, music, blogs
+* search capability
+* registration (captcha, email validation)
+
+### clients
+* android app
+* google earth sync to RESTful services (add network link location)
+* NOPE integration with TinyWebGallery, gallery3, piwigo, zenphoto, or plogger
+   - must have SSO capability with CAS
+   - must be able to rsync image files with server
+* MAYBE integration with gedview
+* MAYBE integration with lifetype, abdera (blog software) -RFC5023 compliant
+   - must have SSO capability with CAS
+* integration with rainlendar2 (calendaring software)
+* homepage should display last n number of recent items: locs, pics, blogs, etc.
+
+TOP=http://localhost/apis/v1/
+TOP/atoms/{bookmarks,locations,contacts,...} (GET Accept:application/atom+xml)
+
+TOP/security/login (POST) - create a session, return a session cookie
+TOP/security/details (GET) - elaborate on the session information
+TOP/security/logout (POST) - delete a session, logs user out
+
+TOP/static/details.html (GET) - get details page
+
+TOP/tags           (POST Accept:application/json) - create a new tag
+TOP/tags           (GET Accept:application/json) - list tags under root tag
+TOP/tags?tagName=tag (GET Accept:application/json) - child tags of tag
+TOP/tags?tagId=1   (GET Accept:application/json) - child tags of tagId
+TOP/tags/{id}      (GET Accept:application/json) - get specific tag
+TOP/tags/{id}      (PUT Accept:application/json) - update a specific tag
+TOP/tags/{id}      (DELETE Accept:application/json) - delete a tag (empty)
+
+TOP/bookmarks/     (POST Accept:application/json) - post a new bookmark
+TOP/bookmarks/     (GET Accept:application/json) - list bookmarks for root tag
+TOP/bookmarks?tag=mytag (GET Accept:application/json) - list bookmarks for tag
+TOP/bookmarks/{id} (GET Accept:application/json) - get a specific bookmark
+TOP/bookmarks/{id} (PUT Accept:application/json) - update a new bookmark
+TOP/bookmarks/{id} (DELETE Accept:application/json) - delete a specific bookmark
+TOP/bookmarks/{id}?tagId=1 (DELETE Accept:application/json) - delete bookmark
+
+TOP/locations/     (POST Accept:application/json) - post a new location
+TOP/locations/     (GET Accept:application/json) - get all locations
+TOP/locations/     (GET Accept:application/vnd.google-earth.kml+xml) all as kml
+TOP/locations/{id} (GET Accept:application/json) - get a location
+TOP/locations/{id} (GET Accept:application/vnd.google-earth.kml+xml) id as kml
+TOP/locations/{id} (PUT Accept:application/json) - update a location
+TOP/locations/{id} (DELETE Accept:application/json) - delete a location
+TOP/locations/{id}?tagId=1 (DELETE Accept:application/json) - delete a location
+
+TOP/contacts/     (POST Accept:application/json) - post a new contact
+TOP/contacts/     (POST Accept:text/vcard) - post a new vcard contact
+TOP/contacts/{id} (GET Accept:application/json) - get a contact
+TOP/contacts/{id} (GET Accept:text/vcard) - get a contact as vcard
+TOP/contacts/     (GET Accept:application/json) - get all contacts
+TOP/contacts/     (GET Accept:text/vcard) - get all contacts as vcard
+TOP/contacts/{id} (PUT Accept:application/json) - update a contact
+TOP/contacts/{id} (DELETE Accept:application/json) - delete a contact
+TOP/contacts/{id}?tagId=1 (DELETE Accept:application/json) - delete a contact
+
+TOP/events/       (POST Accept:application/json) - post a new event
+TOP/events/       (POST Accept:text/calendar) - post a new ical event
+TOP/events/{id}   (GET Accept:application/json) - get a event
+TOP/events/{id}   (GET Accept:text/calendar) - get a event as ical
+TOP/events/       (GET Accept:application/json) - get all events
+TOP/events/       (GET Accept:text/calendar) - get all events in ical format
+TOP/events/{id}   (PUT Accept:application/json) - update a event
+TOP/events/{id}   (DELETE Accept:application/json) - delete a event
+TOP/events/{id}?tagId=1   (DELETE Accept:application/json) - delete a event
+
+TOP/photos/       (POST Accept:application/json) - post new photo metadata
+TOP/photos/{id}   (GET Accept:application/json) - get a photos metadata
+TOP/photos/{id}   (GET Accept:image/jpeg) - get a specific photo
+TOP/photos/{id}?thumb=true (GET Accept:image/jpeg) - specific photo thumbnail
+TOP/photos/       (GET Accept:application/json) - get all photo metadata
+TOP/photos/{id}   (PUT Accept:application/json) - update a photos metadata
+TOP/photos/{id}   (DELETE Accept:application/json) - delete a photos metadata
+TOP/photos/{id}?tagId=1 (DELETE Accept:application/json) - delete photo metadata
+
+TOP/blogs/        (POST Accept:application/json) - post new blog metadata
+TOP/blogs/{id}    (GET Accept:application/json) - get a blog entry
+TOP/blogs/        (GET Accept:application/json) - get all blog entries
+TOP/blogs?tagId=1 (GET Accept:application/json) - get all blog entries for tag
+TOP/blogs/{id}    (PUT Accept:application/json) - update a blog entry
+TOP/blogs/{id}    (DELETE Accept:application/json) - delete blog entry/comments
+TOP/blogs/{id}/comments (POST Accept:application/json) - post a new blog comment
+TOP/blogs/{id}/comments (GET Accept:application/json) - get all comments of blog
+TOP/blogs/{id}/comments/{id} (GET Accept:application/json) - get a blogs comment
+TOP/blogs/{id}/comments/{id} (PUT Accept:application/json) - update a comment
+TOP/blogs/{id}/comments/{id} (DELETE Accept:application/json) - delete a comment
+
+TOP/sounds/       (POST Accept:application/json) - post new sound metadata
+TOP/sounds/{id}   (GET Accept:application/json) - get a sounds metadata
+TOP/sounds/{id}   (GET Accept:application/ogg) - get a specific sound as ogg
+TOP/sounds/{id}.ogg (GET Accept:application/ogg) - get a specific sound as ogg
+TOP/sounds/playlist.m3u?tagId=35 (GET Accept:application/ogg) - get playlist
+TOP/sounds/{id}   (GET Accept:application/mp3) - get a specific sound as mp3
+TOP/sounds/       (GET Accept:application/json) - get all sound metadata
+TOP/sounds/{id}   (PUT Accept:application/json) - update a sounds metadata
+TOP/sounds/{id}   (DELETE Accept:application/json) - delete a sounds metadata
+TOP/sounds/{id}?tagId=1 (DELETE Accept:application/json) - delete sound metadata
+
+TOP/videos/       (POST Accept:application/json) - post new video metadata
+TOP/videos/{id}   (GET Accept:application/json) - get a videos metadata
+TOP/videos/{id}   (GET Accept:image/jpeg) - get a specific video
+TOP/videos/{id}?thumb=true (GET Accept:image/jpeg) - specific video thumbnail
+TOP/videos/       (GET Accept:application/json) - get all video metadata
+TOP/videos/{id}   (PUT Accept:application/json) - update a videos metadata
+TOP/videos/{id}   (DELETE Accept:application/json) - delete a videos metadata
+TOP/videos/{id}?tagId=1 (DELETE Accept:application/json) - delete video metadata
+
+TOP/fileitems/       (POST Accept:application/json) - post new fileitem metadata
+TOP/fileitems/{id}   (GET Accept:application/json) - get a fileitems metadata
+TOP/fileitems/{id}   (GET Accept:<MIME>) - get a specific fileitem of given type
+TOP/fileitems/       (GET Accept:application/json) - get all fileitem metadata
+TOP/fileitems/{id}   (PUT Accept:application/json) - update a fileitems metadata
+TOP/fileitems/{id}   (DELETE Accept:application/json) - delete a given fileitem
+TOP/fileitems/{id}?tagId=1 (DELETE Accept:application/json) - delete fileitem
+
+TOP/search        (POST Accept:text/plain) - search the system
+
+
+
+================================================================================
+###############
+### TESTING ###
+###############
+#--------------- testing deps --------------------------
+### test users
+INSERT INTO groups (name, description) VALUES ('test', 'test group');
+INSERT INTO credentials (username, password, email, _group) VALUES ('test', '9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08','test@myhost.com',(SELECT id FROM groups WHERE name = 'test'));
+# echo -n test |sha256sum
+
+
+########################
+### FitNesse testing ###
+########################
+cd ~/tmp
+java -jar fitnesse.jar -p 8000 -d $HOME/tmp/fitnesse/ -l $HOME/tmp/fitnesse/
+echo foo >/tmp/video1.mpg
+echo foo >/tmp/photo1.jpg
+
+##############################
+### FitNesse testing setup ###
+##############################
+# deploy FitNesse
+wget -c 'http://fitnesse.org/fitnesse-standalone.jar?responder=releaseDownload&release=20131110' -O fitnesse.jar
+java -jar fitnesse.jar -help
+rm -rf $HOME/tmp/fitness/
+java -jar fitnesse.jar -p 8000 -d $HOME/tmp/fitness/ -l $HOME/tmp/fitness/
+
+## download and include RestFixture
+# wget -c 'https://github.com/smartrics/RestFixture/archive/3.0.tar.gz'
+ls -ld 3.0.tar.gz && tar zxvf 3.0.tar.gz && cd RestFixture-3.0
+mvn clean package
+ls -ld target/smartrics-RestFixture-3.0.jar
+
+## include the fixture and its dependencies in FitNesse
+# visit URL: localhost:8000/root?edit
+------------- Add This ----------------
+!define TEST_SYSTEM {slim}
+!path $HOME/tmp/RestFixture-3.0/target/dependencies/*.jar
+!path $HOME/tmp/RestFixture-3.0/target/smartrics-RestFixture-3.0.jar
+---------------------------------------
+
+## place fitnesse files under FitNesseRoot
+cp -r fitnesse/* ~/tmp/fitnesse/FitNesseRoot
+chromium-browser http://localhost:8000/IntegrationTests
+
+
+
+#--------------- manual testing --------------------------
+#############
+### LOGIN ###
+#############
+curl -i -X GET http://localhost:8080/apis/v1/security/login.html
+curl -q -X POST 'http://localhost:8080/apis/v1/security/login?username=guest&password=guest' -o cookie.txt
+curl -i -X GET -H "Cookie: khallware=$(cat cookie.txt);Version=1" http://localhost:8080/apis/v1/security/details
+curl -i -X GET -H "Cookie: khallware=$(cat cookie.txt);Version=1" http://localhost:8080/apis/v1/tags
+
+############
+### TAGS ###
+############
+## create, read, update and delete a tag
+# create
+curl -i -X POST -H "Accept:application/json" -H "Content-Type:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/tags -d '{"name":"mytag"}'
+
+# read
+curl -i -X GET -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/tags/1
+curl -i -X POST -H "Accept:application/json" -H "Content-Type:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/tags -d '{"name":"subtag","parent":1}'
+curl -i -X GET -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/tags?parentId=1
+curl -i -X GET -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/tags?tagName=subtag
+curl -i -X GET -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/tags?tagId=1
+
+# update
+curl -i -X PUT -H "Accept:application/json" -H "Content-Type:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/tags/1 -d '{"name":"tag"}'
+curl -i -X GET -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/tags/1
+
+# delete
+curl -i -X POST -H "Accept:application/json" -H "Content-Type:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/tags -d '{"name":"deleteme","parent":1}'
+curl -i -X DELETE -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/tags/3
+
+
+#################
+### BOOKMARKS ###
+#################
+## create, read, update and delete a bookmark
+# create
+curl -i -X POST -H "Accept:application/json" -H "Content-Type:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/bookmarks -d '{"name":"google","url":"http://www.google.com/"}'
+
+# read
+curl -i -X GET -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/bookmarks/1
+
+# update
+curl -i -X PUT -H "Accept:application/json" -H "Content-Type:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/bookmarks/1 -d '{"name":"my google","url":"http://www.google.com/"}'
+curl -i -X GET -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/bookmarks/1
+
+# delete
+curl -i -X POST -H "Accept:application/json" -H "Content-Type:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/bookmarks -d '{"name":"deleteme","url":"http://www.deleteme.com/"}'
+curl -i -X DELETE -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/bookmarks/2
+
+## add bookmark to tag, read back, remove it
+curl -i -X POST -H "Accept:application/json" -H "Content-Type:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/bookmarks -d '{"name":"delme","url":"http://www.delme.com/"}'
+curl -i -X PUT -H "Accept:application/json" -H "Content-Type:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/bookmarks/4?tagId=2 -d '{"name":"google","url":"http://www.google.com/"}'
+curl -i -X DELETE -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/bookmarks/4
+
+# read back
+curl -i -X GET -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/bookmarks
+curl -i -X GET -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/bookmarks?tagId=2
+curl -i -X GET -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/tags
+curl -i -X GET -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/tags?parentId=1
+
+# website dump
+curl -i -X GET http://localhost:8080/apis/index.html
+# http://localhost:8080/apis/index.html
+
+
+#################
+### LOCATIONS ###
+#################
+## post a location, read it back, then delete it
+# create
+curl -i -X POST -H "Accept:application/json" -H "Content-Type:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/locations -d '{"latitude":33.946386,"longitude":-25.895210,"name":"foo"}'
+
+# read
+curl -i -X GET -H "Accept:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/locations
+curl -i -X GET -H "Accept:application/vnd.google-earth.kml+xml" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/locations
+curl -i -X GET -H "Accept:application/json" -H "Content-Type:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/locations/1
+curl -i -X GET -H "Accept:application/vnd.google-earth.kml+xml" -H "Content-Type:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/locations/1
+
+# update
+curl -i -X PUT -H "Accept:application/json" -H "Content-Type:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/locations/1 -d '{"latitude":32.893286,"longitude":-62.925830,"name":"old work"}'
+curl -i -X GET -H "Accept:application/vnd.google-earth.kml+xml" -H "Content-Type:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/locations/1
+
+# delete
+curl -i -X DELETE -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/locations/1
+
+## post a location, add a location, read it back
+curl -i -X POST -H "Accept:application/json" -H "Content-Type:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/locations -d '{"latitude":31.146286,"longitude":-80.029430,"name":"foo"}'
+curl -i -X PUT -H "Accept:application/json" -H "Content-Type:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/locations/2?tagId=2 -d '{"latitude":31.903886,"longitude":-86.685530,"description":"20 century"}'
+curl -i -X GET -H "Accept:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/locations?tagId=2
+
+## add a tag, read it back by tag, remove it
+curl -i -X PUT -H "Accept:application/json" -H "Content-Type:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/locations/2?tagId=2 -d '{"latitude":30.093926,"longitude":-76.673530,"description":"20 century"}'
+curl -i -X GET -H "Accept:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/locations?tagId=2
+curl -i -X DELETE -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/locations/2
+
+
+################
+### CONTACTS ###
+################
+cat <<EOF >/tmp/blah.vcf
+BEGIN:VCARD
+VERSION:3.0
+N:Gump;Forrest;Mr.
+FN:Forrest Gump
+ORG:Bubba Gump Shrimp Co.
+TITLE:Shrimp Man
+PHOTO;VALUE=URL;TYPE=GIF:http://www.example.com/dir_photos/my_photo.gif
+TEL;TYPE=WORK,VOICE:(540) 555-1212
+TEL;TYPE=HOME,VOICE:(615) 555-1212
+ADR;TYPE=WORK:;;100 Waters Edge;Baytown;LA;30314;United States of America
+LABEL;TYPE=WORK:100 Waters Edge\nBaytown, LA 30314\nUnited States of America
+ADR;TYPE=HOME:;;42 Plantation St.;Baytown;LA;30314;United States of America
+LABEL;TYPE=HOME:42 Plantation St.\nBaytown, LA 30314\nUnited States of America
+EMAIL;TYPE=PREF,INTERNET:forrestgump@example.com
+REV:2008-04-24T19:52:43Z
+END:VCARD
+EOF
+# post a contact as json and vcf, read them back, modify and then delete them
+curl -i -X POST -H "Accept:text/vcard" -H "Content-Type:text/vcard" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/contacts --data-binary @/tmp/blah.vcf
+curl -i -X POST -H "Accept:application/json" -H "Content-Type:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/contacts -d '{"jcard":["vcard",[["version",{},"text","4.0"],["n",{},"text",["last","first","","mr",""]],["fn",{},"text","mr. first last"]]],"description":"foo"}'
+curl -i -X GET -H "Accept:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/contacts/1
+curl -i -X GET -H "Accept:text/vcard" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/contacts/1
+curl -i -X GET -H "Accept:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/contacts
+curl -i -X GET -H "Accept:text/vcard" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/contacts
+curl -i -X PUT -H "Accept:application/json" -H "Content-Type:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/contacts/1 -d '{"name":"blah","vcard":"","jcard":["vcard",[["version",{},"text","4.0"],["n",{},"text",["Last","First","","Mr.",""]],["fn",{},"text","Mr. First Last"]]],"description":"camel case"}'
+curl -i -X DELETE -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/contacts/1
+
+## add a tag, read it back by tag
+curl -i -X PUT -H "Accept:application/json" -H "Content-Type:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/contacts/2?tagId=2 -d '{"name":"blah","vcard":"","jcard":["vcard",[["version",{},"text","4.0"],["n",{},"text",["Last","First","","Mr.",""]],["fn",{},"text","Mr. First Last"]]],"description":"camel case"}'
+curl -i -X GET -H "Accept:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/contacts?tagId=2
+
+
+##############
+### EVENTS ###
+##############
+# post an event as json and ics, read them back, modify and then delete them
+curl -i -X POST -H "Accept:application/json" -H "Content-Type:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/events -d '{"name":"foo","description":"blah"}'
+cat <<EOF >/tmp/blah.ics
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//hacksw/handcal//NONSGML v1.0//EN
+BEGIN:VEVENT
+UID:uid1@example.com
+DTSTAMP:19970714T170000Z
+ORGANIZER;CN=John Doe:MAILTO:john.doe@example.com
+DTSTART:19970714T170000Z
+DTEND:19970715T035959Z
+SUMMARY:Bastille Day Party
+END:VEVENT
+END:VCALENDAR
+EOF
+curl -i -X POST -H "Accept:text/calendar" -H "Content-Type:text/calendar" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/events --data-binary @/tmp/blah.ics
+curl -i -X GET -H "Accept:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/events/1
+curl -i -X GET -H "Accept:text/calendar" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/events/1
+curl -i -X GET -H "Accept:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/events
+curl -i -X GET -H "Accept:text/calendar" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/events
+curl -i -X PUT -H "Accept:application/json" -H "Content-Type:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/events/1 -d '{"name":"Foo","description":"blah"}'
+curl -i -X DELETE -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/events/1
+
+## add a tag, read it back by tag
+curl -i -X PUT -H "Accept:application/json" -H "Content-Type:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/events/2?tagId=2 -d '{"name":"Foo","description":"blah"}'
+curl -i -X GET -H "Accept:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/events?tagId=2
+
+##############
+### PHOTOS ###
+##############
+## post a photo, read it back, then delete it
+# create
+curl -i -X POST -H "Accept:application/json" -H "Content-Type:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/photos -d '{"name":"photo1","path":"/tmp/photo1.jpg","description":"good day"}'
+
+# read
+curl -i -X GET -H "Accept:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/photos
+curl -i -X GET -H "Accept:image/jpeg" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/photos/1 -o x.jpg
+curl -i -X GET -H "Accept:image/jpeg" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/photos/1?thumb=true -o x.jpg
+curl -i -X GET -H "Accept:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" 'http://localhost:8080/apis/v1/photos?page=2&pageSize=3&tagId=35'
+
+# update
+curl -i -X PUT -H "Accept:application/json" -H "Content-Type:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/photos/1 -d '{"name":"photo1","path":"events/2014/20140501-birthday/photo1.jpg","description":"good day"}'
+
+# delete
+curl -i -X POST -H "Accept:application/json" -H "Content-Type:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/photos -d '{"name":"deleteme","path":"/tmp/photo1.jpg","description":"blah"}'
+curl -i -X DELETE -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/photos/2
+
+## add a tag, read it back by tag
+curl -i -X PUT -H "Accept:application/json" -H "Content-Type:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/photos/1?tagId=2 -d '{"name":"photo1","path":"events/2014/20140501-birthday/photo1.jpg","description":"good day"}'
+curl -i -X GET -H "Accept:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/photos?tagId=2
+
+
+#############
+### BLOGS ###
+#############
+## post a blog, read it back, then delete it
+# create
+curl -i -X POST -H "Accept:application/json" -H "Content-Type:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/blogs -d '{"description":"good day","content":"my first blog entry"}'
+
+# read
+curl -i -X GET -H "Accept:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/blogs/1
+curl -i -X GET -H "Accept:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/blogs/
+
+# update
+curl -i -X PUT -H "Accept:application/json" -H "Content-Type:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/blogs/1 -d '{"description":"hello world","content":"my first updated blog entry"}'
+
+# delete
+curl -i -X POST -H "Accept:application/json" -H "Content-Type:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/blogs -d '{"description":"deleteme","content":"delete this blog entry"}'
+curl -i -X DELETE -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/blogs/2
+
+## post a blog comment, read it back, then delete it
+# create
+curl -i -X POST -H "Accept:application/json" -H "Content-Type:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/blogs/1/comments -d '{"description":"good day sir","content":"my first blog comment dude","blog":{"id":1}}'
+
+# read
+curl -i -X GET -H "Accept:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/blogs/1/comments/1
+curl -i -X GET -H "Accept:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/blogs/1/comments/
+
+##############
+### SOUNDS ###
+##############
+## post a sound, read it back, then delete it
+# create
+curl -i -X POST -H "Accept:application/json" -H "Content-Type:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/sounds -d '{"name":"sound1","path":"/tmp/sound1.ogg","title":"mysong","artist":"me","description":"good day"}'
+
+# read
+curl -i -X GET -H "Accept:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/sounds
+curl -i -X GET -H "Accept:application/ogg" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/sounds/1 -o x.ogg
+curl -i -X GET -H "Accept:application/ogg" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/sounds/1?thumb=true -o x.ogg
+curl -i -X GET -H "Accept:application/x-mpegurl" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/sounds/playlist.m3u?tagId=35
+
+
+# update
+curl -i -X PUT -H "Accept:application/json" -H "Content-Type:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/sounds/1 -d '{"name":"sound1","path":"events/2014/20140501-birthday/sound1.ogg","description":"good day"}'
+
+# delete
+curl -i -X POST -H "Accept:application/json" -H "Content-Type:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/sounds -d '{"name":"deleteme","path":"/tmp/sound1.ogg","title":"mysong","artist":"me","description":"blah"}'
+curl -i -X DELETE -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/sounds/2
+
+## add a tag, read it back by tag
+## KDH !!!! SELECT * FROM `tags` WHERE `id` = 2; returns no results!!!!!
+curl -i -X PUT -H "Accept:application/json" -H "Content-Type:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/sounds/1?tagId=2 -d '{"name":"sound1","path":"events/2014/20140501-birthday/sound1.ogg","description":"good day"}'
+curl -i -X GET -H "Accept:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/sounds?tagId=2
+
+##############
+### VIDEOS ###
+##############
+## post a video, read it back, then delete it
+# create
+curl -i -X POST -H "Accept:application/json" -H "Content-Type:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/videos -d '{"name":"video1","path":"/tmp/video1.mpg","description":"good day"}'
+
+# read
+curl -i -X GET -H "Accept:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/videos
+curl -i -X GET -H "Accept:image/jpeg" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/videos/1 -o x.mpg
+curl -i -X GET -H "Accept:image/jpeg" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/videos/1?thumb=true -o x.mpg
+
+# update
+curl -i -X PUT -H "Accept:application/json" -H "Content-Type:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/videos/1 -d '{"name":"video1","path":"events/2014/20140501-birthday/video1.mpg","description":"good day"}'
+
+# delete
+curl -i -X POST -H "Accept:application/json" -H "Content-Type:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/videos -d '{"name":"deleteme","path":"/tmp/video1.mpg","description":"blah"}'
+curl -i -X DELETE -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/videos/2
+
+## add a tag, read it back by tag
+curl -i -X PUT -H "Accept:application/json" -H "Content-Type:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/videos/1?tagId=2 -d '{"name":"video1","path":"events/2014/20140501-birthday/video1.mpg","description":"good day"}'
+curl -i -X GET -H "Accept:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/videos?tagId=2
+
+
+#################
+### FILEITEMS ###
+#################
+## post a fileitem (pdf), read it back, then delete it
+# create
+curl -i -X POST -H "Accept:application/json" -H "Content-Type:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/fileitems -d '{"name":"fileitem1","ext":"pdf","mime":"application/pdf","path":"/tmp/fileitem1.pdf","description":"good day"}'
+
+# read
+curl -i -X GET -H "Accept:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/fileitems
+curl -i -X GET -H "Accept:application/pdf" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/fileitems/1 -o x.pdf
+curl -i -X GET -H "Accept:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" 'http://localhost:8080/apis/v1/fileitems?page=2&pageSize=3&tagId=35'
+
+# update
+curl -i -X PUT -H "Accept:application/json" -H "Content-Type:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/fileitems/1 -d '{"name":"fileitem1","ext":"pdf","path":"events/2014/20140501-birthday/fileitem1.pdf","description":"good day"}'
+
+# delete
+curl -i -X POST -H "Accept:application/json" -H "Content-Type:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/fileitems -d '{"name":"deleteme","ext":"blah","path":"/tmp/fileitem1.pdf","description":"blah"}'
+curl -i -X DELETE -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/fileitems/2
+
+## add a tag, read it back by tag
+curl -i -X PUT -H "Accept:application/json" -H "Content-Type:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/fileitems/1?tagId=2 -d '{"name":"fileitem1","ext":"pdf","path":"events/2014/20140501-birthday/fileitem1.jpg","description":"good day"}'
+curl -i -X GET -H "Accept:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/fileitems?tagId=2
+
+
+#############
+### ADMIN ###
+#############
+# create
+curl -i -X POST -H "Accept:application/json" -H "Content-Type:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/admin/groups -d '{"name":"mynewgroup","description":"my new group"}'
+curl -i -X POST -H "Accept:application/json" -H "Content-Type:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/admin/groups/4/children -d '{"child":0}'
+curl -i -X POST -H "Accept:application/json" -H "Content-Type:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/admin/users?group=21 -d '{"username":"mynewuser","password":"abc1234","email":"myemail@foo.com"}'
+
+# read
+curl -i -X GET -H "Accept:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/admin/users
+curl -i -X GET -H "Accept:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/admin/users/1
+curl -i -X GET -H "Accept:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/admin/groups
+curl -i -X GET -H "Accept:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/admin/groups/1
+curl -i -X GET -H "Accept:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/admin/groups/1/children
+curl -i -X GET -H "Accept:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/admin/sessions
+curl -i -X GET -H "Accept:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/admin/sessions/8e8a59d2-501d-4fd1-95d9-45dee1401a7c
+curl -i -X GET -H "Accept:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/admin/groups/3/landing
+
+# update
+curl -i -X PUT -H "Accept:application/json" -H "Content-Type:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/admin/groups/1 -d '{"name":"mynewgroup","description":"my new group","disabled":0}'
+curl -i -X PUT -H "Accept:application/json" -H "Content-Type:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/admin/users/3?group=3 -d '{"username":"mynewuser","password":"bcd2345","email":"myemail@foo.com"}'
+curl -i -X PUT -H "Accept:application/json" -H "Content-Type:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/admin/groups/3/landing -d '{"landing":"/apis/v1/static/foo.html"}'
+
+# delete (disable)
+curl -i -X DELETE -H "Accept:application/json" -H "Content-Type:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/admin/groups/3
+curl -i -X DELETE -H "Accept:application/json" -H "Content-Type:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/admin/groups/4/children/0
+curl -i -X DELETE -H "Accept:application/json" -H "Content-Type:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/admin/users/3
+curl -i -X DELETE -H "Accept:application/json" -H "Content-Type:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/admin/sessions/8e8a59d2-501d-4fd1-95d9-45dee1401a7c
+
+
+
+##############
+### SEARCH ###
+##############
+## search the content
+curl -i -X POST -H "Accept:application/json" -H "Content-Type:text/plain" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/search -d 'google'
+curl -i -X POST -H "Accept:application/json" -H "Content-Type:text/plain" -H "Authorization:Basic dGVzdDp0ZXN0" http://localhost:8080/apis/v1/search -d 'google'
+
+
+##############
+### UPLOAD ###
+##############
+curl -i -X POST -H "Accept:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" -F "filecomment=bookmarks" -F "image=@/tmp/blah.txt" http://localhost:8080/apis/v1/upload?tagId=5
+curl -i -X POST -H "Accept:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" -F "filecomment=contacts" -F "image=@/tmp/blah.vcf;type=text/vcard" http://localhost:8080/apis/v1/upload?tagId=5
+curl -i -X POST -H "Accept:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" -F "filecomment=events" -F "image=@$HOME/include/calendar.ics;type=text/calendar" http://localhost:8080/apis/v1/upload?tagId=5
+curl -i -X POST -H "Accept:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" -F "filecomment=fileitems" -F "image=@/tmp/blah.pdf;type=application/pdf" http://localhost:8080/apis/v1/upload?tagId=5
+curl -i -X POST -H "Accept:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" -F "filecomment=locations" -F "image=@/tmp/blah.kml;type=application/vnd.google-earth.kml+xml" http://localhost:8080/apis/v1/upload?tagId=5
+curl -i -X POST -H "Accept:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" -F "filecomment=photo" -F "image=@$HOME/tmp/x.jpg" http://localhost:8080/apis/v1/upload?tagId=5
+curl -i -X POST -H "Accept:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" -F "filecomment=sound" -F "image=@$HOME/tmp/blah.ogg;type=application/ogg" http://localhost:8080/apis/v1/upload?tagId=5
+curl -i -X POST -H "Accept:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" -F "name=my video" -F "path=/tmp/video_upload" -F "mask=777" -F "image=@$HOME/tmp/x.mpg;type=video/mp4" http://localhost:8080/apis/v1/upload?tagId=5
+
+
+####################
+### REGISTRATION ###
+####################
+curl -i -X GET -H "text/html" http://localhost:8080/apis/v1/security/register.html
+
+
+#############
+### ATOMS ###
+#############
+curl -i -X GET http://localhost:8080/apis/v1/atoms/bookmarks
+curl -i -X GET http://localhost:8080/apis/v1/atoms/locations
+curl -i -X GET http://localhost:8080/apis/v1/atoms/contacts
+curl -i -X GET http://localhost:8080/apis/v1/atoms/events
+curl -i -X GET http://localhost:8080/apis/v1/atoms/sounds
+curl -i -X GET http://localhost:8080/apis/v1/atoms/blogs
+curl -i -X GET http://localhost:8080/apis/v1/atoms/photos
+curl -i -X GET http://localhost:8080/apis/v1/atoms/tags
+
+##############
+### LOGOUT ###
+##############
+curl -q -X POST -H "Cookie: khallware=$(cat cookie.txt);Version=1" http://localhost:8080/apis/v1/security/logout
+curl -q -X POST -H "Cookie: khallware=$(cat cookie.txt);Version=1" http://localhost:8080/apis/v1/security/logout.html
+
+
+######################
+### MYSQL DATABASE ###
+######################
+mysql -uroot -pmypasswd mysql <<EOF
+CREATE DATABASE website;
+CREATE USER 'api'@'localhost' IDENTIFIED BY 'somepass';
+GRANT ALL PRIVILEGES ON website.* TO 'api'@'localhost' WITH GRANT OPTION;
+EOF
+mysql -uapi -psomepass website <src/scripts/db_schema.sql
+
+
+###################
+### UPDATE LIBS ###
+###################
+vi pom.xml
+
+
+######################
+### DATA MIGRATION ###
+######################
+mysql -h tomcat-server -u api -psomepass website <src/scripts/db_schema.sql
+mysql -h tomcat-server -u api -psomepass website <src/scripts/db_load.sql
+mysql -h tomcat-server -u api -psomepass website <<EOF
+INSERT INTO bookmarks (name, modified, url, _group, mask, rating) SELECT name, modified, url, (SELECT id FROM groups WHERE name = 'guest'), 770, rating FROM homepage.url WHERE url_type IN (SELECT id FROM homepage.url_type WHERE name = "http");
+UPDATE bookmarks SET rating = LOWER(rating);
+INSERT INTO groups (name, description) VALUES ('root', 'root group');
+UPDATE groups SET id=0 WHERE name = 'root';
+INSERT INTO groups (name, description) VALUES ('guest', 'guest group');
+INSERT INTO groups (name, description) VALUES ('family', 'family group');
+INSERT INTO edges (_group, parent) VALUES ((SELECT id FROM groups WHERE name = 'guest'), (SELECT id FROM groups WHERE name = 'root'));
+INSERT INTO edges (_group, parent) VALUES ((SELECT id FROM groups WHERE name = 'guest'), (SELECT id FROM groups WHERE name = 'family'));
+INSERT INTO credentials (username, password, email, _group) VALUES ('guest', '84983c60f7daadc1cb8698621f802c0d9f9a3c3c295c810748fb048115c186ec','guest@myhost.com',(SELECT id FROM groups WHERE name = 'guest'));
+EOF
+INDIR=$HOME/tmp/incoming/
+ODIR=/usr/local/share/media/video
+TMP=/tmp
+
+for m in $INDIR/*MPG; do
+        movie=$(basename $m)
+        mname=$(echo $movie |cut -d. -f1)
+        echo converting $mname
+	ffmpeg -i $m -deinterlace -pix_fmt yuv420p -vcodec libx264 \
+		-preset slow -vprofile high -trellis 2 -crf 20 -ac 2 -ab 192k \
+		-f mp4 -y $mname.mp4
+        ffmpeg -i $INDIR/$movie -f image2 -vframes 1 $ODIR/$mname.jpg
+        mv $m $ODIR/
+done
+perl src/scripts/import.pl
+
+for m in $ODIR/*MPG; do
+	movie=$(basename $m)
+	mname=$(echo $movie |cut -d. -f1)
+	tagId=35
+	echo posting $mname
+	printf -- 'curl -i -X POST -H "Accept:application/json" -H "Content-Type:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/videos?tagId=%s -d '\''{"name":"%s","path":"%s","description":"%s"}'\''\n' "$tagId" "$mname" "$m" "$movie" |bash
+done
+
+for c in ~/doc/VCF/*vcf; do
+	curl -s -X POST -H "Accept:text/vcard" -H "Content-Type:text/vcard" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://tomcat-server:8080/apis/v1/contacts?tagId=35 --data-binary @$c
+done
+
+for i in ~/doc/*.ics; do
+	curl -i -X POST -H "Accept:text/calendar" -H "Content-Type:text/calendar" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" http://localhost:8080/apis/v1/events?tagId=35 --data-binary @$i
+done

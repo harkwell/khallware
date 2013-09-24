@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- $Id$ -->
+<!-- ==========================================================================
+ * The Android "Khallware" application
+ * (C) 2014 Kevin D.Hall
+ *
+ * The software, processes, trade secrets and technical/business know-how used
+ * on these premises are the property of Kevin D.Hall and are not to be copied,  * divulged or used without the express written consent of the author.
+ *
+-->
+<LinearLayout
+		android:layout_width="fill_parent"
+		android:layout_height="fill_parent"
+		android:orientation="vertical"
+		xmlns:android="http://schemas.android.com/apk/res/android" >
+
+	<TextView
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:text="@string/connect"
+			android:gravity="center"
+			android:layout_x="0px"
+			android:layout_y="160px"/>
+
+	<TextView
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:text="@string/lit_user" />
+
+	<EditText
+			android:id="@+id/connect_user"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content" />
+
+	<TextView
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:text="@string/lit_pass" />
+
+	<EditText
+			android:id="@+id/connect_pass"
+			android:maxLines="1"
+			android:hint="password"
+			android:inputType="textPassword"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content" />
+
+	<TextView
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:text="@string/lit_host" />
+
+	<EditText
+			android:id="@+id/connect_host"
+			android:maxLines="1"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content" />
+
+	<Button
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="@string/lit_connect"
+			android:onClick="doConnect" />
+</LinearLayout>
+
+<!-- http://www.droiddraw.org/ -->

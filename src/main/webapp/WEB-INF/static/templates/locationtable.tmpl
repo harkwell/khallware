@@ -1,0 +1,16 @@
+<script id="locationtable_template" type="text/template">
+   {{#locations}}
+   <tr class="tr_item">
+      <td><input type="checkbox"></td>
+      <td><span class="item_id">{{id}}</span></td>
+      <td>{{name}}</td>
+      <td><a href="/apis/v1/locations/{{id}}.kml">kml</a></td>
+      <td>latlon: {{latitude}},{{longitude}}</td>
+      <td>{{#maxlen}}{{description}}{{/maxlen}}</td>
+      <td>{{dateAsString}}</td>
+      <td>{{_group}}</td>
+      <td>{{mask}}</td>
+      <td><button onclick="deleteLocation({{id}})">delete</button></td>
+   </tr>
+   {{/locations}}
+</script>

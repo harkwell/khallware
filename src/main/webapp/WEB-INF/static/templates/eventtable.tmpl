@@ -1,0 +1,17 @@
+<script id="eventtable_template" type="text/template">
+   {{#events}}
+   <tr class="tr_item">
+      <td><input type="checkbox"></td>
+      <td><span class="item_id">{{id}}</span></td>
+      <td>{{name}}</td>
+      <td><a href="/apis/v1/events/{{id}}.ics">ics</a></td>
+      <td>{{#maxlen}}{{description}}{{/maxlen}}</td>
+      <td>{{start}}</td>
+      <td>{{end}}</td>
+      <td>{{duration}}</td>
+      <td>{{_group}}</td>
+      <td>{{mask}}</td>
+      <td><button onclick="deleteEvent({{id}})">delete</button></td>
+   </tr>
+   {{/events}}
+</script>

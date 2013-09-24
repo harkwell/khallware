@@ -1,0 +1,9 @@
+IntegrationTests.TagTests
+IntegrationTests.BookmarkTests
+IntegrationTests.LocationTests
+IntegrationTests.ContactTests
+IntegrationTests.EventTests
+IntegrationTests.PhotoTests
+IntegrationTests.VideoTests
+IntegrationTests.BlogTests
+IntegrationTests.AtomTests

@@ -1,0 +1,13 @@
+<script id="comment_template" type="text/template">
+   {{#comments}}
+   <div class="panel panel-warning">
+      <div class="panel-heading">
+         <span class="label label-default">{{title}}</span>
+         {{author}} {{dateAsString}}
+      </div>
+      <div class="panel-body">
+         {{content}}
+      </div>
+   </div>
+   {{/comments}}
+</script>

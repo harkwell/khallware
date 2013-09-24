@@ -1,0 +1,16 @@
+<script id="blogtable_template" type="text/template">
+   {{#blogs}}
+   <tr class="tr_item">
+      <td><input type="checkbox"></td>
+      <td><span class="item_id">{{id}}</span></td>
+      <td>{{user}}</td>
+      <td>{{description}}</td>
+      <td>{{#maxlen}}{{content}}{{/maxlen}}</td>
+      <td>{{dateAsString}}</td>
+      <td><a href="comments.html?blogId={{id}}">comments</a></td>
+      <td>{{_group}}</td>
+      <td>{{mask}}</td>
+      <td><button onclick="deleteBlog({{id}})">delete</button></td>
+   </tr>
+   {{/blogs}}
+</script>

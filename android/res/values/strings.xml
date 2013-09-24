@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- this is the string definitions -->
+<resources>
+	<string name="version">foo</string>
+	<string name="connect">Connection Provisions</string>
+	<string name="browse">Browse Tag Details</string>
+	<string name="contact">Contact Details</string>
+	<string name="app_name">Khallware</string>
+	<string name="about">Kevin D.Hall\nkhallware (r)</string>
+	<string name="lit_user">Username</string>
+	<string name="lit_pass">Password</string>
+	<string name="lit_host">Hostname</string>
+	<string name="lit_about">About</string>
+	<string name="lit_connect">Connect</string>
+	<string name="lit_contacts">Contacts</string>
+	<string name="lit_bookmarks">Bookmarks</string>
+	<string name="lit_blogs">Blogs</string>
+	<string name="lit_events">Events</string>
+	<string name="lit_fileitems">File Items</string>
+	<string name="lit_locations">Locations</string>
+	<string name="lit_photos">Photos</string>
+	<string name="lit_search">Search</string>
+	<string name="lit_sounds">Sounds</string>
+	<string name="lit_videos">Videos</string>
+</resources>

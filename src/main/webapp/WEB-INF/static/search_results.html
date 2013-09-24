@@ -1,0 +1,378 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Description" content="search results">
+   <link rel="icon" href="../../media/khallware.png" type="image/png">
+   <link rel="stylesheet" href="../../css/khallware.css">
+   <link rel="stylesheet" type="text/css"
+      href="/apis/webjars/bootstrap/3.3.4/css/bootstrap.min.css" />
+   <title>khallware: search</title>
+   <script type="text/javascript"
+      src="/apis/webjars/jquery/2.1.3/jquery.min.js">
+   </script>
+   <script type="text/javascript"
+      src="/apis/webjars/jquery-ui/1.11.4/jquery-ui.js">
+   </script>
+   <script type="text/javascript"
+      src="/apis/webjars/jquery-cookie/1.4.1-1/jquery.cookie.js"></script>
+   <script type="text/javascript"
+      src="/apis/webjars/mustachejs/0.7.0/mustache.js"></script>
+   <script type="text/javascript" src="scripts/khallware.js"></script>
+   <script type="text/javascript" src="scripts/gui_helper.js"></script>
+   <script type="text/javascript">$(function () { enforce_login(); });</script>
+</head>
+
+<body>
+<div class="well">
+	<div class="header">Search Results</div>
+
+	<h3><a href="bookmarks.html">Bookmarks</a></h3>
+	<div id="new_bookmark_form"></div>
+	<div id="bookmarks">
+		<div id="bookmarktable_content"></div>
+		<button onclick="perform_selected(deleteBookmark);">
+		delete</button>Delete all selected bookmarks.<p>
+
+		<input id="given_bookmark_tag" type="text">
+		<button onclick="perform_selected(update_bookmark_tag);">
+		update</button>Add all selected bookmarks to given tag.<p>
+
+		<select id="given_bookmark_rating">
+			<option>unstable</option>
+			<option>annoying</option>
+			<option selected>average</option>
+			<option>good</option>
+			<option>outstanding</option>
+		</select>
+		<button onclick="perform_selected(update_bookmark_rating);">
+		update</button>Change all selected bookmarks rating.<p>
+
+		<select id="given_bookmark_mask">
+			<option value="777">world</option>
+			<option value="770">group</option>
+			<option value="700" selected>user</option>
+		</select>
+		<button onclick="perform_selected(update_bookmark_mask);">
+		update</button>Change all selected bookmarks visibility.<p>
+		<div class="pager">
+			<div id="bookmarks_prev">prev</div>
+			<div id="bookmarks_next">next</div>
+		</div>
+	</div>
+	<div class="separator"></div>
+
+	<h3><a href="photos.html">Photos</a></h3>
+	<div id="photos">
+		<div id="phototable_content"></div>
+		<button onclick="perform_selected(deletePhoto);">
+		delete</button>Delete all selected photos.<p>
+
+		<input id="given_photo_tag" type="text">
+		<button onclick="perform_selected(update_photo_tag);">
+		update</button>Add all selected photos to given tag.<p>
+
+		<select id="given_photo_mask">
+			<option value="700" selected>user</option>
+			<option value="770">group</option>
+			<option value="777">world</option>
+		</select>
+		<button onclick="perform_selected(update_photo_mask);">
+		update</button>Change all selected photos visibility.<p>
+		<div class="pager">
+			<div id="photos_prev">prev</div>
+			<div id="photos_next">next</div>
+		</div>
+	</div>
+	<div class="separator"></div>
+
+	<h3><a href="audio.html">Audio</a></h3>
+	<div id="audio">
+		<div id="audiotable_content"></div>
+		<button onclick="perform_selected(deleteSound);">delete
+		</button>Delete all selected audio.<p>
+
+		<input id="given_audio_tag" type="text">
+		<button onclick="perform_selected(update_audio_tag);">update
+		</button>Add all selected audio to given tag.<p>
+
+		<select id="given_audio_mask">
+			<option value="700" selected>user</option>
+			<option value="770">group</option>
+			<option value="777">world</option>
+		</select>
+		<button onclick="perform_selected(update_audio_mask);">
+		update</button>Change all selected audio visibility.<p>
+		<div class="pager">
+			<div id="audio_prev">prev</div>
+			<div id="audio_next">next</div>
+		</div>
+	</div>
+	<div class="separator"></div>
+
+	<h3><a href="blogs.html">Blogs</a></h3>
+	<div id="blogs">
+		<div id="blogtable_content"></div>
+		<button onclick="perform_selected(deleteBlog);">delete
+		</button>Delete all selected blogs.<p>
+
+		<input id="given_blog_tag" type="text">
+		<button onclick="perform_selected(update_blog_tag);">update
+		</button>Add all selected blog entries to given tag.<p>
+
+		<select id="given_blog_mask">
+			<option value="700" selected>user</option>
+			<option value="770">group</option>
+			<option value="777">world</option>
+		</select>
+		<button onclick="perform_selected(update_blog_mask);">
+		update</button>Change all selected blog entries visibility.<p>
+		<div class="pager">
+			<div id="blogs_prev">prev</div>
+			<div id="blogs_next">next</div>
+		</div>
+	</div>
+	<div class="separator"></div>
+
+	<h3><a href="comments.html">Comments</a></h3>
+	<div id="blogs">
+		<div id="blog_content"></div>
+	</div>
+	<div id="comments">
+		<div id="commenttable_content"></div>
+		<button onclick="perform_selected(deleteComment);">delete
+		</button>Delete all selected comments.<p>
+
+		<select id="given_comment_mask">
+			<option value="700" selected>user</option>
+			<option value="770">group</option>
+			<option value="777">world</option>
+		</select>
+		<button onclick="perform_selected(update_comment_mask);">
+		update</button>Change all selected comment visibility.<p>
+		<div class="pager">
+			<div id="comments_prev">prev</div>
+			<div id="comments_next">next</div>
+		</div>
+	</div>
+	<div class="separator"></div>
+
+	<h3><a href="contacts.html">Contacts</a></h3>
+	<div id="contacts">
+		<div id="contacttable_content"></div>
+		<button onclick="perform_selected(deleteContact);">delete
+		</button>Delete all selected contacts.<p>
+
+		<input id="given_contact_tag" type="text">
+		<button onclick="perform_selected(update_contact_tag);">update
+		</button>Add all selected contacts to given tag.<p>
+
+		<select id="given_contact_mask">
+			<option value="700" selected>user</option>
+			<option value="770">group</option>
+			<option value="777">world</option>
+		</select>
+		<button onclick="perform_selected(update_contact_mask);">
+		update</button>Change all selected contacts visibility.<p>
+		<div class="pager">
+			<div id="contacts_prev">prev</div>
+			<div id="contacts_next">next</div>
+		</div>
+	</div>
+	<div class="separator"></div>
+
+	<h3><a href="events.html">Events</a></h3>
+	<div id="events">
+		<div id="eventtable_content"></div>
+		<button onclick="perform_selected(deleteEvent);">delete
+		</button>Delete all selected events.<p>
+
+		<input id="given_event_tag" type="text">
+		<button onclick="perform_selected(update_event_tag);">update
+		</button>Add all selected events to given tag.<p>
+
+		<select id="given_event_mask">
+			<option value="700" selected>user</option>
+			<option value="770">group</option>
+			<option value="777">world</option>
+		</select>
+		<button onclick="perform_selected(update_event_mask);">
+		update</button>Change all selected events visibility.<p>
+		<div class="pager">
+			<div id="events_prev">prev</div>
+			<div id="events_next">next</div>
+		</div>
+	</div>
+	<div class="separator"></div>
+
+	<h3><a href="fileitems.html">Files</a></h3>
+	<div id="fileitems">
+		<div id="fileitemtable_content"></div>
+		<button onclick="perform_selected(deleteFileItem);">delete
+		</button>Delete all selected fileitems.<p>
+
+		<input id="given_fileitem_tag" type="text">
+		<button onclick="perform_selected(update_fileitem_tag);">update
+		</button>Add all selected fileitems to given tag.<p>
+
+		<select id="given_fileitem_mask">
+			<option value="700" selected>user</option>
+			<option value="770">group</option>
+			<option value="777">world</option>
+		</select>
+		<button onclick="perform_selected(update_fileitem_mask);">
+		update</button>Change all selected fileitems visibility.<p>
+		<div class="pager">
+			<div id="fileitems_prev">prev</div>
+			<div id="fileitems_next">next</div>
+		</div>
+	</div>
+	<div class="separator"></div>
+
+	<h3><a href="locations.html">Locations</a></h3>
+	<div id="locations">
+		<div id="locationtable_content"></div>
+		<button onclick="perform_selected(deleteLocation);">delete
+		</button>Delete all selected locations.<p>
+
+		<input id="given_location_tag" type="text">
+		<button onclick="perform_selected(update_location_tag);">update
+		</button>Add all selected locations to given tag.<p>
+
+		<select id="given_location_mask">
+			<option value="700" selected>user</option>
+			<option value="770">group</option>
+			<option value="777">world</option>
+		</select>
+		<button onclick="perform_selected(update_location_mask);">
+		update</button>Change all selected locations visibility.<p>
+		<div class="pager">
+			<div id="locations_prev">prev</div>
+			<div id="locations_next">next</div>
+		</div>
+	</div>
+	<div class="separator"></div>
+
+	<h3><a href="videos.html">Videos</a></h3>
+	<div id="videos">
+		<div id="videotable_content"></div>
+		<button onclick="perform_selected(deleteVideo);">delete
+		</button>Delete all selected videos.<p>
+
+		<input id="given_video_tag" type="text">
+		<button onclick="perform_selected(update_video_tag);">update
+		</button>Add all selected videos to given tag.<p>
+
+		<select id="given_video_mask">
+			<option value="700" selected>user</option>
+			<option value="770">group</option>
+			<option value="777">world</option>
+		</select>
+		<button onclick="perform_selected(update_video_mask);">
+		update</button>Change all selected videos visibility.<p>
+		<div class="pager">
+			<div id="videos_prev">prev</div>
+			<div id="videos_next">next</div>
+		</div>
+	</div>
+	<div class="separator"></div>
+	<div class="footer">
+	</div> 
+</div> 
+
+<script type="text/javascript">
+   $(function () {
+      init_globals();
+      window.rslts = search(queryString["pattern"]);
+      attach_content_and_functions();
+      update_bookmarks_table(rslts);
+      update_photos_table(rslts);
+      update_audio_table(rslts);
+      update_blogs_table(rslts);
+      update_blogs(rslts);
+      update_comments_table(rslts);
+      update_contacts_table(rslts);
+      update_fileitems_table(rslts);
+      update_videos_table(rslts);
+      $("#given_bookmark_tag").val(queryString["tagId"]);
+      $("#given_photo_tag").val(queryString["tagId"]);
+      $("#given_audio_tag").val(queryString["tagId"]);
+      $("#given_blog_tag").val(queryString["tagId"]);
+      $("#given_contact_tag").val(queryString["tagId"]);
+      $("#given_fileitem_tag").val(queryString["tagId"]);
+      $("#given_video_tag").val(queryString["tagId"]);
+   });
+</script>
+<script type="text/javascript">
+$("#bookmarks_next").click(
+   next_page_clicked(get_bookmarktable_page, window.btFromIdx, window.btPerPage));
+$("#bookmarks_prev").click(
+   prev_page_clicked(get_bookmarktable_page, window.btFromIdx, window.btPerPage));
+</script>
+<script type="text/javascript">
+   $(function () {
+      if (typeof rslts.bookmarks === "undefined") {
+         $("#bookmarks").hide();
+      }
+      else {
+         $("#bookmarks").show();
+      }
+      if (typeof rslts.photos === "undefined") {
+         $("#photos").hide();
+      }
+      else {
+         $("#photos").show();
+      }
+      if (typeof rslts.sounds === "undefined") {
+         $("#audio").hide();
+      }
+      else {
+         $("#audio").show();
+      }
+      if (typeof rslts.blogs === "undefined") {
+         $("#blogs").hide();
+      }
+      else {
+         $("#blogs").show();
+      }
+      if (typeof rslts.comments === "undefined") {
+         $("#comments").hide();
+      }
+      else {
+         $("#comments").show();
+      }
+      if (typeof rslts.contacts === "undefined") {
+         $("#contacts").hide();
+      }
+      else {
+         $("#contacts").show();
+      }
+      if (typeof rslts.events === "undefined") {
+         $("#events").hide();
+      }
+      else {
+         $("#events").show();
+      }
+      if (typeof rslts.fileitems === "undefined") {
+         $("#fileitems").hide();
+      }
+      else {
+         $("#fileitems").show();
+      }
+      if (typeof rslts.locations === "undefined") {
+         $("#locations").hide();
+      }
+      else {
+         $("#locations").show();
+      }
+      if (typeof rslts.videos === "undefined") {
+         $("#videos").hide();
+      }
+      else {
+         $("#videos").show();
+      }
+   });
+</script>
+</body>
+</html>

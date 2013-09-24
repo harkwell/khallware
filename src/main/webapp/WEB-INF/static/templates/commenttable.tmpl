@@ -1,0 +1,15 @@
+<script id="commenttable_template" type="text/template">
+   {{#comments}}
+   <tr class="tr_item">
+      <td><input type="checkbox"></td>
+      <td><span class="item_id">{{id}}</span></td>
+      <td>{{user}}</td>
+      <td>{{#maxlen}}{{description}}{{/maxlen}}</td>
+      <td>{{#maxlen}}{{content}}{{/maxlen}}</td>
+      <td>{{dateAsString}}</td>
+      <td>{{_group}}</td>
+      <td>{{mask}}</td>
+      <td><button onclick="deleteComment({{id}})">delete</button></td>
+   </tr>
+   {{/comments}}
+</script>

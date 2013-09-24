@@ -1,0 +1,47 @@
+!define TEST_SYSTEM {slim}
+!c !1 PHOTOS
+
+## create, read, update and delete a photo
+!3 create
+
+| Table:smartrics.rest.fitnesse.fixture.RestFixture | http://localhost:8080 |
+| setHeaders |!-
+Authorization:Basic a2hhbGw6a2hhbGw=
+Accept:application/json
+Content-Type:application/json
+-!|
+| setBody | {"name":"photo1","path":"/tmp/photo1.jpg","description":"good day"} |
+| POST | /apis/v1/photos | 200 | Content-Type: application/json | |
+| let | id | js | var photo = JSON.parse(response.body); photo.id; | |
+
+!3 read
+
+| Table:smartrics.rest.fitnesse.fixture.RestFixture | http://localhost:8080 |
+| setHeaders |!-
+Authorization:Basic a2hhbGw6a2hhbGw=
+Accept:application/json
+Content-Type:application/json
+-!|
+| GET | /apis/v1/photos/%id% | 200 | Content-Type: application/json | jsonbody.name == "photo1" |
+
+!3 update
+
+| Table:smartrics.rest.fitnesse.fixture.RestFixture | http://localhost:8080 |
+| setHeaders |!-
+Authorization:Basic a2hhbGw6a2hhbGw=
+Accept:application/json
+Content-Type:application/json
+-!|
+| setBody | {"name":"deleteme","path":"/tmp/photo1.jpg","description":"good day"} |
+| PUT | /apis/v1/photos/%id% | 200 | Content-Type: application/json | |
+| GET | /apis/v1/photos/%id% | 200 | Content-Type: application/json | jsonbody.name == "deleteme" |
+
+!3 delete
+
+| Table:smartrics.rest.fitnesse.fixture.RestFixture | http://localhost:8080 |
+| setHeaders |!-
+Authorization:Basic a2hhbGw6a2hhbGw=
+Accept:application/json
+Content-Type:application/json
+-!|
+| DELETE | /apis/v1/photos/%id% | 200 | | |

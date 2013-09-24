@@ -1,0 +1,55 @@
+!define TEST_SYSTEM {slim}
+!c !1 TAGS
+
+## create, read, update and delete a tag
+!3 create
+
+| Table:smartrics.rest.fitnesse.fixture.RestFixture | http://localhost:8080 |
+| setHeaders |!-
+Authorization:Basic a2hhbGw6a2hhbGw=
+Accept:application/json
+Content-Type:application/json
+-!|
+| setBody | {"name":"mytag"} |
+| POST | /apis/v1/tags | 200 | Content-Type: application/json | |
+| let | parent | js | var tag = JSON.parse(response.body); tag.id; | |
+| let | parentName | js | var tag = JSON.parse(response.body); tag.name; | |
+
+!3 read
+
+| Table:smartrics.rest.fitnesse.fixture.RestFixture | http://localhost:8080 |
+| setHeaders |!-
+Authorization:Basic a2hhbGw6a2hhbGw=
+Accept:application/json
+Content-Type:application/json
+-!|
+| GET | /apis/v1/tags/%parent% | 200 | Content-Type: application/json | jsonbody.title == "mytag" |
+| setBody | {"name":"subtag","parent":%parent%} |
+| POST | /apis/v1/tags | 200 | Content-Type: application/json | |
+| let | id | js | var tag = JSON.parse(response.body); tag.id; | |
+| GET | /apis/v1/tags/%id% | 200 | Content-Type: application/json | jsonbody.title == "subtag" |
+| GET | /apis/v1/tags?tagName=subtag | 200 | Content-Type: application/json | |
+| GET | /apis/v1/tags?tagId=%id% | 200 | Content-Type: application/json | |
+
+!3 update
+
+| Table:smartrics.rest.fitnesse.fixture.RestFixture | http://localhost:8080 |
+| setHeaders |!-
+Authorization:Basic a2hhbGw6a2hhbGw=
+Accept:application/json
+Content-Type:application/json
+-!|
+| setBody | {"name":"tag"} |
+| PUT | /apis/v1/tags/%id% | 200 | Content-Type: application/json | |
+| GET | /apis/v1/tags/%id% | 200 | Content-Type: application/json | jsonbody.title == "tag" |
+
+!3 delete
+
+| Table:smartrics.rest.fitnesse.fixture.RestFixture | http://localhost:8080 |
+| setHeaders |!-
+Authorization:Basic a2hhbGw6a2hhbGw=
+Accept:application/json
+Content-Type:application/json
+-!|
+| DELETE | /apis/v1/tags/%parent% | 200 | | |
+| DELETE | /apis/v1/tags/%id% | 200 | | |

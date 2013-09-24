@@ -1,0 +1,16 @@
+<script id="videotable_template" type="text/template">
+   {{#videos}}
+   <tr class="tr_item">
+      <td><input type="checkbox"></td>
+      <td><span class="item_id">{{id}}</span></td>
+      <td>{{name}}</td>
+      <td><a href="/apis/v1/videos/{{id}}.mp4">mp4</a></td>
+      <td>{{path}}</td>
+      <td>{{#maxlen}}{{description}}{{/maxlen}}</td>
+      <td>{{dateAsString}}</td>
+      <td>{{_group}}</td>
+      <td>{{mask}}</td>
+      <td><button onclick="deleteVideo({{id}})">delete</button></td>
+   </tr>
+   {{/videos}}
+</script>

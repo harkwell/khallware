@@ -1,0 +1,57 @@
+## Mysql
+sudo apt-get install mysql-server  # remember mysql root password "mypasswd"
+mysql -uroot -pmypasswd mysql <<EOF
+CREATE DATABASE website;
+CREATE USER 'api'@'localhost' IDENTIFIED BY 'api';
+GRANT ALL PRIVILEGES ON website.* TO 'api'@'localhost' WITH GRANT OPTION;
+EOF
+
+
+## Tomcat8
+# visit: http://tomcat.apache.org/download-80.cgi
+cd /tmp && wget -c 'http://mirror.sdunix.com/apache/tomcat/tomcat-8/v8.0.14/bin/apache-tomcat-8.0.14.tar.gz'
+sudo mkdir /var/lib/tomcat8
+sudo chown $USER /var/lib/tomcat8
+cd /var/lib/tomcat8 && tar zxvf /tmp/apache-tomcat-8.0.14.tar.gz
+mv apache-tomcat-8.0.14/* . && rm -rf apache-tomcat-8.0.14
+cat <<EOF >>~/.bashrc
+export CATALINA_HOME=/var/lib/tomcat8
+export PATH=/usr/local/java8/bin:$PATH
+EOF
+. ~/.bashrc
+$CATALINA_HOME/bin/startup.sh
+
+### Build
+REPOTOP=/home/guest/project/homepage/
+REPO=khallware
+TOP=/home/guest/tmp/blah/$REPO
+BRANCH=webapp
+rm -rf $TOP && mkdir -p $TOP
+git archive $BRANCH --remote=$USER@localhost:$REPOTOP/$REPO .| tar -x -C $TOP
+cd $TOP && mvn package && ls -ld target/apis.war
+
+### Prep war
+cp target/apis.war /var/lib/tomcat8/webapps
+vi /var/lib/tomcat8/webapps/apis/WEB-INF/classes/apis.properties
+$CATALINA_HOME/bin/shutdown.sh
+
+### Prep database
+mysql -uapi -papi website <src/scripts/db_schema.sql
+mysql -uapi -papi website <src/scripts/db_load.sql
+# choose password:
+echo -n "guest" |sha256sum # "84983c60.."
+mysql -uapi -papi mysql <<EOF
+INSERT INTO groups (name, description) VALUES ('root', 'root group');
+UPDATE groups SET id=0 WHERE name = 'root';
+INSERT INTO groups (name, description) VALUES ('guest', 'guest group');
+INSERT INTO groups (name, description) VALUES ('family', 'family group');
+INSERT INTO edges (_group, parent) VALUES ((SELECT id FROM groups WHERE name = 
+'guest'), (SELECT id FROM groups WHERE name = 'root'));
+INSERT INTO edges (_group, parent) VALUES ((SELECT id FROM groups WHERE name = 
+'guest'), (SELECT id FROM groups WHERE name = 'family'));
+INSERT INTO credentials (username, password, email, _group) VALUES ('guest', '84983c60f7daadc1cb8698621f802c0d9f9a3c3c295c810748fb048115c186ec','guest@mybox.com',(SELECT id FROM groups WHERE name = 'guest'));
+EOF
+
+### Connect
+$CATALINA_HOME/bin/startup.sh
+chromium-browser http://localhost:8080/apis/login.html

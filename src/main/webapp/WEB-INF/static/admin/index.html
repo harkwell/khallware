@@ -1,0 +1,88 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Description" content="Administration">
+   <link rel="icon" href="../../media/tux16-16.png" type="image/png">
+   <link rel="stylesheet" type="text/css"
+      href="/apis/webjars/bootstrap/3.3.4/css/bootstrap.min.css" />
+   <title>khallware: admin</title>
+   <script type="text/javascript"
+      src="/apis/webjars/jquery/2.1.3/jquery.min.js">
+   </script>
+   <script type="text/javascript"
+      src="/apis/webjars/jquery-cookie/1.4.1-1/jquery.cookie.js"></script>
+   <script type="text/javascript"
+      src="/apis/webjars/mustachejs/0.7.0/mustache.js"></script>
+   <script type="text/javascript" src="../scripts/gui_helper.js"></script>
+   <script type="text/javascript" src="../scripts/khallware.js"></script>
+</head>
+
+<body>
+<!-- ####################################################################### -->
+<div class="well">
+   <div class="panel panel-default">
+      <div class="panel-heading">Users</div>
+      <div class="panel-body">
+         This table enumerates all system users.
+      </div>
+      <div id="userstable_content"></div>
+   </div>
+</div>
+<div class="well">
+   <div class="panel panel-default">
+      <div class="panel-heading">Groups</div>
+      <div class="panel-body">
+         This table enumerates all system groups.
+      </div>
+      <div id="groupstable_content"></div>
+   </div>
+</div>
+<div class="well">
+   <div class="panel panel-default">
+      <div class="panel-heading">Sessions</div>
+      <div class="panel-body">
+         This table enumerates all system sessions.
+      </div>
+      <div id="sessionstable_content"></div>
+   </div>
+</div>
+<!-- ####################################################################### -->
+<script type="text/javascript">
+    $(function () {
+        init_globals();
+        attach_content_and_functions();
+        $.when(getUsers(0, utPerPage)).done(update_users_table);
+        $.when(getGroups(0, gtPerPage)).done(update_groups_table);
+        $.when(getSessions(0, gtPerPage)).done(update_sessions_table);
+   });
+</script>
+<script type="text/javascript">
+$("#users_next").click(function () {
+   console.log("next page of users clicked");
+   next_page_clicked(get_usertable_page, utFromIdx, utPerPage);
+   utFromIdx += utPerPage; });
+$("#users_prev").click(function () {
+   console.log("prev page of users clicked");
+   prev_page_clicked(get_usertable_page, utFromIdx, utPerPage);
+   utFromIdx -= utPerPage; });
+$("#groups_next").click(function () {
+   console.log("next page of groups clicked");
+   next_page_clicked(get_grouptable_page, utFromIdx, utPerPage);
+   utFromIdx += utPerPage; });
+$("#groups_prev").click(function () {
+   console.log("prev page of groups clicked");
+   prev_page_clicked(get_grouptable_page, utFromIdx, utPerPage);
+   utFromIdx -= utPerPage; });
+$("#sessions_next").click(function () {
+   console.log("next page of sessions clicked");
+   next_page_clicked(get_sessiontable_page, utFromIdx, utPerPage);
+   utFromIdx += utPerPage; });
+$("#sessions_prev").click(function () {
+   console.log("prev page of sessions clicked");
+   prev_page_clicked(get_sessiontable_page, utFromIdx, utPerPage);
+   utFromIdx -= utPerPage; });
+</script>
+</body>
+</html>

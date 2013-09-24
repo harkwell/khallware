@@ -1,0 +1,97 @@
+// Copyright Kevin D.Hall 2014-2015
+
+package com.khallware.api.ctrl;
+
+import com.khallware.api.Unauthorized;
+import com.khallware.api.APIException;
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.Path;
+import javax.ws.rs.GET;
+import java.net.URL;
+import java.io.IOException;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
+
+@Path("/static")
+public class StaticContent
+{
+	private static final Logger logger = LoggerFactory.getLogger(
+		StaticContent.class);
+
+	/**
+	 * Read specific static content (URL).
+	 */
+	@GET
+	@Path("/{file}")
+	@Produces("text/html")
+	public Response handleGetHtml(@Context HttpServletRequest request,
+			@PathParam(value="file") String filename)
+	{
+		return(handleGet(request, "/WEB-INF/static/"+filename));
+	}
+
+	@GET
+	@Path("admin/{file}")
+	@Produces("text/html")
+	public Response handleGetAdminOnly(@Context HttpServletRequest request,
+			@PathParam(value="file") String filename)
+	{
+		Response retval = null;
+		try {
+			Admin.enforceThatUserIsAdmin(request);
+			retval = handleGet(request,
+				"/WEB-INF/static/admin/"+filename);
+		}
+		catch (Unauthorized e) {
+			retval = Util.failRequest(e);
+			logger.warn(""+e);
+		}
+		return(retval);
+	}
+
+	@GET
+	@Path("scripts/{file}")
+	@Produces("text/html")
+	public Response handleGetScripts(@Context HttpServletRequest request,
+			@PathParam(value="file") String filename)
+	{
+		return(handleGet(request, "/WEB-INF/static/scripts/"+filename));
+	}
+
+	@GET
+	@Path("templates/{file}")
+	@Produces("text/html")
+	public Response handleGetTemplates(@Context HttpServletRequest request,
+			@PathParam(value="file") String fname)
+	{
+		return(handleGet(request, "/WEB-INF/static/templates/"+fname));
+	}
+
+	protected Response handleGet(HttpServletRequest request, String src)
+	{
+		Response retval = null;
+		URL url = null;
+		try {
+			Util.enforceSecurity(request);
+			url = request.getServletContext().getResource(src);
+			logger.debug("requesting file \"{}\"", ""+url);
+			retval = Response.status(200)
+				.entity(Util.fileContentAsBytes(
+					url.openStream()))
+				.header("Cache-Control",
+					"no-transform, private, max-age="
+					+Security.TIMEOUTMS)
+				.build();
+		}
+		catch (APIException|IOException e) {
+			retval = Util.failRequest(e);
+			logger.trace(""+e, e);
+			logger.warn(""+e);
+		}
+		return(retval);
+	}
+}

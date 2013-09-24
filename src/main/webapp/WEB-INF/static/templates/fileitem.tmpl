@@ -1,0 +1,33 @@
+<script id="fileitem_template" type="text/template">
+   <div class="row">
+      <ul class="list-inline">
+      {{#fileitems}}
+         <li class="thumbnail">
+            <div class="panel panel-default">
+               <div class="panel-heading">
+                  <div class="panel-title">
+                     {{#maxlen}}{{name}}{{/maxlen}}
+                  </div>
+               </div>
+               <div class="panel-body">
+                  <div class="fileitem_content" style="display: none;"></div>
+                  <div>
+                     <i class=\"glyphicon glyphicon-arrow-download bigicon\">
+                     </i>
+                     <button onclick="get_file_item({{id}},'{{ext}}')">Get
+                     </button>
+                  </div>
+                  <div>{{#maxlen}}{{description}}{{/maxlen}}</div>
+                  <div><span class="label label-default">Mime</span>
+                     {{#maxlen}}{{mime}}{{/maxlen}}
+                  </div>
+                  <div><span class="label label-default">Date</span>
+                     {{dateAsString}}
+                  </div>
+               </div>
+            </div>
+         </li>
+      {{/fileitems}}
+      </ul>
+   </div>
+</script>

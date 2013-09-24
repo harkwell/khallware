@@ -1,0 +1,37 @@
+<script id="event_template" type="text/template">
+   <div class="row">
+      <ul class="list-inline">
+      {{#events}}
+         <li class="thumbnail">
+            <div class="panel panel-default">
+               <div class="panel-heading">
+                  <div class="panel-title">
+                     {{#maxlen}}{{name}}{{/maxlen}}
+                  </div>
+               </div>
+               <div class="panel-body">
+                  <div>
+                     <a href="/apis/v1/events/{{id}}.ics">
+                        <i class=\"glyphicon glyphicon-arrow-download bigicon\">                        </i>
+                     </a>
+                  </div>
+                  <div>{{#maxlen}}{{description}}{{/maxlen}}</div>
+                  <div><span class="label label-default">Date</span>
+                     {{dateAsString}}
+                  </div>
+                  <div><span class="label label-default">Start</span>
+                     {{start}}
+                  </div>
+                  <div><span class="label label-default">End</span>
+                     {{end}}
+                  </div>
+                  <div><span class="label label-default">Duration</span>
+                     {{duration}}
+                  </div>
+               </div>
+            </div>
+         </li>
+      {{/events}}
+      </ul>
+   </div>
+</script>

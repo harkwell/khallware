@@ -1,0 +1,38 @@
+<script id="video_template" type="text/template">
+   <div class="row">
+      <ul class="list-inline">
+      {{#videos}}
+         <li class="thumbnail">
+            <div class="panel panel-default">
+               <div class="panel-heading">
+                  <div class="panel-title">
+                     {{#maxlen}}{{name}}{{/maxlen}}
+                  </div>
+               </div>
+               <div class="panel-body">
+                  <div class="video_item">
+                     <div id="id" style="display: none;">{{id}}</div>
+                     <video width="640" height="360" id="flv_movie_{{id}}"
+                           class="video-js vjs-default-skin"
+                           controls preload="auto">
+                        <source src="/apis/v1/videos/{{id}}.mp4"
+                              type="video/mp4" />
+                     </video>
+                     <div>{{#maxlen}}{{description}}{{/maxlen}}</div>
+                     <span>
+                        <a href="/apis/v1/videos/{{id}}.mp4">
+                           <i class=\"glyphicon glyphicon-arrow-down bigicon\">
+                           </i>
+                           download
+                        </a>
+                     </span>
+                     <div><span class="label label-default">Created</span>
+                        {{dateAsString}}
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </li>
+      {{/videos}}
+   </div>
+</script>

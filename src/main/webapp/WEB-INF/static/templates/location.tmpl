@@ -1,0 +1,41 @@
+<script id="location_template" type="text/template">
+   <div class="row">
+      <ul class="list-inline">
+      {{#locations}}
+         <li class="thumbnail">
+            <div class="panel panel-default">
+               <div class="panel-heading">
+                  <div class="panel-title">
+                     {{#maxlen}}{{name}}{{/maxlen}}
+                  </div>
+               </div>
+               <div class="panel-body">
+                  <div>
+                     <a href="/apis/v1/locations/{{id}}.kml">
+                        <span class="glyphicon glyphicon-save bigicon">
+                        </span>
+                     </a>
+                  </div>
+                  <div>
+                     <a href="https://maps.google.com/maps?q={{latitude}},{{longitude}}">
+                        <span class="glyphicon glyphicon-arrow-map-marker bigicon">
+                        </span>
+                     </a>
+                  </div>
+                  <div>{{#maxlen}}{{description}}{{/maxlen}}</div>
+                  <div><span class="label label-default">Address</span>
+                     {{#maxlen}}{{address}}{{/maxlen}}
+                  </div>
+                  <div><span class="label label-default">Lat+Lon</span>
+                     {{latitude}},{{longitude}}
+                  </div>
+                  <div><span class="label label-default">Date</span>
+                     {{dateAsString}}
+                  </div>
+               </div>
+            </div>
+         </li>
+      {{/locations}}
+      </ul>
+   </div>
+</script>

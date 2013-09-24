@@ -1,0 +1,14 @@
+<script id="contacttable_template" type="text/template">
+   {{#contacts}}
+   <tr class="tr_item">
+      <td><input type="checkbox"></td>
+      <td><span class="item_id">{{id}}</span></td>
+      <td>{{name}}</td>
+      <td>{{#maxlen}}{{description}}{{/maxlen}}</td>
+      <td>{{dateAsString}}</td>
+      <td>{{_group}}</td>
+      <td>{{mask}}</td>
+      <td><button onclick="deleteContact({{id}})">delete</button></td>
+   </tr>
+   {{/contacts}}
+</script>

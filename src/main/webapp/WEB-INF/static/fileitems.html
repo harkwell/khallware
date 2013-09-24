@@ -1,0 +1,81 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Description" content="files">
+   <link rel="icon" href="../../media/khallware.png" type="image/png">
+   <link rel="stylesheet" type="text/css"
+      href="/apis/webjars/bootstrap/3.3.4/css/bootstrap.min.css" />
+   <title>khallware: files</title>
+   <script type="text/javascript"
+      src="/apis/webjars/jquery/2.1.3/jquery.min.js">
+   </script>
+   <script type="text/javascript"
+      src="/apis/webjars/jquery-ui/1.11.4/jquery-ui.js">
+   </script>
+   <script type="text/javascript"
+      src="/apis/webjars/jquery-cookie/1.4.1-1/jquery.cookie.js"></script>
+   <script type="text/javascript"
+      src="/apis/webjars/tablesorter/2.17.8/js/jquery.tablesorter.js"></script>
+   <script type="text/javascript"
+      src="/apis/webjars/mustachejs/0.7.0/mustache.js"></script>
+   <script type="text/javascript" src="scripts/khallware.js"></script>
+   <script type="text/javascript" src="scripts/gui_helper.js"></script>
+   <script type="text/javascript">$(function () { enforce_login(); });</script>
+</head>
+
+<body>
+<div class="well">
+   <div id="fileitems">
+      <div class="panel panel-default">
+         <div class="panel-heading">Files</div>
+         <div class="panel-body">
+            This table enumerates all available contact information.
+         </div>
+         <div id="fileitemtable_content"></div>
+      </div>
+      <button onclick="perform_selected(deleteFileItem);">delete
+      </button>Delete all selected fileitems.<p>
+
+      <input id="given_fileitem_tag" type="text">
+      <button onclick="perform_selected(update_fileitem_tag);">update
+      </button>Add all selected fileitems to given tag.<p>
+
+      <select id="given_fileitem_mask">
+         <option value="700" selected>user</option>
+         <option value="770">group</option>
+         <option value="777">world</option>
+      </select>
+      <button onclick="perform_selected(update_fileitem_mask);">
+      update</button>Change all selected fileitems visibility.<p>
+      <ul class="pager">
+         <li><a href="#"><div id="fileitems_prev">Prev</div></a></li>
+         <li><a href="#"><div id="fileitems_next">Next</div></a></li>
+      </ul>
+   </div>
+   <div class="separator"></div>
+   <div class="footer">
+   </div> 
+</div> 
+
+<script type="text/javascript">
+    $(function () {
+        init_globals();
+        attach_content_and_functions();
+        $.when(getFileItems(0, ftPerPage)).done(update_fileitems_table);
+        $("#given_fileitem_tag").val(queryString["tagId"]);
+   });
+</script>
+<script type="text/javascript">
+$("#fileitems_next").click(function () {
+   console.log("next page of fileitems clicked");
+   next_page_clicked(get_fileitemtable_page, ftFromIdx, ftPerPage);
+   ftFromIdx += ftPerPage; });
+$("#fileitems_prev").click(function () {
+   console.log("prev page of fileitems clicked");
+   prev_page_clicked(get_fileitemtable_page, ftFromIdx, ftPerPage);
+   ftFromIdx -= ftPerPage; });
+</script>
+</body>
+</html>

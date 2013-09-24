@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- $Id$ -->
+<!-- ==========================================================================
+ * The Android "Khallware" application
+ * (C) 2014 Kevin D.Hall
+ *
+ * The software, processes, trade secrets and technical/business know-how used
+ * on these premises are the property of Kevin D.Hall and are not to be copied,  * divulged or used without the express written consent of the author.
+ *
+-->
+<LinearLayout
+		android:layout_width="fill_parent"
+		android:layout_height="fill_parent"
+		android:orientation="vertical"
+		xmlns:android="http://schemas.android.com/apk/res/android" >
+
+	<TextView
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:text="@string/browse"
+			android:gravity="center"
+			android:layout_x="0px"
+			android:layout_y="160px"/>
+
+	<Button
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="@string/lit_contacts"
+			android:onClick="goContacts" />
+
+	<Button
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="@string/lit_bookmarks"
+			android:onClick="goBookmarks" />
+
+	<Button
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="@string/lit_blogs"
+			android:onClick="goBlogs" />
+
+	<Button
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="@string/lit_events"
+			android:onClick="goEvents" />
+
+	<Button
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="@string/lit_fileitems"
+			android:onClick="goFileitems" />
+
+	<Button
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="@string/lit_locations"
+			android:onClick="goLocations" />
+
+	<Button
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="@string/lit_photos"
+			android:onClick="goPhotos" />
+
+	<Button
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="@string/lit_search"
+			android:onClick="goSearch" />
+
+	<Button
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="@string/lit_sounds"
+			android:onClick="goSounds" />
+
+	<Button
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="@string/lit_videos"
+			android:onClick="goVideos" />
+
+</LinearLayout>
+
+<!-- http://www.droiddraw.org/ -->

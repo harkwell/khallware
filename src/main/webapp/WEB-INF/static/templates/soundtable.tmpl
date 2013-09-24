@@ -1,0 +1,20 @@
+<script id="soundtable_template" type="text/template">
+   {{#sounds}}
+   <tr class="tr_item">
+      <td><input type="checkbox"></td>
+      <td><span class="item_id">{{id}}</span></td>
+      <td>{{name}}</td>
+      <td><a href="/apis/v1/sounds/{{id}}.ogg">ogg</a></td>
+      <td>{{path}}</td>
+      <td>{{#maxlen}}{{description}}{{/maxlen}}</td>
+      <td>{{artist}}</td>
+      <td>{{title}}</td>
+      <td>{{album}}</td>
+      <td>{{genre}}</td>
+      <td>{{dateAsString}}</td>
+      <td>{{_group}}</td>
+      <td>{{mask}}</td>
+      <td><button onclick="deleteSound({{id}})">delete</button></td>
+   </tr>
+   {{/sounds}}
+</script>

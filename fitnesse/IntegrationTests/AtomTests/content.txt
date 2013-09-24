@@ -1,0 +1,19 @@
+!define TEST_SYSTEM {slim}
+!c !1 ATOMS
+
+!3 list bookmarks, locations, contacts, events, sounds, blogs, photos, tags
+
+| Table:smartrics.rest.fitnesse.fixture.RestFixture | http://localhost:8080 |
+| setHeaders |!-
+Authorization:Basic a2hhbGw6a2hhbGw=
+Accept:application/atom+xml
+Content-Type:application/atom+xml
+-!|
+| GET | /apis/v1/atoms/bookmarks | 200 | | |
+| GET | /apis/v1/atoms/locations | 200 | | |
+| GET | /apis/v1/atoms/contacts | 200 | | |
+| GET | /apis/v1/atoms/events | 200 | | |
+| GET | /apis/v1/atoms/sounds | 200 | | |
+| GET | /apis/v1/atoms/photos | 200 | | |
+| GET | /apis/v1/atoms/blogs | 200 | | |
+| GET | /apis/v1/atoms/tags | 200 | | |

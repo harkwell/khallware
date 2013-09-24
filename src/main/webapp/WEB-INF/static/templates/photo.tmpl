@@ -1,0 +1,20 @@
+<script id="photo_template" type="text/template">
+   <div class="row">
+      <ul class="list-inline">
+      {{#photos}}
+         <li class="thumbnail img-responsive">
+            <div id="photo_dialog" title="{{name}}" style="display: none;">
+               <img src="/apis/v1/photos/{{id}}.jpg" />
+            </div>
+            <img src="/apis/v1/photos/{{id}}.jpg?thumb=true" />
+            <div class="caption">
+               <h3>{{#maxlen}}{{name}}{{/maxlen}}</h3>
+               <p>{{#maxlen}}{{description}}{{/maxlen}}</p>
+               <p>Date: {{dateAsString}}</p>
+            </div>
+         </li>
+      {{/photos}}
+      </div>
+   </div>
+</div>
+</script>

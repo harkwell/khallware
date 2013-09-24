@@ -1,0 +1,16 @@
+<script id="fileitemtable_template" type="text/template">
+   {{#fileitems}}
+   <tr class="tr_item">
+      <td><input type="checkbox"></td>
+      <td><span class="item_id">{{id}}</span></td>
+      <td><a href="/apis/v1/fileitems/{{id}}"/>{{name}}</a>
+      <td>{{mime}}</td>
+      <td>{{path}}</td>
+      <td>{{dateAsString}}</td>
+      <td>{{#maxlen}}{{description}}{{/maxlen}}</td>
+      <td>{{_group}}</td>
+      <td>{{mask}}</td>
+      <td><button onclick="deleteFileItem({{id}})">delete</button></td>
+   </tr>
+   {{/fileitems}}
+</script>

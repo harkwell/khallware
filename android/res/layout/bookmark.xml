@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- $Id$ -->
+<!-- ==========================================================================
+ * The Android "Khallware" application
+ * (C) 2014 Kevin D.Hall
+ *
+ * The software, processes, trade secrets and technical/business know-how used
+ * on these premises are the property of Kevin D.Hall and are not to be copied,  * divulged or used without the express written consent of the author.
+ *
+-->
+<LinearLayout
+		android:layout_width="fill_parent"
+		android:layout_height="fill_parent"
+		android:orientation="vertical"
+		xmlns:android="http://schemas.android.com/apk/res/android" >
+
+	<EditText
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:id="@+id/bookmark_name"
+			android:editable="false" />
+
+	<EditText
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:id="@+id/bookmark_desc"
+			android:editable="false" />
+
+	<EditText
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:id="@+id/bookmark_rating"
+			android:editable="false" />
+
+	<EditText
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:id="@+id/bookmark_url"
+			android:editable="false" />
+
+	<EditText
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:id="@+id/bookmark_title"
+			android:editable="false" />
+
+	<EditText
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:id="@+id/bookmark_updated"
+			android:editable="false" />
+
+</LinearLayout>
+
+<!-- http://www.droiddraw.org/ -->

@@ -1,0 +1,43 @@
+<script id="blog_template" type="text/template">
+   <div class="row wrap">
+      <div class="col-sm-9">
+         {{#blogs}}
+         <div class="blog_item">
+            <div class="row">
+               <div class="col-xs-12">
+                  <h2>
+                     <div class="panel panel-info">
+                        <div class="panel-body">
+                           <span class="label label-default">{{title}}</span>
+                           {{author}} {{dateAsString}}
+                        </div>
+                     </div>
+                  </h2>
+                  <div id="id" style="display: none;">{{id}}</div>
+                  <p>
+                     <div class="new_comment_area">
+                        <div class="add_comment_icon">
+                           <span class="glyphicon glyphicon-plus"></span>
+                        </div>
+                        <div class="add_comment_form" style="display: none;">
+                           <form>
+                              <input type="hidden" id="blogId" name="blogId"
+                                 value="{{id}}">
+                              title: <input type="text" id="new_add_cmt_desc">
+                              comment: <input type="text"
+                                 id="new_add_cmt_content">
+                           </form>
+                           <div id="submit_add_comment">post</div>
+                        </div>
+                     </div>
+                     <div class="blog_text">{{content}}</div>
+                  </p>
+               </div>
+            </div>
+            <div class="comment_content"></div>
+         </div>
+         <hr />
+         {{/blogs}}
+      </div>
+   </div>
+</script>

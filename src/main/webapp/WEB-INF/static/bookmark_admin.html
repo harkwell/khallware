@@ -1,0 +1,204 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Description" content="bookmark admin">
+   <link rel="icon" href="../../media/tux16-16.png" type="image/png">
+   <title>khallware: admin: bookmarks</title>
+   <script type="text/javascript"
+      src="/apis/webjars/jquery/2.1.3/jquery.min.js">
+   </script>
+   <script type="text/javascript"
+      src="/apis/webjars/jquery-ui/1.11.4/jquery-ui.js">
+   </script>
+   <script type="text/javascript"
+      src="/apis/webjars/jquery-cookie/1.4.1-1/jquery.cookie.js"></script>
+   <script type="text/javascript"
+      src="/webjars/dynatree/1.2.5/jquery.dynatree.js">
+   </script>
+   <script type="text/javascript" src="scripts/khallware.js"></script>
+   <script type="text/javascript">$(function () { enforce_login(); });</script>
+   <link rel="stylesheet"
+      href="/apis/webjars/dynatree/1.2.5/skin/ui.dynatree.css" type="text/css">
+   <script type="text/javascript">
+	$(function()
+	{
+           $("#tree").dynatree({
+              title: "bookmarks tree",
+              fx: { height: "toggle", duration: 200 },
+              autoFocus: false,
+              onActivate: function(node)
+	      {
+                 console.log("onActivate called on node {"+node+"}");
+
+                 try {
+                    console.log("selecting "+node.data.title);
+                    showBookmarks(node.data.key);
+                    $("#activeTag").html(node.data.title);
+                 }
+                 catch(err) {
+                    console.log("exception: "+e);
+                 }
+              },
+              onLazyRead: function(node)
+	      {
+                 console.log("lazy loading node {"+node+"}");
+		 try {
+                    $.when(getTags(node.data.key)).done(function (list)
+                    {
+                       appendTags(node, list);
+	               showBookmarks(node.data.key);
+                    });
+                 }
+                 catch(err) {
+                    console.log("exception: "+e);
+                 }
+              }
+           });
+           var tree = $("#tree").dynatree("getRoot");
+           var root = tree.addChild({
+              title: "Bookmarks",
+              isFolder: true,
+              isLazy: true,
+              key: 0
+           });
+           // appendTags(root, getTags(0));
+        });
+   </script>
+</head>
+
+<body>
+<div class="header">
+	<!-- p>The Hall's -->test
+</div>
+
+<div class="main">
+</div> 
+
+<div id="tree"></div>
+
+<div>Selected Bookmark: <span id="activeURL">-</span></div>
+<div>
+<form>
+   new url: <input type="text" id="newurl">
+   name: <input type="text" id="newname">
+   rating: <input type="text" id="newrating">
+</form><div id="submitBookmark">create</div>
+</div>
+<div>
+<form>
+   id: <input type="text" id="myid">
+   url: <input type="text" id="myurl">
+   name: <input type="text" id="myname">
+   rating: <input type="text" id="myrating">
+</form><div id="updateBookmark">update</div>
+<div id="deleteBookmark">delete</div>
+</div>
+<div>Selected Tag: <span id="activeTag">-</span></div>
+<form>new tag: <input type="text" id="newtag"></form>
+<div id="submitTag">submit tag</div>
+<div id="deleteTag">delete tag</div>
+<div id="urls"></div>
+
+<script>
+$("#submitBookmark").click(function()
+{
+   var name = $("#newname").val();
+   var url = $("#newurl").val();
+   var rating = $("#newrating").val();
+   var tag;
+   try {
+      tag = $("#tree").dynatree("getActiveNode").data.key;
+   }
+   catch(err) {
+      tag = 0;
+   }
+   console.log("clicked on submit bookmark button...");
+   postBookmark(name, url, rating, tag);
+});
+</script>
+<script>
+$("#updateBookmark").click(function()
+{
+   var id = $("#myid").val();
+   var name = $("#myname").val();
+   var url = $("#myurl").val();
+   var rating = $("#myrating").val();
+   var bookmark = getBookmark(id);
+   var tag;
+   try {
+      tag = $("#tree").dynatree("getActiveNode").data.key;
+   }
+   catch(err) {
+      tag = 0;
+   }
+   console.log("clicked on update bookmark button...");
+   bookmark.name = name;
+   bookmark.url = url;
+   bookmark.rating = rating;
+   updateBookmark(bookmark, tag);
+});
+</script>
+<script>
+$("#deleteBookmark").click(function()
+{
+   var id = $("#myid").val();
+   console.log("clicked on delete bookmark button...(id="+id+")");
+   deleteBookmark(id);
+});
+</script>
+<script>
+$("#submitTag").click(function()
+{
+   var name = $("#newtag").val();
+   var parent = $("#newtagparent").val();
+
+   if (typeof parent === "undefined") {
+      try {
+         parent = $("#tree").dynatree("getActiveNode").data.key;
+      }
+      catch(err) {
+         parent = 0;
+      }
+   }
+   console.log("clicked on submit tag button...");
+   postTag(name, parent);
+   $("#tree").dynatree("getActiveNode").resetLazy();
+});
+</script>
+<script>
+$("#deleteTag").click(function()
+{
+   console.log("delete tag button...");
+   try {
+      var node = $("#tree").dynatree("getActiveNode");
+      var parent = node.getParent();
+      node.remove();
+      parent.resetLazy();
+      deleteTag(node.data.key);
+   }
+   catch(err) {
+      console.log("ERROR: cannot delete invalid node: "+err);
+   }
+});
+</script>
+<script>
+$("#urls").delegate("li", "click", function()
+{
+   console.log("CLICK...");
+   var bookmark = getBookmark(this.id);
+   console.log("got bookmark "+bookmark);
+   $("#myid").val(""+this.id);
+   $("#myurl").val(""+bookmark.url);
+   $("#myname").val(""+bookmark.name);
+   $("#myrating").val(""+bookmark.rating);
+   $("#activeURL").html(""+bookmark.name);
+});
+</script>
+<div class="footer">
+</div> 
+<center>
+</center>
+</body>
+</html>

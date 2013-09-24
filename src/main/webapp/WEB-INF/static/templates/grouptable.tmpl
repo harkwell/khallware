@@ -1,0 +1,12 @@
+<script id="grouptable_template" type="text/template">
+   {{#groups}}
+   <tr class="tr_item">
+      <td><input type="checkbox"></td>
+      <td><span class="item_id">{{id}}</span></td>
+      <td>{{name}}</td>
+      <td>{{disabled}}</td>
+      <td>{{description}}</td>
+      <td><button onclick="deleteGroup({{id}})">disable</button></td>
+   </tr>
+   {{/groups}}
+</script>

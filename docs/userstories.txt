@@ -1,0 +1,87 @@
+# $Id: e86d22738b0d5eb5dda63e54381b91d1a30c6f44 $
+#-------------------------------------------------------------------------------
+###################
+### IMPLEMENTED ###
+###################
+* As a security officer, I want basic authentication for RESTful services,
+  so that only registered users may interact with each method requiring such
+* As a system admin, I want users to be limited in how much the can store, so
+  that space is equitable
+* As a system admin, I want the ability to set users landing pages, so
+  that custom experiences may be provisioned
+* As a system admin, I want users to be able to register on their own, so that
+  my job is easier
+* As a security officer, I want registering users to be real people with a
+  valid email, so that malware bots will not destroy site usability
+* As a user, I want to log on once per session, so that it's not bothersome
+* As a user, I want to see an atom feed per entity, so that I'm always aware
+  of new things
+* As a user, I want to organize several entities by tag, for relevancy
+* As a user, I want to have bookmarks, so that websites are organized by tag
+* As a user, I want to have locations, so that geographic points of interest
+  are organized by tag
+* As a user, I want to have contacts, so that persons of interest to me are
+  available grouped by tag
+* As a user, I want to have calendar entries, so that events organized by tag
+* As a user, I want to have photos, so that tagged groups contain visuals
+* As a user, I want to have photos play in a slide-show, so that I can site
+  back and enjoy what's showing
+* As a user, I want to have file items, so that arbitrary files are organized
+* As a user, I want to have a blog, so that pertinent discussions are kept
+* As a user, I want to have music and audio, so that playlists are available
+* As a user, I want to have the ability to search across entities, so that
+  previously used or uploaded items can be found easily
+* As a user, I want to access other users content, so that we can share
+* As a user, I want to publish to other users, so that we can share
+* As a developer, I want to have a paging mechanism, so things are manageable
+* As a user, I want to access content from google earth, so that my favorite
+  places show up on the map
+* As a user, I want to be able to export a tagged group of calendar entries,
+  so that I can use them in rainlendar2 or ther calendaring software
+
+###########################
+### NOT YET IMPLEMENTED ###
+###########################
+* As a web user, I want to upload photos, so that they are available later
+* As a web user, I want to upload videos, so that they are available later
+* As a user, I want to access content on my smart phone, so that I can take
+  content with me
+
+
+###############
+### ANDROID ###
+###############
+* As a user, I want to provision login information once, so that accessing the
+  site is convenient
+* As a user, I want to be automatically connected on start-up, so that
+  accessing the site is convenient
+* As a user, I want to be prompted for credentials if they are not known, so
+  that next time I do not have to
+* As a user, I want to be put into the browse tag activity on start-up, so that
+  a consistent feel persists
+* As a user, I want tags to be refreshed on start-up if the network is
+  available, so that the cache stays fresh
+* As a user, I want a button to manually refresh tags from the network if it is
+  available, so that the cache is current
+* As a user, I want an item count beside each entity type button, so that I know
+  how many of each is available for consuming
+* As a user, I want to push a tag button to view children, so that I can
+  navigate to other groups of entities
+* As a user, I want to return to the previously viewed tag by hitting the back
+  button on my phone, so that I can return my train of thought
+* As a user, I want to listen to music by pressing a button, so that the
+  playlist is heard
+* As a user, I want the current tag of song files to be cached, so that the
+  playlist is available off-line later
+* As a user, I want to access a tags list of contacts, so that I may choose one
+* As a user, I want to call a person from a list of contacts, so that I may
+  speak with them
+* As a user, I want to text a person from a list of contacts, so that I may
+  communicate with them via sms
+* As a user, I want to access a tags list of bookmarks, so that I may choose one
+* As a user, I want to access a bookmark, so that I may view website or content
+* As a user, I want to access a tags list of photos, so that I may choose one
+* As a user, I want to access a photo by clicking, so that I may view it
+* As a user, I want to sync my phone image gallery, so that they may be managed
+  online
+* As a user, I want to sync my phone contacts, so that I may manage them online

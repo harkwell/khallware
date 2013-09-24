@@ -1,0 +1,16 @@
+<script id="sessiontable_template" type="text/template">
+   {{#sessions}}
+   <tr class="tr_item">
+      <td><input type="checkbox"></td>
+      <td><span class="item_id">{{id}}</span></td>
+      <td>{{name}}</td>
+      <td>{{disabled}}</td>
+      <td>{{description}}</td>
+      <td>{{credentials.username}}</td>
+      <td>{{group.name}}</td>
+      <td>{{credentials.email}}</td>
+      <td>{{uuid}}</td>
+      <td><button onclick="deleteSession({{id}})">remove</button></td>
+   </tr>
+   {{/sessions}}
+</script>

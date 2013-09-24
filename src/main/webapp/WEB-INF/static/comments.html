@@ -1,0 +1,86 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Description" content="blog comments">
+   <link rel="icon" href="../../media/khallware.png" type="image/png">
+   <link rel="stylesheet" href="../../css/khallware.css">
+   <title>khallware: comments</title>
+   <script type="text/javascript"
+      src="/apis/webjars/jquery/2.1.3/jquery.min.js">
+   </script>
+   <script type="text/javascript"
+      src="/apis/webjars/jquery-ui/1.11.4/jquery-ui.js">
+   </script>
+   <script type="text/javascript"
+      src="/apis/webjars/jquery-cookie/1.4.1-1/jquery.cookie.js"></script>
+   <script type="text/javascript"
+      src="/apis/webjars/tablesorter/2.17.8/js/jquery.tablesorter.js"></script>
+   <script type="text/javascript"
+      src="/apis/webjars/mustachejs/0.7.0/mustache.js"></script>
+   <script type="text/javascript" src="scripts/khallware.js"></script>
+   <script type="text/javascript" src="scripts/gui_helper.js"></script>
+   <script type="text/javascript">$(function () { enforce_login(); });</script>
+</head>
+
+<body>
+<div class="hall">
+	<div class="header">Blog Comments</div>
+	<div id="blogs">
+		<div id="blog_content"></div>
+	</div>
+	<div id="comments">
+		<div id="commenttable_content"></div>
+		<button onclick="perform_selected(deleteComment);">delete
+		</button>Delete all selected comments.<p>
+
+		<select id="given_comment_mask">
+			<option value="700" selected>user</option>
+			<option value="770">group</option>
+			<option value="777">world</option>
+		</select>
+		<button onclick="perform_selected(update_comment_mask);">
+		update</button>Change all selected comment visibility.<p>
+		<div class="pager">
+			<div id="comments_prev">prev</div>
+			<div id="comments_next">next</div>
+		</div>
+	</div>
+	<div class="separator"></div>
+	<div class="footer">
+	</div> 
+</div> 
+
+<script type="text/javascript">
+    $(function () {
+        init_globals();
+        attach_content_and_functions();
+
+        if (queryString["blogId"] != null) {
+           var blog = getBlog(queryString["blogId"]);
+           $.when(blog).done(function (b)
+           {
+              var blog_list_ref = new Object();
+              var blog_list = [];
+              blog_list.push(b);
+              blog_list_ref.blogs = blog_list;
+              update_blogs(blog_list_ref);
+              $.when(getComments(0, cmttPerPage, blog.id)).done(
+                 update_comments_table);
+           });
+        }
+   });
+</script>
+<script type="text/javascript">
+$("#comments_next").click(function () {
+   console.log("next page of comments clicked");
+   next_page_clicked(get_commenttable_page, cmttFromIdx, cmttPerPage);
+   cmttFromIdx += cmttPerPage; });
+$("#comments_prev").click(function () {
+   console.log("prev page of comments clicked");
+   prev_page_clicked(get_commenttable_page, cmttFromIdx, blogtPerPage);
+   cmttFromIdx -= cmttPerPage; });
+</script>
+</body>
+</html>

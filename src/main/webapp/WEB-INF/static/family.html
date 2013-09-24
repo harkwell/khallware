@@ -1,0 +1,217 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Description" content="Welcome family!">
+   <link rel="icon" href="../../media/tux16-16.png" type="image/png">
+   <link rel="stylesheet" type="text/css"
+      href="/apis/webjars/bootstrap/3.3.4/css/bootstrap.min.css" />
+   <title>khallware: family</title>
+   <script type="text/javascript"
+      src="/apis/webjars/jquery/2.1.3/jquery.min.js">
+   </script>
+   <script type="text/javascript"
+      src="/apis/webjars/jquery-cookie/1.4.1-1/jquery.cookie.js"></script>
+   <script type="text/javascript" src="scripts/khallware.js"></script>
+   <script type="text/javascript" src="scripts/gui_helper.js"></script>
+   <script type="text/javascript">$(function () { enforce_login(); });</script>
+</head>
+
+<body>
+<div class="well">
+   <div class="input-group">
+      <span class="input-group-addon">Search</span>
+      <form name="search" action="search_results.html" method="GET">
+         <input name="pattern" type="text">
+         <input type="submit" style="visibility:hidden">
+      </form>
+   </div>
+   <div class="well">
+      <div class="media">
+         <a class="pull-left" href="#">
+            <img class="media-object" src="../../media/rss.png" alt="atom feeds"
+               height="64" width="64">
+         </a>
+         <div class="media-body">
+            <h4 class="media-heading">Available Atom Feeds</h4>
+            <ul class="list-inline">
+               <li><a href="/apis/v1/atoms/bookmarks.atom">bookmarks</a></li>
+               <li><a href="/apis/v1/atoms/sounds.atom">audio</a></li>
+               <li><a href="/apis/v1/atoms/photos.atom">photos</a></li>
+               <li><a href="/apis/v1/atoms/blogs.atom">blogs</a></li>
+               <li><a href="/apis/v1/atoms/contacts.atom">contacts</a></li>
+               <li><a href="/apis/v1/atoms/events.atom">events</a></li>
+               <li><a href="/apis/v1/atoms/fileitems.atom">files</a></li>
+               <li><a href="/apis/v1/atoms/locations.atom">locations</a></li>
+               <li><a href="/apis/v1/atoms/videos.atom">videos</a></li>
+            </ul>
+         </div>
+      </div>
+   </div>
+<!-- ####################################################################### -->
+
+   <div class="container">
+      <div class="row">
+         <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
+            <div class="listing listing-default">
+               <div class="shape">
+                  <div class="shape-text">site</div>
+               </div>
+               <div class="listing-content">
+                  <h3 class="lead">Our Genealogy</h3>
+                  <p>click <a href="https://genealogy.mydomain.com/">here</a>
+                     to review our genealogy information.
+                  </p>
+               </div>
+            </div>
+         </div>
+         <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
+            <div class="listing listing-default">
+               <div class="shape">
+                  <div class="shape-text">new</div>
+               </div>
+               <div class="listing-content">
+                  <h3 class="lead">Animal Park</h3>
+                  <p>click <a href="details.html?tagId=3">here</a>
+                     to see the photos we took at the Animal Park.
+                  </p>
+               </div>
+            </div>
+         </div>
+         <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
+            <div class="listing listing-default">
+               <div class="shape">
+                  <div class="shape-text">new</div>
+               </div>
+               <div class="listing-content">
+                  <h3 class="lead">Kids Fishing Day</h3>
+                  <p>click <a href="details.html?tagId=106">here</a>
+                     to see the photos we took at the local County Kids
+                     Fishing Day.
+                  </p>
+               </div>
+            </div>
+         </div>
+         <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
+            <div class="listing listing-default">
+               <div class="shape">
+                  <div class="shape-text">classic</div>
+               </div>
+               <div class="listing-content">
+                  <h3 class="lead">The Zoo</h3>
+                  <p>click <a href="details.html?tagId=135">here</a>
+                     to see the Zoo trip.
+                  </p>
+               </div>
+            </div>
+         </div>
+         <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
+            <div class="listing listing-default">
+               <div class="shape">
+                  <div class="shape-text">classic</div>
+               </div>
+               <div class="listing-content">
+                  <h3 class="lead">Wedding Photos</h3>
+                  <p>click <a href="details.html?tagId=98">here</a>
+                     to see our wedding photos.
+                  </p>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>
+
+<style>
+.shape {
+    border-style: solid;
+    border-width: 0 70px 40px 0;
+    float: right;
+    height: 0px;
+    width: 0px;
+    -ms-transform: rotate(360deg); /* IE 9 */
+    -o-transform: rotate(360deg); /* Opera 10.5 */
+    -webkit-transform: rotate(360deg); /* Safari and Chrome */
+    transform: rotate(360deg);
+}
+.listing {
+    background: #fff;
+    border: 1px solid #ddd;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    margin: 15px 0;
+    overflow: hidden;
+}
+.listing:hover {
+    -webkit-transform: scale(1.1);
+    -moz-transform: scale(1.1);
+    -ms-transform: scale(1.1);
+    -o-transform: scale(1.1);
+    transform: rotate scale(1.1);
+    -webkit-transition: all 0.4s ease-in-out;
+    -moz-transition: all 0.4s ease-in-out;
+    -o-transition: all 0.4s ease-in-out;
+    transition: all 0.4s ease-in-out;
+}
+.shape {
+    border-color: rgba(255,255,255,0) #d9534f rgba(255,255,255,0) rgba(255,255,255,0);
+}
+.listing-radius {
+    border-radius: 7px;
+}
+.listing-danger {
+    border-color: #d9534f;
+}
+.listing-danger .shape {
+    border-color: transparent #d9533f transparent transparent;
+}
+.listing-success {
+    border-color: #5cb85c;
+}
+.listing-success .shape {
+    border-color: transparent #5cb75c transparent transparent;
+}
+.listing-default {
+    border-color: #999999;
+}
+.listing-default .shape {
+    border-color: transparent #999999 transparent transparent;
+}
+.listing-primary {
+    border-color: #428bca;
+}
+.listing-primary .shape {
+    border-color: transparent #318bca transparent transparent;
+}
+.listing-info {
+    border-color: #5bc0de;
+}
+.listing-info .shape {
+    border-color: transparent #5bc0de transparent transparent;
+}
+.listing-warning {
+    border-color: #f0ad4e;
+}
+.listing-warning .shape {
+    border-color: transparent #f0ad4e transparent transparent;
+}
+.shape-text {
+    color: #fff;
+    font-size: 12px;
+    font-weight: bold;
+    position: relative;
+    right: -40px;
+    top: 2px;
+    white-space: nowrap;
+    -ms-transform: rotate(30deg); /* IE 9 */
+    -o-transform: rotate(360deg); /* Opera 10.5 */
+    -webkit-transform: rotate(30deg); /* Safari and Chrome */
+    transform: rotate(30deg);
+}
+.listing-content {
+    padding: 0 20px 10px;
+}
+</style>
+
+</body>
+</html>

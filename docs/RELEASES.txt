@@ -1,0 +1,165 @@
+#############
+### HOWTO ###
+#############
+# update version, create release baseline
+git checkout webapp
+vi pom.xml # verify bld.major, bld.minor, bld.incr in version property
+git commit -a
+git checkout master
+git merge webapp
+git tag -u 2F18E1FA v0.8
+
+# build release artifact
+REPOTOP=$HOME/project/homepage/
+REPO=khallware
+TOP=$HOME/tmp/blah/$REPO
+rm -rf $TOP && mkdir -p $TOP 
+git archive v0.8 --remote=$USER@localhost:$REPOTOP/$REPO .| tar -x -C $TOP
+cd $TOP && mvn package && ls -ld target/apis.war
+
+##############
+### V0.8.0 ###
+##############
+refactor datastore to replace filterOnMode with APICrudChain.filterOnMode
+refactor builders to include direct field assignment
+add comments
+finish userstories.txt
+validate ./src/scripts/build_apk.sh
+create README.md
+fix "update_videos()" method in gui_helper.js
+move files to docs dir
+review imports via eclipse
+NoClassDefFoundError: com/jhlabs/image/RippleFilter
+remove references to my domain name???
+remove references to khall, hosts, apis.properties and family.html
+run PMD
+re-factor controller (remove onBefore, onAfter, enforce, validation, etc.)
+bld.major,minor,patch text replacement no longer replaces
+details.html:jwplayer.js
+comments.html,audio,blog:jquery-ui.custom.js
+slideshow.html:jquery.easing.min.js
+slideshow.html:supersized.3.2.7.min.js
+slideshow.html:supersized.css,supersized.shutter.css
+# JQuery plugin: supersized (slide-show plugin)
+# jquery.easing.min.js
+
+
+##############
+### V0.7.0 ###
+##############
+UI search_results.html 404!
+UI quick navigation among tags (visualize entire path to root at top)
+run pmd against source
+
+##############
+### V0.6.0 ###
+##############
+UI remove old sessions in admin
+UI search is broken in family.html
+refactor Datastore.java into separate DAOs (chain pattern)
+UI develop the admin page
+provide mechanism to get/set the landing page for group in admin
+landing page group assignment should be persisted in db, not properties
+exceptions should go in respective packages, global only if appropriate
+reconcile policy enforcement concept with validation one
+admin restful calls should return quota info
+more unit tests (mockito)
+captcha text is broken
+from google earth, save places as "a.kmz", unzip and post doc.kml latlon
+uploaded file names should not contain spaces or weird characters
+references to tomcat-server should be configurable
+fileitems,photos,sounds,etc files should be deleted along with db record
+fileitems,photos,etc shouldn't be deleted having multiple tags referenced
+posting the same entity should add it to its tags table only
+UI posting a new bookmark does not add it to current tag
+UI utilize a QR code on login page
+UI add photo or other to multiple tags, delete photo (exception?!)
+
+##############
+### V0.5.0 ###
+##############
+implement login history
+write user logout mechanism
+fix "Unparseable date: 'Thu Feb 20 17:00:00 CST 2014'" at Event.java:111
+replace Locations.toLocation with LocationFactory
+add feature to supply mask and path to file upload
+design mechanism to limit the users drive capacity to upload files
+develop an admin page back-end mechanism (groups, sessions, etc.)
+develop an admin page (groups, sessions, etc.)
+Datastore.java:search() should utilize parameterized string instead
+secure the search feature (do not return entities unless permitted to)
+create view for search instead of piecing queries together
+add sort column to Pagination
+fitnesse tests are failing...
+calling filterOnMode(qb.where(), creds); with no creds may cause IllegalStateException: No where clauses defined
+when posting new entities, enforce uniqueness (uuid in vcard, etc.)
+write Contact method that syncs vcard and instance fields
+handle posting of all contacts within a single vcard
+UI posting a new contact should not throw exception b/c unknown fields
+UI fromIndex and toIndex should be page and pageSize
+scripts (.sh .sql) should not be included in .war(WEB-INF/classes/scripts)
+need functionality to search all items belonging to a tag
+NOPE handle non-javascript browsers
+vcf file with multiple VCARD stanzas only import the first one
+users to post jpegs and mp4s where they have permission to (fileupload)
+NOPE users posting items with world scope require admin acceptance
+
+############
+### V0.4 ###
+############
+UI comment_content not showing in blog area of details.html
+UI audio.html and sister tables need polishing
+UI family.html and sister tables need polishing
+utilize http://getbootstrap.com/ for website presentation
+deps/build under git control
+
+############
+### V0.3 ###
+############
+https://tomcat-server/apis/details.html?tagId=73 (slideshow link ref 0)
+allow user to post kml
+allow user to change password
+NOPE index.html exposed without authentication (non-javascript, otherwise)
+integrate a wiki for easy content management (include wiki engine later)
+download playlist link should be above list
+some images do not display (https://tomcat-server/apis/details.html?tagId=216)
+linux/chromium has 3 images above and one below for photo section
+pretty up the GUI
+NOPE photos should allow URLs to external resources
+NOPE implement single sign on with Jasig CAS
+
+############
+### V0.2 ###
+############
+usernames with spaces should not be allowed
+duplicate usernames should not be allowed
+
+############
+### V0.1 ###
+############
+details.html is not very responsive (add progress wheel)
+should send an email notification to configuable user on registration
+limit photos to one row (static width)
+filter user input in posts for html scripts
+tags.html?tagId=35 is not implemented
+tidy up look and feel
+ellipses (...) should not be in every maxlen string
+enforce_login() does not seem to work (try to access index.html right away)
+details.html page load latency, make some calls async? (fixed w/ limit)
+number of movies listed on details.html surpasses max
+limit the number of related tags in details.html
+groups should have optional landing page (family, friends, etc.)
+session last update time needs to be refreshed each time a request comes in
+basic auth headers sent, session modified time not updated
+include date in log4j logs
+slide-show capability (supersized)
+details pop-up photo should be full-screen not actual size
+restrain js logout, connect after timeout, user allowed to continue
+gui_helper.js:attach_content_and_functions() - record as current tag also
+blog entry on details.html needs to include comments
+atom expiration bug
+should be able to add one photo to multiple tags on photo table page
+auto logout timer does not seem to be working
+table pages should have select all link
+should be able to sort columns on table pages
+in photo table, thumb should be cached, only generate if dne and configured

@@ -1,0 +1,15 @@
+<script id="usertable_template" type="text/template">
+   {{#users}}
+   <tr class="tr_item">
+      <td><input type="checkbox"></td>
+      <td><span class="item_id">{{id}}</span></td>
+      <td>{{username}}</td>
+      <td>{{quota}}</td>
+      <td>{{disabled}}</td>
+      <td>{{regikey}}</td>
+      <td>{{group.name}}</td>
+      <td>{{email}}</td>
+      <td><button onclick="deleteUser({{id}})">disable</button></td>
+   </tr>
+   {{/users}}
+</script>

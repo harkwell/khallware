@@ -1,0 +1,34 @@
+<script id="sound_template" type="text/template">
+   <div class="row">
+      <ul class="list-inline">
+      {{#sounds}}
+         <li class="thumbnail">
+            <div class="panel panel-default">
+               <div class="panel-heading">
+                  <div class="panel-title">
+                     {{#maxlen}}{{name}}{{/maxlen}}
+                  </div>
+               </div>
+               <div class="panel-body">
+                  <a href="/apis/v1/sounds/{{id}}.ogg">
+                     <span class="glyphicon glyphicon-save btn-lg black"></span>
+                  </a>
+                  <div>{{#maxlen}}{{description}}{{/maxlen}}</div>
+                  <div><span class="label label-default">Artist</span>
+                     {{#maxlen}}{{artist}}{{/maxlen}}
+                  </div>
+                  <div><span class="label label-default">Title</span>
+                     {{#maxlen}}{{title}}{{/maxlen}}
+                  </div>
+                  <div><span class="label label-default">Album</span>
+                     {{#maxlen}}{{album}}{{/maxlen}}
+                  </div>
+                  <div><span class="label label-default">Genre</span>
+                     {{genre}}
+                  </div>
+               </div>
+            </div>
+         </li>
+      {{/sounds}}
+   </div>
+</script>

@@ -1,0 +1,81 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Description" content="audio">
+   <link rel="icon" href="../../media/khallware.png" type="image/png">
+   <link rel="stylesheet" type="text/css"
+      href="/apis/webjars/bootstrap/3.3.4/css/bootstrap.min.css" />
+   <title>khallware: audio</title>
+   <script type="text/javascript"
+      src="/apis/webjars/jquery/2.1.3/jquery.min.js">
+   </script>
+   <script type="text/javascript"
+      src="/apis/webjars/jquery-ui/1.11.4/jquery-ui.js">
+   </script>
+   <script type="text/javascript"
+      src="/apis/webjars/jquery-cookie/1.4.1-1/jquery.cookie.js"></script>
+   <script type="text/javascript"
+      src="/apis/webjars/tablesorter/2.17.8/js/jquery.tablesorter.js"></script>
+   <script type="text/javascript"
+      src="/apis/webjars/mustachejs/0.7.0/mustache.js"></script>
+   <script type="text/javascript" src="scripts/khallware.js"></script>
+   <script type="text/javascript" src="scripts/gui_helper.js"></script>
+   <script type="text/javascript">$(function () { enforce_login(); });</script>
+</head>
+
+<body>
+<div class="well">
+   <div id="audio">
+      <div class="panel panel-default">
+         <div class="panel-heading">Audio</div>
+         <div class="panel-body">
+            This table enumerates all available audio files.
+         </div>
+         <div id="audiotable_content"></div>
+      </div>
+      <button onclick="perform_selected(deleteSound);">delete
+      </button>Delete all selected audio.<p>
+
+      <input id="given_audio_tag" type="text">
+      <button onclick="perform_selected(update_audio_tag);">update
+      </button>Add all selected audio to given tag.<p>
+
+      <select id="given_audio_mask">
+         <option value="700" selected>user</option>
+         <option value="770">group</option>
+         <option value="777">world</option>
+      </select>
+      <button onclick="perform_selected(update_audio_mask);">
+      update</button>Change all selected audio visibility.<p>
+      <ul class="pager">
+         <li><a href="#"><div id="audio_prev">Prev</div></a></li>
+         <li><a href="#"><div id="audio_next">Next</div></a></li>
+      </ul>
+   </div>
+   <div class="separator"></div>
+   <div class="footer">
+   </div> 
+</div> 
+
+<script type="text/javascript">
+    $(function () {
+        init_globals();
+        attach_content_and_functions();
+        $.when(getSounds(0, atPerPage)).done(update_audio_table);
+        $("#given_audio_tag").val(queryString["tagId"]);
+   });
+</script>
+<script type="text/javascript">
+$("#audio_next").click(function () {
+   console.log("next page of audio clicked");
+   next_page_clicked(get_audiotable_page, atFromIdx, atPerPage);
+   atFromIdx += atPerPage; });
+$("#audio_prev").click(function () {
+   console.log("prev page of audio clicked");
+   prev_page_clicked(get_audiotable_page, atFromIdx, atPerPage);
+   atFromIdx -= atPerPage; });
+</script>
+</body>
+</html>

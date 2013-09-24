@@ -1,0 +1,15 @@
+<script id="bookmarktable_template" type="text/template">
+   {{#bookmarks}}
+   <tr class="tr_item">
+      <td><input type="checkbox"></td>
+      <td><span class="item_id">{{id}}</span></td>
+      <td><a href="{{url}}">{{name}}</a></td>
+      <td>{{url}}</td>
+      <td>{{#maxlen}}{{description}}{{/maxlen}}</td>
+      <td>{{dateAsString}}</td>
+      <td>{{mask}}</td>
+      <td>{{rating}}</td>
+      <td><button onclick="deleteBookmark({{id}})">delete</button></td>
+   </tr>
+   {{/bookmarks}}
+</script>
