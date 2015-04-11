@@ -134,7 +134,7 @@ public class Datastore extends SQLiteOpenHelper
 		handle().execSQL(sql);
 
 		sql =    "INSERT INTO connect (url, user, pass) "
-			+"VALUES ("+uup[0]+","+uup[1]+","+uup[2]+")";
+			+"VALUES ('"+uup[0]+"','"+uup[1]+"','"+uup[2]+"')";
 		handle().execSQL(sql);
 	}
 }

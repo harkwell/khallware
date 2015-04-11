@@ -25,6 +25,7 @@ public class EntitySetPagerAdapter extends FragmentStatePagerAdapter
 
 	private final List<String> entityList = new Vector<>();
 	private EntityType entityType = null;
+	private boolean endOfItems = false;
 	private int tag = 0;
 
 	public EntitySetPagerAdapter(FragmentManager fragmentManager,
@@ -41,14 +42,17 @@ public class EntitySetPagerAdapter extends FragmentStatePagerAdapter
 	{
 		Fragment retval = null;
 		try {
-			Bundle args = null;
+			int numItems = entityList.size();
+			Bundle args = new Bundle();
 			String json = null;
 
-			if (idx >= entityList.size()) {
+			if (idx >= numItems) {
 				expandEntityListViaThread(tag);
 			}
-			args = new Bundle();
-			json = entityList.get(idx);
+			numItems = entityList.size();
+			json = (numItems > 0 && numItems > idx)
+				? entityList.get(idx)
+				: "{}";
 			retval = new EntityFragment();
 			args.putString(EntityFragment.ARG_JSON, json);
 			args.putString(EntityFragment.ARG_ENTITY,""+entityType);
@@ -63,7 +67,7 @@ public class EntitySetPagerAdapter extends FragmentStatePagerAdapter
 	@Override
 	public int getCount()
 	{
-		return(MAX_ENTITIES);
+		return((endOfItems) ? entityList.size() : MAX_ENTITIES);
 	}
 
 	@Override
@@ -104,16 +108,22 @@ public class EntitySetPagerAdapter extends FragmentStatePagerAdapter
 	protected void expandEntityList(final int tag)
 			throws DatastoreException, NetworkException
 	{
-		JSONArray jarray = CrudHelper.read(entityType,
-			entityList.size(), MAX_REQ_ENTITIES, tag);
+		int page = Math.max(1, (entityList.size() / MAX_REQ_ENTITIES));
+		int num = 0;
+		JSONArray jarray = CrudHelper.read(entityType, (page - 1),
+			MAX_REQ_ENTITIES, tag);
 
 		for (int idx=0; idx < jarray.length(); idx++) {
 			try {
 				entityList.add(""+jarray.getJSONObject(idx));
+				num++;
 			}
 			catch (JSONException e) {
 				throw new NetworkException(e);
 			}
+		}
+		if (num < MAX_REQ_ENTITIES) {
+			endOfItems = true;
 		}
 	}
 }

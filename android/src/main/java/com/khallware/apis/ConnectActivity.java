@@ -28,11 +28,11 @@ public class ConnectActivity extends Activity
 		logger.trace("doConnect()...");
 		try {
 			editText = (EditText)findViewById(R.id.connect_host);
-			uup[2] = "https://"+editText.getText().toString();
+			uup[0] = "http://"+editText.getText().toString();
 			editText = (EditText)findViewById(R.id.connect_user);
-			uup[0] = editText.getText().toString();
-			editText = (EditText)findViewById(R.id.connect_pass);
 			uup[1] = editText.getText().toString();
+			editText = (EditText)findViewById(R.id.connect_pass);
+			uup[2] = editText.getText().toString();
 			Datastore.getDatastore().setUrlUserPasswd(uup);
 		}
 		catch (Exception e) {

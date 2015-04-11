@@ -24,7 +24,10 @@ public class LocationsActivity extends FragmentActivity
 	{
 		super.onCreate(bundle);
 		setContentView(R.layout.activity_locations);
-		tag = bundle.getInt(Khallware.ARG_TAG);
+		bundle = (bundle == null) ? getIntent().getExtras() : bundle;
+		tag = (bundle == null)
+			? 0 // ideally from database
+			: Integer.parseInt(""+bundle.get(Khallware.ARG_TAG));
 		entitySetPagerAdapter = new EntitySetPagerAdapter(
 			getSupportFragmentManager(), EntityType.location, tag);
 		viewPager = (ViewPager)findViewById(R.id.pager);

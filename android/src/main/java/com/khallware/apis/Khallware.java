@@ -129,7 +129,7 @@ public class Khallware extends Activity
 		try {
 			Intent intent = new Intent(this, clazz);
 			// KDH get tag from db
-			intent.putExtra(ARG_TAG, ""+0);
+			intent.putExtra(ARG_TAG, ""+35);
 			startActivity(intent);
 		}
 		catch (Exception e) {

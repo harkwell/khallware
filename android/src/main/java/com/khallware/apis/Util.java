@@ -2,6 +2,8 @@
 
 package com.khallware.apis;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -10,11 +12,11 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import android.util.Base64;
+// httpclient is built into Android
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpDelete;
-import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -72,20 +74,17 @@ public class Util
 
 	public static String toString(InputStream is)
 	{
-		String retval = "";
-		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		StringBuilder retval = new StringBuilder();
+		BufferedReader reader = null;
 		try {
-			for (int b=-1; (b=is.read()) != -1;) {
-				bos.write(b);
-			}
-			is.close();
-			bos.close();
-			retval = ""+bos;
+			reader = new BufferedReader(new InputStreamReader(is));
+			retval.append(reader.readLine()).append("\n");
+			reader.close();
 		}
 		catch (IOException e) {
 			logger.error(""+e, e);
 		}
-		return(retval);
+		return(""+retval);
 	}
 
 	public static String getBasicAuthHeader() throws DatastoreException
@@ -94,7 +93,7 @@ public class Util
 		String[] info = Datastore.getDatastore().getUrlUserPasswd();
 		String tmp = info[1]+":"+info[2];
 		retval.append("Authorization:Basic ");
-		tmp = Base64.encodeToString(tmp.getBytes(), Base64.DEFAULT);
+		tmp = Base64.encodeToString(tmp.getBytes(), Base64.NO_WRAP);
 		retval.append(tmp);
 		return(""+retval);
 	}
