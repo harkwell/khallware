@@ -64,6 +64,12 @@ public class Khallware extends Activity
 		return(true);
 	}
 
+	public void goTags(View view)
+	{
+		logger.trace("goTags()...");
+		lauchIntent(TagsActivity.class);
+	}
+
 	public void goContacts(View view)
 	{
 		logger.trace("goContacts()...");

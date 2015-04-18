@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- $Id$ -->
+<!-- ==========================================================================
+ * The Android "Khallware" application
+ * (C) 2014 Kevin D.Hall
+ *
+ * The software, processes, trade secrets and technical/business know-how used
+ * on these premises are the property of Kevin D.Hall and are not to be copied,  * divulged or used without the express written consent of the author.
+ *
+-->
+<LinearLayout
+		android:layout_width="fill_parent"
+		android:layout_height="fill_parent"
+		android:orientation="vertical"
+		xmlns:android="http://schemas.android.com/apk/res/android" >
+
+	<EditText
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:id="@+id/tag_id"
+			android:editable="false" />
+
+	<EditText
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:id="@+id/tag_name"
+			android:editable="false" />
+
+	<EditText
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:id="@+id/tag_desc"
+			android:editable="false" />
+
+	<Button
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="@string/lit_goparenttag"
+			android:onClick="goParent" />
+
+	<Button
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="@string/lit_gochildtag"
+			android:onClick="goChildren" />
+
+	<Button
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="@string/lit_gotag"
+			android:onClick="goTag" />
+
+
+</LinearLayout>
+
+<!-- http://www.droiddraw.org/ -->

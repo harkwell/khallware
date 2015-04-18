@@ -59,6 +59,12 @@ public class ViewFactory
 			jsonObj = new JSONObject(json);
 
 			switch (type) {
+			case tag:
+				retval = make(R.layout.tag, context);
+				map.put("id",          R.id.tag_id);
+				map.put("name",        R.id.tag_name);
+				map.put("description", R.id.tag_desc);
+				break;
 			case bookmark:
 				retval = make(R.layout.bookmark, context);
 				map.put("name",        R.id.bookmark_name);
@@ -105,7 +111,9 @@ public class ViewFactory
 				break;
 			}
 			for (String key : map.keySet()) {
-				String val = jsonObj.getString(key);
+				String val = jsonObj.has(key)
+					? jsonObj.getString(key)
+					: "unknown";
 				EditText editText = (EditText)
 					retval.findViewById(map.get(key));
 				editText.setText(val);

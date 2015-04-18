@@ -23,15 +23,11 @@ public class CrudHelper
 		return(Util.handleGet(url));
 	}
 
-	public static JSONArray read(EntityType type, int page, int pageSize,
-			int tag) throws DatastoreException, NetworkException
+	public static JSONArray read(String url, String key)
+			throws DatastoreException, NetworkException
 	{
 		JSONArray retval = null;
 		JSONObject json = null;
-		String[] info = Datastore.getDatastore().getUrlUserPasswd();
-		String key = ""+type+"s";
-		String url = info[0]+"/apis/v1/"+type+"s?page="+page;
-		url += "&pageSize="+pageSize+"&tagId="+tag;
 		logger.debug("GET {}", url);
 
 		if ((json = Util.handleGet(url)) == null) {
@@ -46,6 +42,29 @@ public class CrudHelper
 			}
 		}
 		return(retval);
+	}
+
+	public static JSONArray read(EntityType type, int page, int pageSize,
+			int tag) throws DatastoreException, NetworkException
+	{
+		String[] info = Datastore.getDatastore().getUrlUserPasswd();
+		String url = info[0]+"/apis/v1/"+type+"s?page="+page;
+		url += "&pageSize="+pageSize;
+		url += (type == EntityType.tag) ? "&parentId=" : "&tagId=";
+		url += ""+tag;
+		return(read(url, ""+type+"s"));
+	}
+
+	public static JSONObject getParentTag(int id) throws DatastoreException,
+			NetworkException
+	{
+		try {
+			JSONObject jsonObj = read(EntityType.tag, id);
+			return(read(EntityType.tag, jsonObj.getInt("parent")));
+		}
+		catch (JSONException e) {
+			throw new NetworkException(e);
+		}
 	}
 
 	public static JSONObject getBookmark(int id) throws DatastoreException,
