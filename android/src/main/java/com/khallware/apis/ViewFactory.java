@@ -12,14 +12,16 @@
  */
 package com.khallware.apis;
 
+import com.khallware.apis.tasks.DownloadBitmap;
 import com.khallware.apis.enums.EntityType;
+import android.view.InflateException;
 import android.view.View;
 import android.view.LayoutInflater;
-import android.view.InflateException;
 import android.view.ViewGroup.LayoutParams;
 import android.text.method.ScrollingMovementMethod;
 import android.content.Context;
 import android.widget.TextView;
+import android.widget.ImageView;
 import android.widget.EditText;
 import java.util.HashMap;
 import java.util.Map;
@@ -108,6 +110,15 @@ public class ViewFactory
 				map.put("updated",     R.id.sound_updated);
 				map.put("mask",        R.id.sound_mask);
 				map.put("path",        R.id.sound_path);
+				break;
+			case photo:
+				int id = Integer.parseInt(Util.get("id", json));
+				retval = make(R.layout.photo, context);
+				map.put("name",        R.id.photo_name);
+				map.put("description", R.id.photo_desc);
+				new DownloadBitmap((ImageView)
+					retval.findViewById(R.id.photo)
+				).execute(id);
 				break;
 			}
 			for (String key : map.keySet()) {

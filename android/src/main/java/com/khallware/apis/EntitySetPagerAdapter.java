@@ -77,9 +77,8 @@ public class EntitySetPagerAdapter extends FragmentStatePagerAdapter
 		try {
 			String tmp = (idx < entityList.size())
 				? entityList.get(idx)
-				: "{\"name\":\""+idx+"\"}";
-			JSONObject json = new JSONObject(tmp);
-			retval = json.getString("name");
+				: "{\"name\":\"unknown id="+idx+"\"}";
+			retval = Util.get("name", tmp);
 		}
 		catch (Exception e) {
 			logger.trace(""+e, e);

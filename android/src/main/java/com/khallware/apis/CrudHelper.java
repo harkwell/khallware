@@ -3,11 +3,13 @@
 package com.khallware.apis;
 
 import com.khallware.apis.enums.EntityType;
+import org.apache.http.client.methods.HttpGet;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import java.util.Map;
 
 public class CrudHelper
 {
@@ -17,8 +19,8 @@ public class CrudHelper
 	public static JSONObject read(EntityType type, int id)
 			throws DatastoreException, NetworkException
 	{
-		String[] info = Datastore.getDatastore().getUrlUserPasswd();
-		String url = info[0]+"/apis/v1/"+type+"s/"+id;
+		String[] uup = Datastore.getDatastore().getUrlUserPasswd();
+		String url = uup[0]+"/apis/v1/"+type+"s/"+id;
 		logger.debug("GET {}", url);
 		return(Util.handleGet(url));
 	}
@@ -47,8 +49,8 @@ public class CrudHelper
 	public static JSONArray read(EntityType type, int page, int pageSize,
 			int tag) throws DatastoreException, NetworkException
 	{
-		String[] info = Datastore.getDatastore().getUrlUserPasswd();
-		String url = info[0]+"/apis/v1/"+type+"s?page="+page;
+		String[] uup = Datastore.getDatastore().getUrlUserPasswd();
+		String url = uup[0]+"/apis/v1/"+type+"s?page="+page;
 		url += "&pageSize="+pageSize;
 		url += (type == EntityType.tag) ? "&parentId=" : "&tagId=";
 		url += ""+tag;

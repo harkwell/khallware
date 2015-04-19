@@ -22,7 +22,9 @@ import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.entity.BasicHttpEntity;
+import org.apache.http.entity.BufferedHttpEntity;
 import org.apache.http.HttpResponse;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,34 +37,48 @@ public class Util
 	public static JSONObject queryREST(HttpRequestBase request,
 			String[] headers) throws NetworkException
 	{
-		Map<String, String> map = new HashMap<>();
-
-		for (String header : headers) {
-			String[] pair = header.split(":");
-
-			if (pair.length != 2) {
-				continue;
-			}
-			map.put(pair[0], pair[1]);
-		}
-		return(queryREST(request, map));
+		return(queryREST(request, defaultHeadersAsMap()));
 	}
 
-	public static JSONObject queryREST(HttpRequestBase request,
+	/**
+	 * http://stackoverflow.com/questions/10650660/\
+	 *    android-bitmapfactory-decodestream-returns-null
+	 */
+	public static InputStream queryRESTasStream(HttpRequestBase request,
 			Map<String, String> headers) throws NetworkException
 	{
-		JSONObject retval = null;
+		InputStream retval = null;
 		HttpResponse response = null;
+		BufferedHttpEntity entity = null;
 		DefaultHttpClient client = new DefaultHttpClient(
 			new BasicHttpParams());
-		String tmp = null;
 
 		for (String header : headers.keySet()) {
 			request.setHeader(header, headers.get(header));
 		}
 		try {
 			response = client.execute(request);
-			tmp = toString(response.getEntity().getContent());
+			entity = new BufferedHttpEntity(response.getEntity());
+			retval = entity.getContent();
+
+			if (retval.markSupported()) {
+				retval.mark(1024);
+			}
+			request.abort();
+		}
+		catch (IOException e) {
+			throw new NetworkException(e);
+		}
+		return(retval);
+	}
+
+	public static JSONObject queryREST(HttpRequestBase request,
+			Map<String, String> headers) throws NetworkException
+	{
+		JSONObject retval = null;
+		String tmp = null;
+		try {
+			tmp = toString(queryRESTasStream(request, headers));
 			retval = new JSONObject(tmp);
 		}
 		catch (Exception e) {
@@ -90,12 +106,27 @@ public class Util
 	public static String getBasicAuthHeader() throws DatastoreException
 	{
 		StringBuilder retval = new StringBuilder();
-		String[] info = Datastore.getDatastore().getUrlUserPasswd();
-		String tmp = info[1]+":"+info[2];
+		String[] uup = Datastore.getDatastore().getUrlUserPasswd();
+		String tmp = uup[1]+":"+uup[2];
 		retval.append("Authorization:Basic ");
 		tmp = Base64.encodeToString(tmp.getBytes(), Base64.NO_WRAP);
 		retval.append(tmp);
 		return(""+retval);
+	}
+
+	public static Map<String, String> defaultHeadersAsMap()
+	{
+		Map<String, String> retval = new HashMap<>();
+
+		for (String header : defaultHeaders()) {
+			String[] pair = header.split(":");
+
+			if (pair.length != 2) {
+				continue;
+			}
+			retval.put(pair[0], pair[1]);
+		}
+		return(retval);
 	}
 
 	public static String[] defaultHeaders()
@@ -182,5 +213,16 @@ public class Util
 		retval.append("\n");
 		retval.append(""+bos);
 		return(""+retval);
+	}
+
+	public static String get(String key, String json) throws JSONException
+	{
+		String retval = "";
+		JSONObject jsonObj = new JSONObject(json);
+
+		if (jsonObj.has(key)) {
+			retval = jsonObj.getString(key);
+		}
+		return(retval);
 	}
 }

@@ -14,13 +14,24 @@
 		android:orientation="vertical"
 		xmlns:android="http://schemas.android.com/apk/res/android" >
 
-	<TextView
-			android:layout_width="fill_parent"
+	<EditText
+			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:text="@string/version"
-			android:gravity="center"
-			android:layout_x="0px"
-			android:layout_y="160px"/>
+			android:id="@+id/photo_name"
+			android:editable="false" />
+
+	<EditText
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:id="@+id/photo_desc"
+			android:editable="false" />
+
+	<ImageView
+			android:id="@+id/photo"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:contentDescription="please wait..." />
+
 </LinearLayout>
 
 <!-- http://www.droiddraw.org/ -->
