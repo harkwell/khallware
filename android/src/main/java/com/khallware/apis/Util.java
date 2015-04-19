@@ -12,6 +12,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import android.util.Base64;
+import android.widget.Toast;
+import android.content.Context;
 // httpclient is built into Android
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPut;
@@ -224,5 +226,14 @@ public class Util
 			retval = jsonObj.getString(key);
 		}
 		return(retval);
+	}
+
+	public static void toastException(Exception e, Context context)
+	{
+		int duration = Toast.LENGTH_SHORT;
+		String msg = toStringWithStacktrace(e);
+		Toast toast = Toast.makeText(context, msg, duration);
+		logger.error(""+e, e);
+		toast.show();
 	}
 }

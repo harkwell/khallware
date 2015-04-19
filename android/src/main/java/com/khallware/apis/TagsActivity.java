@@ -6,10 +6,8 @@ import com.khallware.apis.enums.EntityType;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
-import android.content.Context;
-import android.content.Intent;
 import android.widget.EditText;
-import android.widget.Toast;
+import android.content.Intent;
 import android.view.View;
 import android.os.Bundle;
 import android.os.AsyncTask;
@@ -53,7 +51,8 @@ public class TagsActivity extends FragmentActivity
 							tag).getInt("id"));
 				}
 				catch (Exception e) {
-					toastException(e);
+					Util.toastException(e,
+						getApplicationContext());
 				}
 			}
 		});
@@ -81,17 +80,7 @@ public class TagsActivity extends FragmentActivity
 			startActivity(intent);
 		}
 		catch (Exception e) {
-			toastException(e);
+			Util.toastException(e, getApplicationContext());
 		}
-	}
-
-	protected void toastException(Exception e)
-	{
-		int duration = Toast.LENGTH_SHORT;
-		Context context = getApplicationContext();
-		String msg = Util.toStringWithStacktrace(e);
-		Toast toast = Toast.makeText(context, msg, duration);
-		logger.error(""+e, e);
-		toast.show();
 	}
 }

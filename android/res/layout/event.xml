@@ -14,13 +14,42 @@
 		android:orientation="vertical"
 		xmlns:android="http://schemas.android.com/apk/res/android" >
 
-	<TextView
-			android:layout_width="fill_parent"
+	<EditText
+			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:text="@string/version"
-			android:gravity="center"
-			android:layout_x="0px"
-			android:layout_y="160px"/>
+			android:id="@+id/event_name"
+			android:editable="false" />
+
+	<EditText
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:id="@+id/event_desc"
+			android:editable="false" />
+
+	<EditText
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:id="@+id/event_duration"
+			android:editable="false" />
+
+	<EditText
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:id="@+id/event_start"
+			android:editable="false" />
+
+
+	<EditText
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:id="@+id/event_end"
+			android:editable="false" />
+
+	<Button
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="@string/lit_addtodroidcal"
+			android:onClick="goCalendar" />
 </LinearLayout>
 
 <!-- http://www.droiddraw.org/ -->

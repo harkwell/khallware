@@ -76,6 +76,14 @@ public class ViewFactory
 				map.put("title",       R.id.bookmark_title);
 				map.put("updated",     R.id.bookmark_updated);
 				break;
+			case event:
+				retval = make(R.layout.event, context);
+				map.put("name",        R.id.event_name);
+				map.put("description", R.id.event_desc);
+				map.put("duration",    R.id.event_duration);
+				map.put("start",       R.id.event_start);
+				map.put("end",         R.id.event_end);
+				break;
 			case contact:
 				retval = make(R.layout.contact, context);
 				map.put("name",         R.id.contact_name);

@@ -16,6 +16,7 @@
 	<string name="lit_goparenttag">Back</string>
 	<string name="lit_gochildtag">More</string>
 	<string name="lit_gotag">Content</string>
+	<string name="lit_addtodroidcal">Add to Calendar</string>
 	<string name="lit_contacts">Contacts</string>
 	<string name="lit_bookmarks">Bookmarks</string>
 	<string name="lit_blogs">Blogs</string>
