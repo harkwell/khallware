@@ -68,6 +68,19 @@ public class Datastore extends SQLiteOpenHelper
 			+    ")";
 		logger.debug("sql: " +sql);
 		db.execSQL(sql);
+
+		sql = "CREATE TABLE current_tag ("
+			+          "tag int NOT NULL"
+			+")";
+		logger.debug("sql: " +sql);
+		db.execSQL(sql);
+		try {
+			//KDH setTag(0);
+			setTag(35);
+		}
+		catch (Exception e) {
+			logger.error(""+e, e);
+		}
 	}
 
 	@Override
@@ -91,6 +104,26 @@ public class Datastore extends SQLiteOpenHelper
 	{
 		try {
 			setUrlUserPasswdUnwrapped(uup);
+		}
+		catch (Exception e) {
+			throw new DatastoreException(e);
+		}
+	}
+
+	public int getTag() throws DatastoreException
+	{
+		try {
+			return(getTagUnwrappwed());
+		}
+		catch (Exception e) {
+			throw new DatastoreException(e);
+		}
+	}
+
+	public void setTag(int tag) throws DatastoreException
+	{
+		try {
+			setTagUnwrapped(tag);
 		}
 		catch (Exception e) {
 			throw new DatastoreException(e);
@@ -135,6 +168,34 @@ public class Datastore extends SQLiteOpenHelper
 
 		sql =    "INSERT INTO connect (url, user, pass) "
 			+"VALUES ('"+uup[0]+"','"+uup[1]+"','"+uup[2]+"')";
+		handle().execSQL(sql);
+	}
+
+	private int getTagUnwrappwed() throws SQLiteException
+	{
+		int retval = 0;
+		Cursor cursor = null;
+		String sql = "SELECT tag "
+			+      "FROM current_tag";
+		logger.debug("sql: " +sql);
+		cursor = handle().rawQuery(sql, new String[] {});
+
+		if (cursor.moveToNext()) {
+			retval = Integer.parseInt(cursor.getString(
+				cursor.getColumnIndexOrThrow("tag")));
+		}
+		cursor.close();
+		return(retval);
+	}
+
+	private void setTagUnwrapped(int tag) throws SQLiteException
+	{
+		String sql = "DELETE FROM current_tag";
+		logger.debug("sql: " +sql);
+		handle().execSQL(sql);
+
+		sql =    "INSERT INTO current_tag (tag) "
+			+"VALUES ('"+tag+"')";
 		handle().execSQL(sql);
 	}
 }

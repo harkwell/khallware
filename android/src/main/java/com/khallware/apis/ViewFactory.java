@@ -108,6 +108,7 @@ public class ViewFactory
 				break;
 			case sound:
 				retval = make(R.layout.sound, context);
+				map.put("id",          R.id.sound_id);
 				map.put("name",        R.id.sound_name);
 				map.put("description", R.id.sound_desc);
 				map.put("title",       R.id.sound_title);

@@ -5,7 +5,6 @@ package com.khallware.apis;
 import android.content.Intent;
 import android.content.Context;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.os.Bundle;
 import android.app.Dialog;
 import android.app.Activity;
@@ -52,7 +51,7 @@ public class Khallware extends Activity
 			}
 		}
 		catch (Exception e) {
-			toastException(e);
+			Util.toastException(e, getApplicationContext());
 		}
 	}
 
@@ -134,23 +133,13 @@ public class Khallware extends Activity
 	{
 		try {
 			Intent intent = new Intent(this, clazz);
-			// KDH get tag from db
-			intent.putExtra(ARG_TAG, ""+35);
+			int tag = Datastore.getDatastore().getTag();
+			intent.putExtra(ARG_TAG, ""+tag);
 			startActivity(intent);
 		}
 		catch (Exception e) {
-			toastException(e);
+			Util.toastException(e, getApplicationContext());
 		}
-	}
-
-	protected void toastException(Exception e)
-	{
-		int duration = Toast.LENGTH_SHORT;
-		Context context = getApplicationContext();
-		String msg = Util.toStringWithStacktrace(e);
-		Toast toast = Toast.makeText(context, msg, duration);
-		logger.error(""+e, e);
-		toast.show();
 	}
 
 	/*

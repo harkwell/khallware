@@ -6,6 +6,7 @@ import com.khallware.apis.enums.EntityType;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
+import android.widget.LinearLayout;
 import android.widget.EditText;
 import android.content.Intent;
 import android.view.View;
@@ -60,16 +61,29 @@ public class TagsActivity extends FragmentActivity
 
 	public void goChildren(View view)
 	{
+		int child = 0;
 		logger.trace("goChildren()...");
-		EditText editText = (EditText)view.findViewById(R.id.tag_id);
-		int child = Integer.parseInt(""+editText.getText());
-		lauchIntent(TagsActivity.class, child);
+		// LinearLayout layout = (LinearLayout)view.getParent();
+		EditText editText = (EditText)findViewById(R.id.tag_id);
+		try {
+			child = Integer.parseInt(""+editText.getText());
+			lauchIntent(TagsActivity.class, child);
+		}
+		catch (Exception e) {
+			Util.toastException(e, getApplicationContext());
+		}
 	}
 
 	public void goTag(View view)
 	{
-		logger.trace("goTag()...");
-		lauchIntent(Khallware.class, tag);
+		try {
+			logger.trace("goTag()...");
+			lauchIntent(Khallware.class,
+				Datastore.getDatastore().getTag());
+		}
+		catch (Exception e) {
+			Util.toastException(e, getApplicationContext());
+		}
 	}
 
 	protected void lauchIntent(Class clazz, int tagId)

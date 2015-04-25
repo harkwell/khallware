@@ -12,9 +12,10 @@
 	<string name="lit_host">Hostname</string>
 	<string name="lit_about">About</string>
 	<string name="lit_connect">Connect</string>
+	<string name="lit_play">Play</string>
 	<string name="lit_tags">Tags</string>
-	<string name="lit_goparenttag">Back</string>
-	<string name="lit_gochildtag">More</string>
+	<string name="lit_goparenttag">Parent Tag</string>
+	<string name="lit_gochildtag">Children</string>
 	<string name="lit_gotag">Content</string>
 	<string name="lit_addtodroidcal">Add to Calendar</string>
 	<string name="lit_contacts">Contacts</string>

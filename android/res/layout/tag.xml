@@ -17,12 +17,6 @@
 	<EditText
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:id="@+id/tag_id"
-			android:editable="false" />
-
-	<EditText
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
 			android:id="@+id/tag_name"
 			android:editable="false" />
 
@@ -32,23 +26,36 @@
 			android:id="@+id/tag_desc"
 			android:editable="false" />
 
-	<Button
+	<EditText
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:text="@string/lit_goparenttag"
-			android:onClick="goParent" />
+			android:id="@+id/tag_id"
+			android:editable="false" />
 
-	<Button
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:text="@string/lit_gochildtag"
-			android:onClick="goChildren" />
+	<LinearLayout
+			android:layout_width="fill_parent"
+			android:layout_height="fill_parent"
+			android:orientation="horizontal"
+			xmlns:android="http://schemas.android.com/apk/res/android" >
+		<Button
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/lit_goparenttag"
+				android:onClick="goParent" />
+	
+		<Button
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/lit_gochildtag"
+				android:onClick="goChildren" />
+	
+		<Button
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/lit_gotag"
+				android:onClick="goTag" />
 
-	<Button
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:text="@string/lit_gotag"
-			android:onClick="goTag" />
+	</LinearLayout>
 
 
 </LinearLayout>

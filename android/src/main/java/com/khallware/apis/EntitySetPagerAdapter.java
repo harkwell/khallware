@@ -26,6 +26,7 @@ public class EntitySetPagerAdapter extends FragmentStatePagerAdapter
 	private final List<String> entityList = new Vector<>();
 	private EntityType entityType = null;
 	private boolean endOfItems = false;
+	private boolean processing = false;
 	private int tag = 0;
 
 	public EntitySetPagerAdapter(FragmentManager fragmentManager,
@@ -46,7 +47,7 @@ public class EntitySetPagerAdapter extends FragmentStatePagerAdapter
 			Bundle args = new Bundle();
 			String json = null;
 
-			if (idx >= numItems) {
+			if (idx >= numItems && !processing) {
 				expandEntityListViaThread(tag);
 			}
 			numItems = entityList.size();
@@ -95,34 +96,38 @@ public class EntitySetPagerAdapter extends FragmentStatePagerAdapter
 			public void run()
 			{
 				try {
+					processing = true;
 					expandEntityList(tag);
 				}
 				catch (Exception e) {
 					logger.warn(""+e, e);
 				}
+				processing = false;
 			}
 		});
 	}
 
-	protected void expandEntityList(final int tag)
+	protected synchronized void expandEntityList(final int tag)
 			throws DatastoreException, NetworkException
 	{
-		int page = Math.max(1, (entityList.size() / MAX_REQ_ENTITIES));
-		int num = 0;
-		JSONArray jarray = CrudHelper.read(entityType, (page - 1),
-			MAX_REQ_ENTITIES, tag);
+		int page = Math.max(1,(entityList.size()/MAX_REQ_ENTITIES)+1);
+		int count = 0;
 
-		for (int idx=0; idx < jarray.length(); idx++) {
-			try {
-				entityList.add(""+jarray.getJSONObject(idx));
-				num++;
-			}
-			catch (JSONException e) {
-				throw new NetworkException(e);
+		if (!endOfItems) {
+			JSONArray jarray = CrudHelper.read(entityType, page,
+				MAX_REQ_ENTITIES, tag);
+
+			for (int idx=0; idx < jarray.length(); idx++) {
+				try {
+					entityList.add(""+jarray.getJSONObject(
+						idx));
+					count++;
+				}
+				catch (JSONException e) {
+					throw new NetworkException(e);
+				}
 			}
 		}
-		if (num < MAX_REQ_ENTITIES) {
-			endOfItems = true;
-		}
+		endOfItems =  (count < MAX_REQ_ENTITIES);
 	}
 }
