@@ -8,7 +8,9 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.Fragment;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 import org.json.JSONObject;
 import org.json.JSONArray;
@@ -23,7 +25,9 @@ public class EntitySetPagerAdapter extends FragmentStatePagerAdapter
 	public static final int MAX_ENTITIES = 1000;
 	public static final int MAX_REQ_ENTITIES = 25;
 
-	private final List<String> entityList = new Vector<>();
+	private final Map<Integer,Fragment> loadMap = new HashMap<>();
+	private final List<String> jsonList = new Vector<>();
+	private FragmentManager fragmentManager = null;
 	private EntityType entityType = null;
 	private boolean endOfItems = false;
 	private boolean processing = false;
@@ -33,6 +37,7 @@ public class EntitySetPagerAdapter extends FragmentStatePagerAdapter
 			EntityType entityType, int tag)
 	{
 		super(fragmentManager);
+		this.fragmentManager = fragmentManager;
 		this.entityType = entityType;
 		this.tag = tag;
 		logger.debug("{} pager adapter with tag {}", entityType, tag);
@@ -43,32 +48,44 @@ public class EntitySetPagerAdapter extends FragmentStatePagerAdapter
 	{
 		Fragment retval = null;
 		try {
-			int numItems = entityList.size();
-			Bundle args = new Bundle();
+			int numItems = jsonList.size();
 			String json = null;
 
 			if (idx >= numItems && !processing) {
 				expandEntityListViaThread(tag);
 			}
-			numItems = entityList.size();
-			json = (numItems > 0 && numItems > idx)
-				? entityList.get(idx)
-				: "{}";
-			retval = new EntityFragment();
-			args.putString(EntityFragment.ARG_JSON, json);
-			args.putString(EntityFragment.ARG_ENTITY,""+entityType);
-			retval.setArguments(args);
+			if ((numItems=jsonList.size()) > 0 && numItems > idx) {
+				retval = new EntityFragment();
+				provision(retval, idx);
+			}
+			else {
+				final Fragment f = new LoadFailureFragment();
+				final int i = idx;
+				retval = f;
+				((LoadFailureFragment)retval).set(
+					new LoadFailureFragment.Callback() {
+						public void handle()
+						{
+							replace(f,i);
+						}
+				});
+				loadMap.put(idx, retval);
+			}
 		}
 		catch (Exception e) {
 			logger.warn(""+e, e);
 		}
+		fragmentManager
+			.beginTransaction()
+			.add(retval, ""+entityType+idx)
+			.commit();
 		return(retval);
 	}
 
 	@Override
 	public int getCount()
 	{
-		return((endOfItems) ? entityList.size() : MAX_ENTITIES);
+		return((endOfItems) ? jsonList.size() : MAX_ENTITIES);
 	}
 
 	@Override
@@ -76,10 +93,11 @@ public class EntitySetPagerAdapter extends FragmentStatePagerAdapter
 	{
 		String retval = "";
 		try {
-			String tmp = (idx < entityList.size())
-				? entityList.get(idx)
-				: "{\"name\":\"unknown id="+idx+"\"}";
-			retval = Util.get("name", tmp);
+			String json = (idx < jsonList.size())
+				? jsonList.get(idx)
+				: "{\"name\":\"Unknown "+entityType
+					+" [idx="+idx+"]\"}";
+			retval = Util.get("name", json);
 		}
 		catch (Exception e) {
 			logger.trace(""+e, e);
@@ -89,7 +107,7 @@ public class EntitySetPagerAdapter extends FragmentStatePagerAdapter
 
 	protected void expandEntityListViaThread(final int tag)
 	{
-		if (entityList.size() >= MAX_ENTITIES) {
+		if (jsonList.size() >= MAX_ENTITIES) {
 			throw new RuntimeException("maximum entities reached");
 		}
 		AsyncTask.execute(new Runnable() {
@@ -110,17 +128,23 @@ public class EntitySetPagerAdapter extends FragmentStatePagerAdapter
 	protected synchronized void expandEntityList(final int tag)
 			throws DatastoreException, NetworkException
 	{
-		int page = Math.max(1,(entityList.size()/MAX_REQ_ENTITIES)+1);
+		int page = Math.max(1,(jsonList.size() / MAX_REQ_ENTITIES)+1);
 		int count = 0;
 
 		if (!endOfItems) {
 			JSONArray jarray = CrudHelper.read(entityType, page,
 				MAX_REQ_ENTITIES, tag);
 
-			for (int idx=0; idx < jarray.length(); idx++) {
+			for (int j=0; j < jarray.length(); j++) {
+				int idx = ((page-1) * MAX_REQ_ENTITIES) + j;
 				try {
-					entityList.add(""+jarray.getJSONObject(
-						idx));
+					jsonList.add(
+						""+jarray.getJSONObject(j));
+
+					if (loadMap.containsKey(idx)) {
+						replace(loadMap.get(idx), idx);
+						loadMap.remove(idx);
+					}
 					count++;
 				}
 				catch (JSONException e) {
@@ -129,5 +153,28 @@ public class EntitySetPagerAdapter extends FragmentStatePagerAdapter
 			}
 		}
 		endOfItems =  (count < MAX_REQ_ENTITIES);
+	}
+
+	protected final void replace(Fragment oldFragment, int idx)
+	{
+		if (jsonList.size() > idx) {
+			Fragment newFragment = new EntityFragment();
+			provision(newFragment, idx);
+			fragmentManager
+				.beginTransaction()
+				.detach(oldFragment)
+				.add(newFragment, ""+entityType+idx)
+				.attach(newFragment)
+				.commit();
+		}
+	}
+
+	protected final void provision(Fragment fragment, int idx)
+	{
+		Bundle args = new Bundle();
+		String json = jsonList.get(idx);
+		args.putString(EntityFragment.ARG_JSON, json);
+		args.putString(EntityFragment.ARG_ENTITY, ""+entityType);
+		fragment.setArguments(args);
 	}
 }

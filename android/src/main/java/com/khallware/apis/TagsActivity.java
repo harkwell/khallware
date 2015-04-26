@@ -42,7 +42,7 @@ public class TagsActivity extends FragmentActivity
 			public void run()
 			{
 				try {
-					lauchIntent(
+					launchIntent(
 						TagsActivity.class,
 						CrudHelper.getParentTag(
 							tag).getInt("id"));
@@ -59,7 +59,7 @@ public class TagsActivity extends FragmentActivity
 	{
 		logger.trace("goChildren()...");
 		try {
-			lauchIntent(TagsActivity.class, child);
+			launchIntent(TagsActivity.class, child);
 		}
 		catch (Exception e) {
 			Util.toastException(e, getApplicationContext());
@@ -68,17 +68,21 @@ public class TagsActivity extends FragmentActivity
 
 	public void goTag(View view)
 	{
+		logger.trace("goTag()...");
 		try {
-			logger.trace("goTag()...");
-			lauchIntent(Khallware.class,
-				Datastore.getDatastore().getTag());
+			EntityFragment fragment = (EntityFragment)
+				getSupportFragmentManager().findFragmentByTag(
+					"tag"+viewPager.getCurrentItem());
+			int tag = fragment.getEntityTag();
+			Datastore.getDatastore().setTag(tag);
+			launchIntent(Khallware.class, tag);
 		}
 		catch (Exception e) {
 			Util.toastException(e, getApplicationContext());
 		}
 	}
 
-	protected void lauchIntent(Class clazz, int tagId)
+	protected void launchIntent(Class clazz, int tagId)
 	{
 		try {
 			Intent intent = new Intent(this, clazz);

@@ -11,41 +11,38 @@ import android.os.Bundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class EntityFragment extends Fragment
+public class LoadFailureFragment extends Fragment
 {
 	private static final Logger logger = LoggerFactory.getLogger(
-		EntityFragment.class);
-	public static final String ARG_JSON = "json";
-	public static final String ARG_ENTITY = "entity";
-	private int tag = 0;
+		LoadFailureFragment.class);
+
+	public interface Callback
+	{
+		public void handle();
+	}
+
+	private Callback callback = null;
 
 	// All subclasses of Fragment must include a public empty constructor.
-	public EntityFragment() {}
+	public LoadFailureFragment() {}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup viewGroup,
 			Bundle bundle)
 	{
 		View retval = null;
+		View button = null;
 		try {
-			EntityType type = null;
-			String json = null;
-			Bundle args = (getArguments() != null)
-				? getArguments()
-				: bundle;
-
-			if (args == null) {
-				throw new IllegalArgumentException(
-					"no argument data passed");
-			}
-			else {
-				json = args.getString(ARG_JSON);
-				tag = Integer.parseInt(Util.get("id", json));
-				type = EntityType.valueOf(
-					args.getString(ARG_ENTITY));
-				retval = ViewFactory.make(type, json,
-					getActivity());
-			}
+			retval = inflater.inflate(R.layout.reload, null, false);
+			button = retval.findViewById(R.id.reload_btn);
+			button.setOnClickListener(new View.OnClickListener() {
+				public void onClick(View v)
+				{
+					if (getCallback() != null) {
+						getCallback().handle();
+					}
+				}
+			});
 		}
 		catch (Exception e) {
 			retval = ViewFactory.make(e, getActivity());
@@ -54,8 +51,13 @@ public class EntityFragment extends Fragment
 		return(retval);
 	}
 
-	public int getEntityTag()
+	public void set(Callback callback)
 	{
-		return(tag);
+		this.callback = callback;
+	}
+
+	public Callback getCallback()
+	{
+		return(callback);
 	}
 }

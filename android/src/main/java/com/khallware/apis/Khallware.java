@@ -5,6 +5,7 @@ package com.khallware.apis;
 import android.content.Intent;
 import android.content.Context;
 import android.widget.TextView;
+import android.widget.EditText;
 import android.os.Bundle;
 import android.app.Dialog;
 import android.app.Activity;
@@ -34,6 +35,13 @@ public class Khallware extends Activity
 		dstore = Datastore.getDatastore(this, getPreferences(mode));
 		super.onCreate(bundle);
 		setContentView(R.layout.main);
+		try {
+			((EditText)findViewById(R.id.atag_id)).setText(
+				""+dstore.getTag());
+		}
+		catch (DatastoreException e) {
+			Util.toastException(e, getApplicationContext());
+		}
 		// getAboutDialog(this);
 	}
 

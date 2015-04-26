@@ -23,12 +23,16 @@ public class ConnectActivity extends Activity
 
 	public void doConnect(View view)
 	{
+		String url = null;
 		String[] uup = new String[] {"", "", ""};
 		EditText editText = null;
+		String proto = "http://";
 		logger.trace("doConnect()...");
 		try {
 			editText = (EditText)findViewById(R.id.connect_host);
-			uup[0] = "http://"+editText.getText().toString();
+			url = editText.getText().toString();
+			proto = (url.startsWith("http")) ? "" : proto;
+			uup[0] = proto+url;
 			editText = (EditText)findViewById(R.id.connect_user);
 			uup[1] = editText.getText().toString();
 			editText = (EditText)findViewById(R.id.connect_pass);

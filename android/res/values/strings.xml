@@ -13,11 +13,14 @@
 	<string name="lit_about">About</string>
 	<string name="lit_connect">Connect</string>
 	<string name="lit_play">Play</string>
+	<string name="lit_playallsongs">Play All Audio</string>
 	<string name="lit_tags">Tags</string>
 	<string name="lit_goparenttag">Parent Tag</string>
 	<string name="lit_gochildtag">Children</string>
 	<string name="lit_gotag">Content</string>
 	<string name="lit_addtodroidcal">Add to Calendar</string>
+	<string name="lit_reloadmsg">Item Failed To Load</string>
+	<string name="lit_reload">Reload</string>
 	<string name="lit_contacts">Contacts</string>
 	<string name="lit_bookmarks">Bookmarks</string>
 	<string name="lit_blogs">Blogs</string>

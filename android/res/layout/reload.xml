@@ -17,20 +17,14 @@
 	<EditText
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:id="@+id/fileitem_name"
+			android:text="@string/lit_reloadmsg"
 			android:editable="false" />
 
-	<EditText
+	<Button
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:id="@+id/fileitem_desc"
-			android:editable="false" />
-
-	<EditText
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:id="@+id/fileitem_id"
-			android:editable="false" />
+			android:id="@+id/reload_btn"
+			android:text="@string/lit_reload" />
 
 </LinearLayout>
 

@@ -24,6 +24,7 @@ import android.widget.TextView;
 import android.widget.ImageView;
 import android.widget.EditText;
 import android.widget.Button;
+import android.os.AsyncTask;
 import android.app.Activity;
 import java.util.HashMap;
 import java.util.Map;
@@ -57,10 +58,9 @@ public class ViewFactory
 	public static View make(EntityType type, String json, Context context)
 	{
 		View retval = null;
-		JSONObject jsonObj = null;
 		try {
-			Map<String, Integer> map = new HashMap<>();
-			jsonObj = new JSONObject(json);
+			final JSONObject jsonObj = new JSONObject(json);
+			final Map<String, Integer> map = new HashMap<>();
 
 			switch (type) {
 			case tag:
@@ -77,23 +77,6 @@ public class ViewFactory
 						jsonObj.getString("id"));
 				}
 				break;
-			case bookmark:
-				retval = make(R.layout.bookmark, context);
-				map.put("name",        R.id.bookmark_name);
-				map.put("description", R.id.bookmark_desc);
-				map.put("rating",      R.id.bookmark_rating);
-				map.put("url",         R.id.bookmark_url);
-				map.put("title",       R.id.bookmark_title);
-				map.put("updated",     R.id.bookmark_updated);
-				break;
-			case event:
-				retval = make(R.layout.event, context);
-				map.put("name",        R.id.event_name);
-				map.put("description", R.id.event_desc);
-				map.put("duration",    R.id.event_duration);
-				map.put("start",       R.id.event_start);
-				map.put("end",         R.id.event_end);
-				break;
 			case contact:
 				retval = make(R.layout.contact, context);
 				map.put("name",         R.id.contact_name);
@@ -105,6 +88,35 @@ public class ViewFactory
 				map.put("organization", R.id.contact_org);
 				map.put("updated",      R.id.contact_updated);
 				break;
+			case bookmark:
+				retval = make(R.layout.bookmark, context);
+				map.put("name",        R.id.bookmark_name);
+				map.put("description", R.id.bookmark_desc);
+				map.put("rating",      R.id.bookmark_rating);
+				map.put("url",         R.id.bookmark_url);
+				map.put("title",       R.id.bookmark_title);
+				map.put("updated",     R.id.bookmark_updated);
+				break;
+			case blog:
+				retval = make(R.layout.blog, context);
+				map.put("id",          R.id.blog_id);
+				map.put("name",        R.id.blog_name);
+				map.put("description", R.id.blog_desc);
+				break;
+			case event:
+				retval = make(R.layout.event, context);
+				map.put("name",        R.id.event_name);
+				map.put("description", R.id.event_desc);
+				map.put("duration",    R.id.event_duration);
+				map.put("start",       R.id.event_start);
+				map.put("end",         R.id.event_end);
+				break;
+			case fileitem:
+				retval = make(R.layout.fileitem, context);
+				map.put("id",          R.id.fileitem_id);
+				map.put("name",        R.id.fileitem_name);
+				map.put("description", R.id.fileitem_desc);
+				break;
 			case location:
 				retval = make(R.layout.location, context);
 				map.put("name",        R.id.location_name);
@@ -115,6 +127,17 @@ public class ViewFactory
 				map.put("mask",        R.id.location_mask);
 				map.put("modified",    R.id.location_modified);
 				map.put("description", R.id.location_desc);
+				break;
+			case photo:
+				int id = Integer.parseInt(Util.get("id", json));
+				retval = make(R.layout.photo, context);
+				map.put("name",        R.id.photo_name);
+				map.put("description", R.id.photo_desc);
+				new DownloadBitmap((ImageView)
+					retval.findViewById(R.id.photo)
+				).execute(id);
+				break;
+			case search:
 				break;
 			case sound:
 				retval = make(R.layout.sound, context);
@@ -130,24 +153,20 @@ public class ViewFactory
 				map.put("mask",        R.id.sound_mask);
 				map.put("path",        R.id.sound_path);
 				break;
-			case photo:
-				int id = Integer.parseInt(Util.get("id", json));
-				retval = make(R.layout.photo, context);
-				map.put("name",        R.id.photo_name);
-				map.put("description", R.id.photo_desc);
-				new DownloadBitmap((ImageView)
-					retval.findViewById(R.id.photo)
-				).execute(id);
+			case video:
+				retval = make(R.layout.video, context);
+				map.put("id",          R.id.video_id);
+				map.put("name",        R.id.video_name);
+				map.put("description", R.id.video_desc);
 				break;
 			}
-			for (String key : map.keySet()) {
-				String val = jsonObj.has(key)
-					? jsonObj.getString(key)
-					: "unknown";
-				EditText editText = (EditText)
-					retval.findViewById(map.get(key));
-				editText.setText(val);
-			}
+			final View v = retval;
+			AsyncTask.execute(new Runnable() {
+				public void run()
+				{
+					setEditTexts(map, jsonObj, v);
+				}
+			});
 		}
 		catch (Exception e) {
 			retval = make(e, context);
@@ -236,5 +255,24 @@ public class ViewFactory
 				}
 			}
 		});
+	}
+
+	private static void setEditTexts(Map<String, Integer> map,
+			JSONObject jsonObj, View view)
+	{
+		try {
+			for (String key : map.keySet()) {
+				String val = jsonObj.has(key)
+					? jsonObj.getString(key)
+					: "unknown";
+				EditText editText = (EditText)
+					view.findViewById(map.get(key));
+				editText.setText(val);
+			}
+			view.postInvalidate();
+		}
+		catch (Exception e) {
+			logger.error(""+e, e);
+		}
 	}
 }

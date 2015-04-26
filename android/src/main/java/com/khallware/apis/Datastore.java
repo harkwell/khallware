@@ -74,13 +74,9 @@ public class Datastore extends SQLiteOpenHelper
 			+")";
 		logger.debug("sql: " +sql);
 		db.execSQL(sql);
-		try {
-			//KDH setTag(0);
-			setTag(35);
-		}
-		catch (Exception e) {
-			logger.error(""+e, e);
-		}
+
+		sql = "INSERT INTO current_tag VALUES (1)";
+		db.execSQL(sql);
 	}
 
 	@Override
