@@ -44,10 +44,10 @@
 				android:onClick="goParent" />
 	
 		<Button
+				android:id="@+id/tag_btn_gochild"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:text="@string/lit_gochildtag"
-				android:onClick="goChildren" />
+				android:text="@string/lit_gochildtag" />
 	
 		<Button
 				android:layout_width="wrap_content"

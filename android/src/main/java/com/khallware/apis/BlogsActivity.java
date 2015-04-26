@@ -25,9 +25,7 @@ public class BlogsActivity extends FragmentActivity
 		super.onCreate(bundle);
 		setContentView(R.layout.activity_blogs);
 		bundle = (bundle == null) ? getIntent().getExtras() : bundle;
-		tag = (bundle == null)
-			? 0 // ideally from database
-			: Integer.parseInt(""+bundle.get(Khallware.ARG_TAG));
+		tag = Util.resolveTag(bundle);
 		entitySetPagerAdapter = new EntitySetPagerAdapter(
 			getSupportFragmentManager(), EntityType.blog, tag);
 		viewPager = (ViewPager)findViewById(R.id.pager);

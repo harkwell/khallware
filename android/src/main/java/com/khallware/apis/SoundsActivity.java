@@ -32,9 +32,7 @@ public class SoundsActivity extends FragmentActivity
 		super.onCreate(bundle);
 		setContentView(R.layout.activity_sounds);
 		bundle = (bundle == null) ? getIntent().getExtras() : bundle;
-		tag = (bundle == null)
-			? 0 // ideally from database
-			: Integer.parseInt(""+bundle.get(Khallware.ARG_TAG));
+		tag = Util.resolveTag(bundle);
 		entitySetPagerAdapter = new EntitySetPagerAdapter(
 			getSupportFragmentManager(), EntityType.sound, tag);
 		viewPager = (ViewPager)findViewById(R.id.pager);

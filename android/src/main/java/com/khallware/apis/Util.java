@@ -11,6 +11,7 @@ import java.io.InputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import android.os.Bundle;
 import android.util.Base64;
 import android.widget.Toast;
 import android.content.Context;
@@ -235,5 +236,20 @@ public class Util
 		Toast toast = Toast.makeText(context, msg, duration);
 		logger.error(""+e, e);
 		toast.show();
+	}
+
+	public static int resolveTag(Bundle bundle)
+	{
+		int retval = 0;
+		try {
+			retval = (bundle == null)
+				? Datastore.getDatastore().getTag()
+				: Integer.parseInt(""+bundle.get(
+					Khallware.ARG_TAG));
+		}
+		catch (DatastoreException e) {
+			logger.error(""+e, e);
+		}
+		return(retval);
 	}
 }

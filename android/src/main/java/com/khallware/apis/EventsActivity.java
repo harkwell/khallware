@@ -28,9 +28,7 @@ public class EventsActivity extends FragmentActivity
 		super.onCreate(bundle);
 		setContentView(R.layout.activity_events);
 		bundle = (bundle == null) ? getIntent().getExtras() : bundle;
-		tag = (bundle == null)
-			? 0 // ideally from database
-			: Integer.parseInt(""+bundle.get(Khallware.ARG_TAG));
+		tag = Util.resolveTag(bundle);
 		entitySetPagerAdapter = new EntitySetPagerAdapter(
 			getSupportFragmentManager(), EntityType.event, tag);
 		viewPager = (ViewPager)findViewById(R.id.pager);

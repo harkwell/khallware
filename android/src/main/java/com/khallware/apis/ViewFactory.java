@@ -23,6 +23,8 @@ import android.content.Context;
 import android.widget.TextView;
 import android.widget.ImageView;
 import android.widget.EditText;
+import android.widget.Button;
+import android.app.Activity;
 import java.util.HashMap;
 import java.util.Map;
 import org.json.JSONObject;
@@ -66,6 +68,14 @@ public class ViewFactory
 				map.put("id",          R.id.tag_id);
 				map.put("name",        R.id.tag_name);
 				map.put("description", R.id.tag_desc);
+
+				if (jsonObj.has("id")) {
+					provision(
+						(Activity)context,
+						(Button)retval.findViewById(
+							R.id.tag_btn_gochild),
+						jsonObj.getString("id"));
+				}
 				break;
 			case bookmark:
 				retval = make(R.layout.bookmark, context);
@@ -198,5 +208,33 @@ public class ViewFactory
 				LayoutParams.WRAP_CONTENT);
 		}
 		return(retval);
+	}
+
+	private static void provision(Activity activity, Button button,
+			String token)
+	{
+		try {
+			int id = Integer.parseInt(token);
+			provision(activity, button, id);
+		}
+		catch (Exception e) {
+			logger.error(""+e, e);
+		}
+	}
+
+	private static void provision(final Activity activity, Button button,
+			final int id)
+	{
+		button.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View v)
+			{
+				try {
+					((TagsActivity)activity).goChild(id);
+				}
+				catch (Exception e) {
+					logger.error(""+e, e);
+				}
+			}
+		});
 	}
 }

@@ -6,8 +6,6 @@ import com.khallware.apis.enums.EntityType;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
-import android.widget.LinearLayout;
-import android.widget.EditText;
 import android.content.Intent;
 import android.view.View;
 import android.os.Bundle;
@@ -30,9 +28,7 @@ public class TagsActivity extends FragmentActivity
 		super.onCreate(bundle);
 		setContentView(R.layout.activity_tags);
 		bundle = (bundle == null) ? getIntent().getExtras() : bundle;
-		tag = (bundle == null)
-			? 0 // ideally from database
-			: Integer.parseInt(""+bundle.get(Khallware.ARG_TAG));
+		tag = Util.resolveTag(bundle);
 		entitySetPagerAdapter = new EntitySetPagerAdapter(
 			getSupportFragmentManager(), EntityType.tag, tag);
 		viewPager = (ViewPager)findViewById(R.id.pager);
@@ -59,14 +55,10 @@ public class TagsActivity extends FragmentActivity
 		});
 	}
 
-	public void goChildren(View view)
+	public void goChild(int child)
 	{
-		int child = 0;
 		logger.trace("goChildren()...");
-		// LinearLayout layout = (LinearLayout)view.getParent();
-		EditText editText = (EditText)findViewById(R.id.tag_id);
 		try {
-			child = Integer.parseInt(""+editText.getText());
 			lauchIntent(TagsActivity.class, child);
 		}
 		catch (Exception e) {
