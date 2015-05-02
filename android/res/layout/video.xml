@@ -14,6 +14,12 @@
 		android:orientation="vertical"
 		xmlns:android="http://schemas.android.com/apk/res/android" >
 
+	<Button
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="@string/lit_play"
+			android:onClick="goPlay" />
+
 	<EditText
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"

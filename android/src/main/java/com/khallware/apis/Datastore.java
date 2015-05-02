@@ -96,6 +96,16 @@ public class Datastore extends SQLiteOpenHelper
 		}
 	}
 
+	public void deleteUrlUserPasswd() throws DatastoreException
+	{
+		try {
+			deleteUrlUserPasswdUnwrapped();
+		}
+		catch (Exception e) {
+			throw new DatastoreException(e);
+		}
+	}
+
 	public void setUrlUserPasswd(String[] uup) throws DatastoreException
 	{
 		try {
@@ -155,15 +165,21 @@ public class Datastore extends SQLiteOpenHelper
 		return(retval);
 	}
 
-	private void setUrlUserPasswdUnwrapped(String[] uup)
-			throws SQLiteException
+	private void deleteUrlUserPasswdUnwrapped() throws SQLiteException
 	{
 		String sql = "DELETE FROM connect";
 		logger.debug("sql: " +sql);
 		handle().execSQL(sql);
+		setTagUnwrapped(1);
+	}
 
-		sql =    "INSERT INTO connect (url, user, pass) "
-			+"VALUES ('"+uup[0]+"','"+uup[1]+"','"+uup[2]+"')";
+	private void setUrlUserPasswdUnwrapped(String[] uup)
+			throws SQLiteException
+	{
+		String sql = "INSERT INTO connect (url, user, pass) "
+			+    "VALUES ('"+uup[0]+"','"+uup[1]+"','"+uup[2]+"')";
+		deleteUrlUserPasswdUnwrapped();
+		logger.debug("sql: " +sql);
 		handle().execSQL(sql);
 	}
 

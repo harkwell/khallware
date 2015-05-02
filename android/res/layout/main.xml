@@ -66,6 +66,12 @@
 		<Button
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
+				android:text="@string/lit_postcontacts"
+				android:onClick="postContacts" />
+
+		<Button
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
 				android:text="@string/lit_bookmarks"
 				android:onClick="goBookmarks" />
 
@@ -123,6 +129,12 @@
 				android:layout_height="wrap_content"
 				android:text="@string/lit_videos"
 				android:onClick="goVideos" />
+
+		<Button
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/lit_reconnect"
+				android:onClick="goConnect" />
 
 	</LinearLayout>
 </ScrollView>

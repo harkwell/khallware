@@ -2,19 +2,27 @@
 
 package com.khallware.apis;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.ByteArrayInputStream;
+import com.khallware.apis.enums.EntityType;
 import java.io.ByteArrayOutputStream;
+import java.io.ByteArrayInputStream;
+import java.io.InputStreamReader;
+import java.io.BufferedReader;
 import java.io.PrintStream;
 import java.io.InputStream;
 import java.io.IOException;
-import java.util.HashMap;
+import java.io.File;
 import java.util.Map;
+import java.util.HashMap;
+import java.nio.file.Files;
 import android.os.Bundle;
+import android.net.Uri;
 import android.util.Base64;
 import android.widget.Toast;
 import android.content.Context;
+import android.database.Cursor;
+import android.provider.ContactsContract;
+import android.provider.ContactsContract.CommonDataKinds;
+import android.media.MediaPlayer;
 // httpclient is built into Android
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPut;
@@ -86,6 +94,7 @@ public class Util
 		}
 		catch (Exception e) {
 			logger.warn("invalid json returned: ({})", tmp);
+			logger.warn(""+e, e);
 			throw new NetworkException(e);
 		}
 		return(retval);
@@ -104,6 +113,19 @@ public class Util
 			logger.error(""+e, e);
 		}
 		return(""+retval);
+	}
+
+	public static boolean toFile(File file, InputStream is)
+	{
+		boolean retval = false;
+		try {
+			Files.write(file.toPath(), toString(is).getBytes());
+			retval = true;
+		}
+		catch (IOException e) {
+			logger.error(""+e, e);
+		}
+		return(retval);
 	}
 
 	public static String getBasicAuthHeader() throws DatastoreException
@@ -251,5 +273,87 @@ public class Util
 			logger.error(""+e, e);
 		}
 		return(retval);
+	}
+
+	public static void play(File file, Context ctxt)
+	{
+		MediaPlayer player = null;
+		try {
+			player = MediaPlayer.create(ctxt, Uri.fromFile(file));
+
+			if (player != null) {
+				player.start();
+				// player.release();
+			}
+		}
+		catch (Exception e) {
+			Util.toastException(e, ctxt);
+		}
+	}
+
+	public static Map<String, String> map = new HashMap<>();
+
+	static {
+		map.put("uid", ContactsContract.Contacts._ID);
+		map.put("name", ContactsContract.Contacts.DISPLAY_NAME_PRIMARY);
+		map.put("phone", CommonDataKinds.Phone.NUMBER);
+		map.put("email", CommonDataKinds.Email.ADDRESS );
+		map.put("org", CommonDataKinds.Organization.COMPANY );
+		map.put("title", CommonDataKinds.Organization.TITLE );
+		map.put("address",
+			CommonDataKinds.StructuredPostal.FORMATTED_ADDRESS );
+	};
+
+	public static JSONObject merge(Context ctxt, JSONObject retval, Uri uri,
+			String id) throws JSONException
+	{
+		String patt = CommonDataKinds.Phone.CONTACT_ID
+			+" = ?";
+		Cursor cursor = ctxt.getContentResolver().query(uri, null,
+			patt, new String[] { id }, null);
+		int idx = -1;
+
+		while (cursor.moveToNext()) {
+			for (String key : map.keySet()) {
+				if ((idx = cursor.getColumnIndex(map.get(key)))
+						!= -1) {
+					retval.put(key, cursor.getString(idx));
+				}
+			}
+		}
+		cursor.close();
+		return(retval);
+	}
+
+	public static void postContacts(Context ctxt, int tagId)
+			throws JSONException, DatastoreException,
+			NetworkException
+	{
+		Cursor cursor = ctxt.getContentResolver().query(
+			ContactsContract.Contacts.CONTENT_URI, null, null,
+				null, null);
+		Uri[] uris = new Uri[] {
+			CommonDataKinds.Phone.CONTENT_URI,
+			CommonDataKinds.Email.CONTENT_URI,
+			// CommonDataKinds.Contactables.CONTENT_URI,
+			CommonDataKinds.StructuredPostal.CONTENT_URI
+		};
+		JSONObject jsonObj = new JSONObject();
+
+		while (cursor.moveToNext()) {
+			int idx = cursor.getColumnIndex(map.get("uid"));
+			String uid = cursor.getString(idx);
+			jsonObj.put("uid", uid);
+			idx = cursor.getColumnIndex(map.get("name"));
+			jsonObj.put("name", cursor.getString(idx));
+
+			for (Uri uri : uris) {
+				merge(ctxt, jsonObj, uri, uid);
+			}
+			logger.info("json: ({})", ""+jsonObj);
+			CrudHelper.create(EntityType.contact, jsonObj, tagId);
+			jsonObj = new JSONObject();
+		}
+		cursor.close();
 	}
 }

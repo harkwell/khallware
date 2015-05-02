@@ -2,10 +2,10 @@
 
 package com.khallware.apis;
 
-import android.content.Intent;
-import android.content.Context;
 import android.widget.TextView;
 import android.widget.EditText;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.app.Dialog;
 import android.app.Activity;
@@ -83,6 +83,18 @@ public class Khallware extends Activity
 		lauchIntent(ContactsActivity.class);
 	}
 
+	public void postContacts(View view)
+	{
+		Context context = getApplicationContext();
+		logger.trace("postContacts()...");
+		try {
+			Util.postContacts(context, dstore.getTag());
+		}
+		catch (Exception e) {
+			Util.toastException(e, context);
+		}
+	}
+
 	public void goBookmarks(View view)
 	{
 		logger.trace("goBookmarks()...");
@@ -137,12 +149,23 @@ public class Khallware extends Activity
 		lauchIntent(VideosActivity.class);
 	}
 
+	public void goConnect(View view)
+	{
+		try {
+			logger.trace("goConnect()...");
+			dstore.deleteUrlUserPasswd();
+			lauchIntent(Khallware.class);
+		}
+		catch (Exception e) {
+			Util.toastException(e, getApplicationContext());
+		}
+	}
+
 	protected void lauchIntent(Class clazz)
 	{
 		try {
 			Intent intent = new Intent(this, clazz);
-			int tag = Datastore.getDatastore().getTag();
-			intent.putExtra(ARG_TAG, ""+tag);
+			intent.putExtra(ARG_TAG, ""+dstore.getTag());
 			startActivity(intent);
 		}
 		catch (Exception e) {

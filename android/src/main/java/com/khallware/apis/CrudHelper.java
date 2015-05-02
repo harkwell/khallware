@@ -16,6 +16,15 @@ public class CrudHelper
 	private static final Logger logger = LoggerFactory.getLogger(
 		CrudHelper.class);
 
+	public static JSONObject create(EntityType type, JSONObject jsonObj,
+			int tagId) throws DatastoreException, NetworkException
+	{
+		String[] uup = Datastore.getDatastore().getUrlUserPasswd();
+		String url = uup[0]+"/apis/v1/"+type+"s?tagId="+tagId;
+		logger.debug("POST {}", url);
+		return(Util.handlePost(url, jsonObj));
+	}
+
 	public static JSONObject read(EntityType type, int id)
 			throws DatastoreException, NetworkException
 	{
@@ -55,6 +64,12 @@ public class CrudHelper
 		url += (type == EntityType.tag) ? "&parentId=" : "&tagId=";
 		url += ""+tag;
 		return(read(url, ""+type+"s"));
+	}
+
+	public static JSONObject getTag(int id) throws DatastoreException,
+			NetworkException
+	{
+		return(read(EntityType.tag, id));
 	}
 
 	public static JSONObject getParentTag(int id) throws DatastoreException,

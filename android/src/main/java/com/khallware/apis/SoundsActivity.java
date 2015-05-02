@@ -9,10 +9,9 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.widget.LinearLayout;
 import android.widget.EditText;
+import android.content.Context;
 import android.os.Bundle;
-import android.net.Uri;
 import android.view.View;
-import android.media.MediaPlayer;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 import java.io.File;
@@ -42,6 +41,7 @@ public class SoundsActivity extends FragmentActivity
 	public void goPlay(View view)
 	{
 		// current audio stops playing because it goes out of context
+		final Context ctxt = getApplicationContext();
 		LinearLayout layout = (LinearLayout)view.getParent();
 		EditText editText =(EditText)layout.findViewById(R.id.sound_id);
 		int soundId = 0;
@@ -50,30 +50,13 @@ public class SoundsActivity extends FragmentActivity
 			new DownloadSound(new DownloadSound.Callback() {
 				public void handle(File file)
 				{
-					play(file);
+					Util.play(file, ctxt);
 				}
 			}, getFilesDir()).execute(soundId);
 		}
 		catch (Exception e) {
 			logger.error(""+e, e);
-			Util.toastException(e, getApplicationContext());
-		}
-	}
-
-	private void play(File file)
-	{
-		MediaPlayer player = null;
-		try {
-			player = MediaPlayer.create(getApplicationContext(),
-				Uri.fromFile(file));
-
-			if (player != null) {
-				player.start();
-				// player.release();
-			}
-		}
-		catch (Exception e) {
-			Util.toastException(e, getApplicationContext());
+			Util.toastException(e, ctxt);
 		}
 	}
 }

@@ -134,8 +134,8 @@ public class ViewFactory
 				map.put("name",        R.id.photo_name);
 				map.put("description", R.id.photo_desc);
 				new DownloadBitmap((ImageView)
-					retval.findViewById(R.id.photo)
-				).execute(id);
+					retval.findViewById(R.id.photo),
+					context.getFilesDir()).execute(id);
 				break;
 			case search:
 				break;

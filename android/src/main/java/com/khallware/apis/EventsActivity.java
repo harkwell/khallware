@@ -6,6 +6,7 @@ import com.khallware.apis.enums.EntityType;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
+import android.widget.LinearLayout;
 import android.widget.EditText;
 import android.content.Intent;
 import android.view.View;
@@ -38,23 +39,27 @@ public class EventsActivity extends FragmentActivity
 	public void goCalendar(View view)
 	{
 		logger.trace("goCalendar()...");
-		EditText editText = null;
-		String token = "";
-		String title = "";
-		String desc = "";
-		long start = 0;
-		long end = 0;
-		editText = (EditText)view.findViewById(R.id.event_name);
-		title = ""+editText.getText();
-		editText = (EditText)view.findViewById(R.id.event_desc);
-		desc = ""+editText.getText();
-		editText = (EditText)view.findViewById(R.id.event_start);
-		token = ""+editText.getText();
-		start = Long.parseLong(token);
-		editText = (EditText)view.findViewById(R.id.event_end);
-		token = ""+editText.getText();
-		end = Long.parseLong(token);
-		lauchIntent(title, desc, start, end);
+		LinearLayout layout = (LinearLayout)view.getParent();
+		goCalendar(
+			(EditText)layout.findViewById(R.id.event_name),
+			(EditText)layout.findViewById(R.id.event_desc),
+			(EditText)layout.findViewById(R.id.event_start),
+			(EditText)layout.findViewById(R.id.event_end));
+	}
+
+	protected void goCalendar(EditText... data)
+	{
+		try {
+			lauchIntent(
+				""+data[0].getText(),
+				""+data[1].getText(),
+				Long.parseLong(""+data[2].getText()),
+				Long.parseLong(""+data[2].getText()));
+				// KDH Long.parseLong(""+data[3].getText()));
+		}
+		catch (Exception e) {
+			Util.toastException(e, getApplicationContext());
+		}
 	}
 
 	protected void lauchIntent(String title, String desc, long start,

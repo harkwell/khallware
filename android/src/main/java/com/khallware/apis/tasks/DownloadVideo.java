@@ -17,10 +17,10 @@ import org.apache.http.client.methods.HttpGet;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 
-public class DownloadSound extends AsyncTask<Integer, Void, File>
+public class DownloadVideo extends AsyncTask<Integer, Void, File>
 {
 	private static final Logger logger = LoggerFactory.getLogger(
-		DownloadSound.class);
+		DownloadVideo.class);
 
 	public interface Callback
 	{
@@ -30,18 +30,18 @@ public class DownloadSound extends AsyncTask<Integer, Void, File>
 	private Callback callback = null;
 	private File cacheDir = null;
 
-	public DownloadSound(Callback callback, File cacheDir)
+	public DownloadVideo(Callback callback, File cacheDir)
 	{
 		this.callback = callback;
 		this.cacheDir = cacheDir;
 	}
 
 	@Override
-	protected File doInBackground(Integer... soundIds)
+	protected File doInBackground(Integer... videoIds)
 	{
 		File retval = null;
 		try {
-			retval = getSound(soundIds[0], cacheDir);
+			retval = getVideo(videoIds[0], cacheDir);
 		}
 		catch (Exception e) {
 			logger.error(""+e, e);
@@ -57,19 +57,19 @@ public class DownloadSound extends AsyncTask<Integer, Void, File>
 		}
 	}
 
-	private File getSound(int soundId, File dir) throws DatastoreException,
+	private File getVideo(int videoId, File dir) throws DatastoreException,
 			NetworkException, IOException
 	{
 		File retval = null;
 		InputStream is = null;
-		String name = ""+soundId+".ogg";
+		String name = ""+videoId+".mp4";
 
 		if (!(retval = new File(dir, name)).exists()) {
 			Datastore dstore = Datastore.getDatastore();
 			String[] uup = dstore.getUrlUserPasswd();
-			String url = uup[0]+"/apis/v1/sounds/"+name;
+			String url = uup[0]+"/apis/v1/videos/"+name;
 			Map<String, String> map = Util.defaultHeadersAsMap();
-			map.put("Accept","application/ogg");
+			map.put("Accept","application/mp4");
 
 			if (!Util.toFile(retval, (is = Util.queryRESTasStream(
 					new HttpGet(url), map)))) {

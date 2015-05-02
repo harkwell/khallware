@@ -12,8 +12,10 @@ import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import java.util.Map;
 import java.net.URL;
+import java.io.File;
 import java.io.InputStream;
 import java.io.IOException;
+import java.io.FileInputStream;
 import java.lang.ref.WeakReference;
 import org.apache.http.client.methods.HttpGet;
 import org.slf4j.LoggerFactory;
@@ -25,10 +27,12 @@ public class DownloadBitmap extends AsyncTask<Integer, Void, Bitmap>
 		DownloadBitmap.class);
 
 	private final WeakReference<ImageView> ref;
+	private File cacheDir = null;
 
-	public DownloadBitmap(ImageView view)
+	public DownloadBitmap(ImageView view, File cacheDir)
 	{
 		ref = new WeakReference<ImageView>(view);
+		this.cacheDir = cacheDir;
 	}
 
 	@Override
@@ -56,13 +60,31 @@ public class DownloadBitmap extends AsyncTask<Integer, Void, Bitmap>
 		}
 	}
 
+	private Bitmap getBitmapFromCache(File dir, int photoId)
+	{
+		Bitmap retval = null;
+		try {
+			File file = new File(dir, ""+photoId+".jpg");
+
+			if (dir != null && file.exists()) {
+				retval = BitmapFactory.decodeStream(
+					new FileInputStream(file));
+			}
+		}
+		catch (Exception e) {
+			logger.error(""+e, e);
+		}
+		return(retval);
+	}
+
 	private Bitmap getBitmap(int photoId) throws DatastoreException,
 			NetworkException, IOException
 	{
-		Bitmap retval = null;
+		Bitmap retval = getBitmapFromCache(cacheDir, photoId);
 		InputStream is = null;
 		String[] uup = Datastore.getDatastore().getUrlUserPasswd();
-		String url = uup[0]+"/apis/v1/photos/"+photoId+".jpg";
+		String name = photoId+".jpg";
+		String url = uup[0]+"/apis/v1/photos/"+name;
 		Map<String, String> map = Util.defaultHeadersAsMap();
 		map.put("Accept","image/jpeg");
 		is = Util.queryRESTasStream(new HttpGet(url), map);
@@ -70,6 +92,10 @@ public class DownloadBitmap extends AsyncTask<Integer, Void, Bitmap>
 		retval = BitmapFactory.decodeStream(is);
 		is.reset();
 
+		if (cacheDir != null) {
+			Util.toFile(new File(cacheDir, name), is);
+			is.reset();
+		}
 		if (retval == null) {
 			logger.info(Util.toString(is).substring(0, 80));
 			is.reset();

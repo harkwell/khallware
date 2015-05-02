@@ -3,7 +3,9 @@
 package com.khallware.apis;
 
 import android.widget.EditText;
+import android.widget.Toast;
 import android.app.Activity;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import org.slf4j.Logger;
@@ -38,10 +40,45 @@ public class ConnectActivity extends Activity
 			editText = (EditText)findViewById(R.id.connect_pass);
 			uup[2] = editText.getText().toString();
 			Datastore.getDatastore().setUrlUserPasswd(uup);
+			testConnectionAndFinish();
+		}
+		catch (Exception e) {
+			Util.toastException(e, getApplicationContext());
+		}
+	}
+
+	private void testConnectionAndFinish()
+	{
+		AsyncTask.execute(new Runnable() {
+			public void run()
+			{
+				try {
+					CrudHelper.getParentTag(1);
+					finish();
+				}
+				catch (Exception e) {
+					logger.warn(""+e, e);
+					runOnUiThread(new Runnable() {
+						public void run()
+						{
+							failConnect();
+						}
+					});
+				}
+			}
+		});
+	}
+
+	private void failConnect()
+	{
+		try {
+			Datastore.getDatastore().deleteUrlUserPasswd();
+			Toast toast = Toast.makeText(getApplicationContext(),
+				"Could not connect...", Toast.LENGTH_SHORT);
+			toast.show();
 		}
 		catch (Exception e) {
 			logger.error(""+e, e);
 		}
-		finish();
 	}
 }

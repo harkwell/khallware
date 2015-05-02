@@ -3,6 +3,7 @@
 package com.khallware.apis;
 
 import com.khallware.apis.enums.EntityType;
+import com.khallware.apis.tasks.CacheCleanup;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
@@ -75,6 +76,7 @@ public class TagsActivity extends FragmentActivity
 					"tag"+viewPager.getCurrentItem());
 			int tag = fragment.getEntityTag();
 			Datastore.getDatastore().setTag(tag);
+			new CacheCleanup().execute(getFilesDir());
 			launchIntent(Khallware.class, tag);
 		}
 		catch (Exception e) {

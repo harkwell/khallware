@@ -68,6 +68,12 @@
 			android:id="@+id/contact_updated"
 			android:editable="false" />
 
+	<Button
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="@string/lit_addascontact"
+			android:onClick="goContact" />
+
 </LinearLayout>
 
 <!-- http://www.droiddraw.org/ -->
