@@ -6,6 +6,7 @@ import com.khallware.apis.enums.EntityType;
 import java.io.ByteArrayOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.InputStreamReader;
+import java.io.FileOutputStream;
 import java.io.BufferedReader;
 import java.io.PrintStream;
 import java.io.InputStream;
@@ -13,7 +14,7 @@ import java.io.IOException;
 import java.io.File;
 import java.util.Map;
 import java.util.HashMap;
-import java.nio.file.Files;
+// import java.nio.file.Files;
 import android.os.Bundle;
 import android.net.Uri;
 import android.util.Base64;
@@ -119,6 +120,25 @@ public class Util
 	{
 		boolean retval = false;
 		try {
+			FileOutputStream fos = new FileOutputStream(file);
+
+			for (int ch=-1; (ch = is.read()) != -1;) {
+				fos.write(ch);
+			}
+			fos.close();
+			retval = true;
+		}
+		catch (IOException e) {
+			logger.error(""+e, e);
+		}
+		return(retval);
+	}
+
+	/*
+	public static boolean toFileJava7(File file, InputStream is)
+	{
+		boolean retval = false;
+		try {
 			Files.write(file.toPath(), toString(is).getBytes());
 			retval = true;
 		}
@@ -127,6 +147,7 @@ public class Util
 		}
 		return(retval);
 	}
+	*/
 
 	public static String getBasicAuthHeader() throws DatastoreException
 	{

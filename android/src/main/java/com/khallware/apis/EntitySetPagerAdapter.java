@@ -30,7 +30,9 @@ public class EntitySetPagerAdapter extends FragmentStatePagerAdapter
 	private FragmentManager fragmentManager = null;
 	private EntityType entityType = null;
 	private boolean endOfItems = false;
-	private boolean processing = false;
+	private boolean expanding = false;
+	private boolean replacing = false;
+	private int index = 0;
 	private int tag = 0;
 
 	public EntitySetPagerAdapter(FragmentManager fragmentManager,
@@ -44,17 +46,43 @@ public class EntitySetPagerAdapter extends FragmentStatePagerAdapter
 	}
 
 	@Override
+	public int getCount()
+	{
+		int retval = jsonList.size();
+
+		if (index == retval && !expanding) {
+			if (!endOfItems) {
+				expandEntityListViaThread(tag);
+			}
+			else if (!replacing) {
+				Fragment fragment = new NoneAvailableFragment();
+				provision(fragment);
+				replace(getItem(index), fragment);
+				retval++;
+			}
+		}
+		/*
+		else if ((retval - index) <= 1 && !replacing) {
+			replace(getItem(index), index);
+		}
+		*/
+		return(retval);
+	}
+
+	@Override
 	public Fragment getItem(int idx)
 	{
 		Fragment retval = null;
+		this.index = idx;
 		try {
 			int numItems = jsonList.size();
 			String json = null;
 
-			if (idx >= numItems && !processing) {
-				expandEntityListViaThread(tag);
+			if ((numItems == 0 || idx > numItems) && endOfItems) {
+				retval = new NoneAvailableFragment();
+				provision(retval);
 			}
-			if ((numItems=jsonList.size()) > 0 && numItems > idx) {
+			else if (numItems > 0 && numItems > idx) {
 				retval = new EntityFragment();
 				provision(retval, idx);
 			}
@@ -83,12 +111,6 @@ public class EntitySetPagerAdapter extends FragmentStatePagerAdapter
 	}
 
 	@Override
-	public int getCount()
-	{
-		return((endOfItems) ? jsonList.size() : MAX_ENTITIES);
-	}
-
-	@Override
 	public CharSequence getPageTitle(int idx)
 	{
 		String retval = "";
@@ -114,13 +136,13 @@ public class EntitySetPagerAdapter extends FragmentStatePagerAdapter
 			public void run()
 			{
 				try {
-					processing = true;
+					expanding = true;
 					expandEntityList(tag);
 				}
 				catch (Exception e) {
 					logger.warn(""+e, e);
 				}
-				processing = false;
+				expanding = false;
 			}
 		});
 	}
@@ -155,24 +177,38 @@ public class EntitySetPagerAdapter extends FragmentStatePagerAdapter
 		endOfItems =  (count < MAX_REQ_ENTITIES);
 	}
 
+	protected final void replace(Fragment oldFragment, Fragment newFragment)
+	{
+		replacing = true;
+		fragmentManager
+			.beginTransaction()
+			.detach(oldFragment)
+			.add(newFragment, ""+entityType+index)
+			.attach(newFragment)
+			.commit();
+		notifyDataSetChanged(); // NOTE: will invoke getCount()
+		replacing = false;
+		// KDH sometimes we never get here...
+	}
+
 	protected final void replace(Fragment oldFragment, int idx)
 	{
 		if (jsonList.size() > idx) {
 			Fragment newFragment = new EntityFragment();
 			provision(newFragment, idx);
-			fragmentManager
-				.beginTransaction()
-				.detach(oldFragment)
-				.add(newFragment, ""+entityType+idx)
-				.attach(newFragment)
-				.commit();
+			replace(oldFragment, newFragment);
 		}
+	}
+
+	protected final void provision(Fragment fragment)
+	{
+		provision(fragment, -1);
 	}
 
 	protected final void provision(Fragment fragment, int idx)
 	{
 		Bundle args = new Bundle();
-		String json = jsonList.get(idx);
+		String json = (idx >= 0) ? jsonList.get(idx) : "{}";
 		args.putString(EntityFragment.ARG_JSON, json);
 		args.putString(EntityFragment.ARG_ENTITY, ""+entityType);
 		fragment.setArguments(args);

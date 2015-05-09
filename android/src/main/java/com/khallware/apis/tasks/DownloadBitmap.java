@@ -84,7 +84,7 @@ public class DownloadBitmap extends AsyncTask<Integer, Void, Bitmap>
 		InputStream is = null;
 		String[] uup = Datastore.getDatastore().getUrlUserPasswd();
 		String name = photoId+".jpg";
-		String url = uup[0]+"/apis/v1/photos/"+name;
+		String url = uup[0]+"/apis/v1/photos/"+name+"?thumb=true";
 		Map<String, String> map = Util.defaultHeadersAsMap();
 		map.put("Accept","image/jpeg");
 		is = Util.queryRESTasStream(new HttpGet(url), map);

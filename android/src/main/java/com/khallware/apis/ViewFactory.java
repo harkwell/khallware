@@ -262,12 +262,18 @@ public class ViewFactory
 	{
 		try {
 			for (String key : map.keySet()) {
-				String val = jsonObj.has(key)
+				final String val = jsonObj.has(key)
 					? jsonObj.getString(key)
 					: "unknown";
-				EditText editText = (EditText)
+				final EditText editText = (EditText)
 					view.findViewById(map.get(key));
-				editText.setText(val);
+				((Activity)view.getContext()).runOnUiThread(
+						new Runnable() {
+					public void run()
+					{
+						editText.setText(val);
+					}
+				});
 			}
 			view.postInvalidate();
 		}
