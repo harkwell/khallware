@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- $Id$ -->
+<!-- ==========================================================================
+ * The Android "Khallware" application
+ * (C) 2015 Kevin D.Hall
+ *
+-->
+<AbsoluteLayout
+		android:layout_width="fill_parent"
+		android:layout_height="fill_parent"
+		xmlns:android="http://schemas.android.com/apk/res/android" >
+
+	<ImageView android:id="@+id/about_img"
+			android:layout_width="200px"
+			android:layout_height="200px"
+			android:layout_x="50px"
+			android:layout_y="10px"/>
+	<TextView
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:text="@string/version"
+			android:gravity="center"
+			android:layout_x="0px"
+			android:layout_y="235px"/>
+	<TextView
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:text="@string/about"
+			android:gravity="center"
+			android:layout_x="0px"
+			android:layout_y="263px"/>
+</AbsoluteLayout>

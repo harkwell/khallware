@@ -449,10 +449,12 @@ public final class Util
 					+"\""+decoded+"\"");
 			}
 			try {
+				String passwd = hash(tokens[1]);
 				Credentials pattern = new Credentials(
-					tokens[0], hash(tokens[1]), null);
+					tokens[0], passwd, null);
 				retval = Datastore.DS().getCredentials(pattern);
 				retval = (retval == null) ? pattern : retval;
+				retval.setPassword(passwd);
 			}
 			catch (DatastoreException|NoSuchAlgorithmException e) {
 				throw new APIException(e);
