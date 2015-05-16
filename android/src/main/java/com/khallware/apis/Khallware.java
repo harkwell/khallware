@@ -124,14 +124,20 @@ public class Khallware extends Activity
 
 	public void postContacts(View view)
 	{
-		Context context = getApplicationContext();
+		final Context context = getApplicationContext();
 		logger.trace("postContacts()...");
-		try {
-			Util.postContacts(context, dstore.getTag());
-		}
-		catch (Exception e) {
-			Util.toastException(e, context);
-		}
+		AsyncTask.execute(new Runnable() {
+			public void run()
+			{
+				try {
+					Util.postContacts(context,
+						dstore.getTag());
+				}
+				catch (Exception e) {
+					logger.error(""+e,e);
+				}
+			}
+		});
 	}
 
 	public void goBookmarks(View view)
@@ -325,7 +331,15 @@ public class Khallware extends Activity
 	protected void countAndApply(int tagId)
 	{
 		Map<EntityType, Integer> map = new HashMap<>();
+		map.put(EntityType.bookmark, R.id.abookmark_button);
+		map.put(EntityType.location, R.id.alocation_button);
+		map.put(EntityType.fileitem, R.id.afileitem_button);
+		map.put(EntityType.contact, R.id.acontact_button);
+		map.put(EntityType.video, R.id.avideo_button);
+		map.put(EntityType.sound, R.id.asound_button);
+		map.put(EntityType.event, R.id.aevent_button);
 		map.put(EntityType.photo, R.id.aphoto_button);
+		map.put(EntityType.blog, R.id.ablog_button);
 
 		try {
 			for (EntityType type : map.keySet()) {

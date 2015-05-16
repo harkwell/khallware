@@ -54,29 +54,72 @@
 		<Button
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:text="@string/lit_addtag"
-				android:onClick="addTag" />
-
-		<Button
-				android:id="@+id/atag_button"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:text="@string/lit_tags"
-				android:onClick="goTags" />
-
-		<Button
-				android:id="@+id/acontact_button"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:text="@string/lit_contacts"
-				android:onClick="goContacts" />
+				android:text="@string/lit_reconnect"
+				android:onClick="goConnect" />
 
 		<Button
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:text="@string/lit_postcontacts"
-				android:onClick="postContacts" />
+				android:text="@string/lit_search"
+				android:onClick="goSearch" />
 
+		<LinearLayout
+				android:orientation="horizontal"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent" >
+
+			<Button
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:text="@string/lit_addtag"
+					android:onClick="addTag" />
+
+			<Button
+					android:id="@+id/atag_button"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:text="@string/lit_tags"
+					android:onClick="goTags" />
+
+		</LinearLayout>
+		<LinearLayout
+				android:orientation="horizontal"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent" >
+
+			<Button
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:text="@string/lit_uploadphoto"
+					android:onClick="uploadPhotos" />
+
+			<Button
+					android:id="@+id/aphoto_button"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:text="@string/lit_photos"
+					android:onClick="goPhotos" />
+
+		</LinearLayout>
+		<LinearLayout
+				android:orientation="horizontal"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent" >
+
+			<Button
+					android:id="@+id/acontact_button"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:text="@string/lit_contacts"
+					android:onClick="goContacts" />
+
+			<Button
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:text="@string/lit_postcontacts"
+					android:onClick="postContacts" />
+
+		</LinearLayout>
 		<Button
 				android:id="@+id/abookmark_button"
 				android:layout_width="wrap_content"
@@ -112,51 +155,32 @@
 				android:text="@string/lit_locations"
 				android:onClick="goLocations" />
 
-		<Button
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:text="@string/lit_uploadphoto"
-				android:onClick="uploadPhotos" />
+		<LinearLayout
+				android:orientation="horizontal"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent" >
 
-		<Button
-				android:id="@+id/aphoto_button"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:text="@string/lit_photos"
-				android:onClick="goPhotos" />
+			<Button
+					android:id="@+id/asound_button"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:text="@string/lit_sounds"
+					android:onClick="goSounds" />
 
-		<Button
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:text="@string/lit_search"
-				android:onClick="goSearch" />
+			<Button
+					android:id="@+id/atag_playaudio"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:text="@string/lit_playallsongs"
+					android:onClick="playAllSongs" />
 
-		<Button
-				android:id="@+id/asound_button"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:text="@string/lit_sounds"
-				android:onClick="goSounds" />
-
-		<Button
-				android:id="@+id/atag_playaudio"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:text="@string/lit_playallsongs"
-				android:onClick="playAllSongs" />
-
+		</LinearLayout>
 		<Button
 				android:id="@+id/avideo_button"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:text="@string/lit_videos"
 				android:onClick="goVideos" />
-
-		<Button
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:text="@string/lit_reconnect"
-				android:onClick="goConnect" />
 
 	</LinearLayout>
 </ScrollView>

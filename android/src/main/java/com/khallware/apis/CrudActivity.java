@@ -29,24 +29,40 @@ public class CrudActivity extends Activity
 
 	static {
 		map.put(EntityType.tag, new HashMap<String, Integer>() {{
-			this.put("name", R.id.tag_name);
+			this.put("name",    R.id.tag_name);
+			this.put("id",      R.id.tag_id);
+			this.put("parent",  R.id.tag_parent);
+			// this.put("mask", R.id.tag_mask);
+		}});
+		map.put(EntityType.photo, new HashMap<String, Integer>() {{
+			this.put("name",    R.id.photo_name);
+			this.put("desc",    R.id.photo_desc);
+			// this.put("mask", R.id.tag_mask);
+		}});
+		map.put(EntityType.bookmark, new HashMap<String, Integer>() {{
+			this.put("name",    R.id.bookmark_name);
+			this.put("desc",    R.id.bookmark_desc);
+			this.put("rating",  R.id.bookmark_rating);
+			this.put("url",     R.id.bookmark_url);
+			this.put("title",   R.id.bookmark_title);
 			// this.put("mask", R.id.tag_mask);
 		}});
 	};
 
-	private int tag = 0;
+	private int tag = -1;
 	private EntityType type = null;
 	private JSONObject jsonObj = null;
 
 	@Override
 	public void onCreate(Bundle bundle)
 	{
+		Context context = null;
 		super.onCreate(bundle);
 		bundle = (bundle == null) ? getIntent().getExtras() : bundle;
-		tag = Util.resolveTag(bundle);
 		try {
-			Context context = getApplicationContext();
 			LinearLayout layout = null;
+			tag = Util.resolveTag(bundle);
+			context = getApplicationContext();
 			jsonObj = new JSONObject(""+bundle.get(ARG_JSON));
 
 			switch ((type = EntityType.valueOf(
@@ -55,9 +71,16 @@ public class CrudActivity extends Activity
 				setContentView((layout = (LinearLayout)
 					ViewFactory.make(
 						R.layout.tag, context)));
-				jsonObj.put("parent", tag);
-				appendCrudButtons(layout);
-				turnOnEditTexts(layout);
+				break;
+			case photo:
+				setContentView((layout = (LinearLayout)
+					ViewFactory.make(
+						R.layout.photo, context)));
+				break;
+			case bookmark:
+				setContentView((layout = (LinearLayout)
+					ViewFactory.make(
+						R.layout.bookmark, context)));
 				break;
 			default:
 				String msg = "unhandled type \""+type+"\"";
@@ -65,10 +88,13 @@ public class CrudActivity extends Activity
 					new IllegalArgumentException(msg),
 					context);
 			}
+			appendCrudButtons(layout);
+			turnOnEditTexts(layout);
 			populateLayout(layout, map.get(type), jsonObj);
 		}
 		catch (Exception e) {
-			Util.toastException(e, getApplicationContext());
+			Util.toastException(e, context);
+			setContentView(ViewFactory.make(e, context));
 		}
 	}
 
@@ -84,7 +110,7 @@ public class CrudActivity extends Activity
 					if (jsonObj.has("id")) {
 						int id = Integer.parseInt(
 							j.getString("id"));
-						update(id,map.get(type),layout);
+						update(id, map.get(type));
 					}
 					else {
 						create(map.get(type), layout);
@@ -123,18 +149,17 @@ public class CrudActivity extends Activity
 			throws JSONException, DatastoreException,
 			NetworkException
 	{
-		update(-1, map, layout);
+		update(-1, map);
 	}
 
-	protected void update(int id, Map<String, Integer> map,
-			LinearLayout layout) throws JSONException,
-			DatastoreException, NetworkException
+	protected void update(int id, Map<String, Integer> map)
+			throws JSONException, DatastoreException,
+			NetworkException
 	{
 		JSONObject jsonObj = new JSONObject("{}");
 
 		for (String key : map.keySet()) {
-			EditText et = (EditText)layout.findViewById(
-				map.get(key));
+			EditText et = (EditText)findViewById(map.get(key));
 			jsonObj.put(key, (et != null) ? ""+et.getText() : "");
 		}
 		if (id > 0) {
@@ -176,8 +201,8 @@ public class CrudActivity extends Activity
 			}
 			editText = (EditText)layout.getChildAt(idx);
 			editText.setEnabled(true);
-			editText.setLayoutParams(
-				new LinearLayout.LayoutParams(200, 75));
+			/* editText.setLayoutParams(
+				new LinearLayout.LayoutParams(200, 75)); */
 		}
 	}
 

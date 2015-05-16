@@ -30,7 +30,7 @@
 	<string name="lit_reloadmsg">Item Failed To Load</string>
 	<string name="lit_reload">Reload</string>
 	<string name="lit_contacts">Contacts</string>
-	<string name="lit_postcontacts">Post Phone Contacts</string>
+	<string name="lit_postcontacts">Upload Contacts</string>
 	<string name="lit_bookmarks">Bookmarks</string>
 	<string name="lit_blogs">Blogs</string>
 	<string name="lit_events">Events</string>

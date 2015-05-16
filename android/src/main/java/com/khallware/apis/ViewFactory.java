@@ -57,12 +57,16 @@ public class ViewFactory
 		return(retval);
 	}
 
-	public static View make(EntityType type, String json, Context context)
+	public static View make(final EntityType type, final String json,
+			Context context)
 	{
 		View retval = null;
 		try {
 			final JSONObject jsonObj = new JSONObject(json);
 			final Map<String, Integer> map = new HashMap<>();
+			final int tag = jsonObj.has("tag")
+				? jsonObj.getInt("tag")
+				: 0;
 
 			switch (type) {
 			case tag:
@@ -167,7 +171,8 @@ public class ViewFactory
 				public void run()
 				{
 					setEditTexts(map, jsonObj, v);
-					addEditButton((LinearLayout)v);
+					addEditButton((LinearLayout)
+						v, json, type, tag);
 				}
 			});
 		}
@@ -260,6 +265,12 @@ public class ViewFactory
 		});
 	}
 
+	/**
+	 * For each given key, locate each EditText specified by the
+	 * corresponding map value and replace the text with the value
+	 * of the corresponding json value (same key).  The EditText is
+	 * relative to the given View.
+	 */
 	private static void setEditTexts(Map<String, Integer> map,
 			JSONObject jsonObj, View view)
 	{
@@ -285,18 +296,28 @@ public class ViewFactory
 		}
 	}
 
-	private static void addEditButton(final LinearLayout parent)
+	private static void addEditButton(final LinearLayout parent,
+			final String json, final EntityType type,
+			final int tagId)
 	{
 		try {
 			final Activity activity = (Activity)parent.getContext();
 			LinearLayout layout = new LinearLayout(
 				parent.getContext());
 			Button button = new Button(layout.getContext());
+			getLayoutParams(button);
+			button.setText("Edit");
 			button.setOnClickListener(new View.OnClickListener() {
 				public void onClick(View v)
 				{
 					Intent intent = new Intent(activity,
 						CrudActivity.class);
+					String key = CrudActivity.ARG_JSON;
+					intent.putExtra(key, json);
+					key = Khallware.ARG_TAG;
+					intent.putExtra(key, tagId);
+					key = CrudActivity.ARG_TYPE;
+					intent.putExtra(key, type);
 					activity.startActivity(intent);
 				}
 			});

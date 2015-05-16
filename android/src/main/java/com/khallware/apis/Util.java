@@ -13,7 +13,9 @@ import java.io.InputStream;
 import java.io.IOException;
 import java.io.File;
 import java.util.Map;
+import java.util.List;
 import java.util.HashMap;
+import java.util.ArrayList;
 // import java.nio.file.Files;
 import android.os.Bundle;
 import android.net.Uri;
@@ -99,6 +101,15 @@ public class Util
 		try {
 			tmp = toString(queryRESTasStream(request, headers));
 			retval = new JSONObject(tmp);
+		}
+		catch (JSONException e) {
+			logger.warn(""+e, e);
+			try {
+				retval =new JSONObject("{\"error\":\""+e+"\"}");
+			}
+			catch (Exception ie) {
+				logger.error(""+ie, ie);
+			}
 		}
 		catch (Exception e) {
 			logger.warn("invalid json returned: ({})", tmp);
@@ -385,6 +396,7 @@ public class Util
 			throws JSONException, DatastoreException,
 			NetworkException
 	{
+		List<String> errors = new ArrayList<>();
 		Cursor cursor = ctxt.getContentResolver().query(
 			ContactsContract.Contacts.CONTENT_URI, null, null,
 				null, null);
@@ -394,9 +406,8 @@ public class Util
 			// CommonDataKinds.Contactables.CONTENT_URI,
 			CommonDataKinds.StructuredPostal.CONTENT_URI
 		};
-		JSONObject jsonObj = new JSONObject();
-
 		while (cursor.moveToNext()) {
+			JSONObject jsonObj = new JSONObject();
 			int idx = cursor.getColumnIndex(map.get("uid"));
 			String uid = cursor.getString(idx);
 			jsonObj.put("uid", uid);
@@ -407,9 +418,18 @@ public class Util
 				merge(ctxt, jsonObj, uri, uid);
 			}
 			logger.info("json: ({})", ""+jsonObj);
-			CrudHelper.create(EntityType.contact, jsonObj, tagId);
-			jsonObj = new JSONObject();
+			try {
+				CrudHelper.create(EntityType.contact, jsonObj,
+					tagId);
+			}
+			catch (Exception e) {
+				errors.add(""+e);
+			}
 		}
 		cursor.close();
+
+		if (errors.size() > 0) {
+			throw new NetworkException(""+errors);
+		}
 	}
 }
