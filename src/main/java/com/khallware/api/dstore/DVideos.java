@@ -56,14 +56,17 @@ public class DVideos extends APICrudChain<Video>
 		final Wrapper<List<Video>> retval = new Wrapper<>();
 		Operator.<Video>perform((dao) -> {
 			QueryBuilder<Video, Integer> qb = dao.queryBuilder()
+				.setCountOf(pg.returnCount())
 				.offset(pg.calcCursorIndex())
 				.limit(pg.getPageSize());
 			retval.item = new ArrayList<Video>();
 			filterOnMode(qb.where(), creds);
+			retval.count = pg.returnCount() ? qb.countOf() : -1;
 			retval.item.addAll((pattern == null)
 				? qb.query()
 				: dao.queryForMatchingArgs(pattern));
 		}, Video.class);
+		pg.setCount(retval.count);
 		return(retval.item);
 	}
 
@@ -74,6 +77,7 @@ public class DVideos extends APICrudChain<Video>
 		final List<Video> retval = new ArrayList<>();
 		Operator.<VideoTags>perform((dao) -> {
 			QueryBuilder<VideoTags, Integer> qb = dao.queryBuilder()
+				.setCountOf(pg.returnCount())
 				.offset(pg.calcCursorIndex())
 				.limit(pg.getPageSize());
 			qb.where().eq(VideoTags.COL_TAG, tag);
@@ -81,6 +85,7 @@ public class DVideos extends APICrudChain<Video>
 			for (VideoTags vt : qb.query()) {
 				retval.add(vt.getVideo());
 			}
+			pg.setCount(pg.returnCount() ? qb.countOf() : -1);
 		}, VideoTags.class);
 		return(retval);
 	}

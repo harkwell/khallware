@@ -56,14 +56,17 @@ public class DBookmarks extends APICrudChain<Bookmark>
 		final Wrapper<List<Bookmark>> retval = new Wrapper<>();
 		Operator.<Bookmark>perform((dao) -> {
 			QueryBuilder<Bookmark, Integer> qb = dao.queryBuilder()
+				.setCountOf(pg.returnCount())
 				.offset(pg.calcCursorIndex())
 				.limit(pg.getPageSize());
 			retval.item = new ArrayList<Bookmark>();
 			filterOnMode(qb.where(), creds);
+			retval.count = pg.returnCount() ? qb.countOf() : -1;
 			retval.item.addAll((pattern == null)
 				? qb.query()
 				: dao.queryForMatchingArgs(pattern));
 		}, Bookmark.class);
+		pg.setCount(retval.count);
 		return(retval.item);
 	}
 
@@ -75,6 +78,7 @@ public class DBookmarks extends APICrudChain<Bookmark>
 		Operator.<BookmarkTags>perform((dao) -> {
 			QueryBuilder<BookmarkTags, Integer> qb =
 				dao.queryBuilder()
+					.setCountOf(pg.returnCount())
 					.offset(pg.calcCursorIndex())
 					.limit(pg.getPageSize());
 			qb.where().eq(BookmarkTags.COL_TAG, tag);
@@ -82,6 +86,7 @@ public class DBookmarks extends APICrudChain<Bookmark>
 			for (BookmarkTags bt : qb.query()) {
 				retval.add(bt.getBookmark());
 			}
+			pg.setCount(pg.returnCount() ? qb.countOf() : -1);
 		}, BookmarkTags.class);
 		return(retval);
 	}

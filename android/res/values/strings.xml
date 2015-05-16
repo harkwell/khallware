@@ -7,6 +7,9 @@
 	<string name="contact">Contact Details</string>
 	<string name="app_name">Khallware</string>
 	<string name="about">Kevin D.Hall\nkhallware (r)</string>
+	<string name="lit_id">Identifier</string>
+	<string name="lit_name">Name</string>
+	<string name="lit_desc">Description</string>
 	<string name="lit_user">Username</string>
 	<string name="lit_pass">Password</string>
 	<string name="lit_host">Hostname</string>
@@ -14,7 +17,11 @@
 	<string name="lit_connect">Connect</string>
 	<string name="lit_play">Play</string>
 	<string name="lit_playallsongs">Play All Audio</string>
+	<string name="lit_parent">Parent</string>
 	<string name="lit_tags">Tags</string>
+	<string name="lit_addtag">Add Tag</string>
+	<string name="lit_update">Update</string>
+	<string name="lit_delete">Delete</string>
 	<string name="lit_goparenttag">Parent Tag</string>
 	<string name="lit_gochildtag">Children</string>
 	<string name="lit_gotag">Content</string>
@@ -29,6 +36,7 @@
 	<string name="lit_events">Events</string>
 	<string name="lit_fileitems">File Items</string>
 	<string name="lit_locations">Locations</string>
+	<string name="lit_uploadphoto">Upload Photo</string>
 	<string name="lit_photos">Photos</string>
 	<string name="lit_search">Search</string>
 	<string name="lit_sounds">Sounds</string>

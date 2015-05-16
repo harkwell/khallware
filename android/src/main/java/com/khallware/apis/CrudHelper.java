@@ -10,6 +10,7 @@ import org.json.JSONArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.Map;
+import java.io.File;
 
 public class CrudHelper
 {
@@ -21,6 +22,16 @@ public class CrudHelper
 	{
 		String[] uup = Datastore.getDatastore().getUrlUserPasswd();
 		String url = uup[0]+"/apis/v1/"+type+"s?tagId="+tagId;
+		try {
+			switch (type) {
+			case tag:
+				jsonObj.put("parent", tagId);
+				break;
+			}
+		}
+		catch (JSONException e) {
+			throw new NetworkException(e);
+		}
 		logger.debug("POST {}", url);
 		return(Util.handlePost(url, jsonObj));
 	}
@@ -64,6 +75,50 @@ public class CrudHelper
 		url += (type == EntityType.tag) ? "&parentId=" : "&tagId=";
 		url += ""+tag;
 		return(read(url, ""+type+"s"));
+	}
+
+	public static long count(EntityType type, int tag)
+			throws DatastoreException, NetworkException
+	{
+		long retval = -1;
+		String[] uup = Datastore.getDatastore().getUrlUserPasswd();
+		String url = uup[0]+"/apis/v1/"+type+"s?count=true";
+		JSONObject rslt = null;
+		url += (type == EntityType.tag) ? "&parentId=" : "&tagId=";
+		url += ""+tag;
+		try {
+			if ((rslt = Util.handleGet(url)) != null
+					&& rslt.has("count")) {
+				retval = Long.parseLong(""+rslt.get("count"));
+			}
+		}
+		catch (JSONException e) {
+			throw new NetworkException(e);
+		}
+		return(retval);
+	}
+
+	public static void update(EntityType type, JSONObject jsonObj, int tag)
+			throws DatastoreException, NetworkException
+	{
+		String[] uup = Datastore.getDatastore().getUrlUserPasswd();
+		try {
+			int id = Integer.parseInt(jsonObj.getString("id"));
+			String url = uup[0]+"/apis/v1/"+type+"s/"+id
+				+"?tagId="+tag;
+			Util.handlePut(url, jsonObj);
+		}
+		catch (JSONException e) {
+			throw new NetworkException(e);
+		}
+	}
+
+	public static void delete(EntityType type, int id, int tag)
+			throws DatastoreException, NetworkException
+	{
+		String[] uup = Datastore.getDatastore().getUrlUserPasswd();
+		String url = uup[0]+"/apis/v1/"+type+"s/"+id+"?tagId="+tag;
+		Util.handleDelete(url);
 	}
 
 	public static JSONObject getTag(int id) throws DatastoreException,
@@ -155,6 +210,14 @@ public class CrudHelper
 	{
 		return(read(EntityType.location, from, to, tag));
 	}
+
+	/*
+	public static JSONObject upload(EntityType type, int tagId, File file)
+			throws NetworkException, DatastoreException
+	{
+		return(Util.handlePost(type, tagId, file));
+	}
+	*/
 
 	public static JSONObject getFileItem(int id) throws DatastoreException,
 			NetworkException

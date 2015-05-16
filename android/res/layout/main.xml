@@ -54,10 +54,18 @@
 		<Button
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
+				android:text="@string/lit_addtag"
+				android:onClick="addTag" />
+
+		<Button
+				android:id="@+id/atag_button"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
 				android:text="@string/lit_tags"
 				android:onClick="goTags" />
 
 		<Button
+				android:id="@+id/acontact_button"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:text="@string/lit_contacts"
@@ -70,36 +78,48 @@
 				android:onClick="postContacts" />
 
 		<Button
+				android:id="@+id/abookmark_button"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:text="@string/lit_bookmarks"
 				android:onClick="goBookmarks" />
 
 		<Button
+				android:id="@+id/ablog_button"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:text="@string/lit_blogs"
 				android:onClick="goBlogs" />
 
 		<Button
+				android:id="@+id/aevent_button"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:text="@string/lit_events"
 				android:onClick="goEvents" />
 
 		<Button
+				android:id="@+id/afileitem_button"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:text="@string/lit_fileitems"
 				android:onClick="goFileitems" />
 
 		<Button
+				android:id="@+id/alocation_button"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:text="@string/lit_locations"
 				android:onClick="goLocations" />
 
 		<Button
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/lit_uploadphoto"
+				android:onClick="uploadPhotos" />
+
+		<Button
+				android:id="@+id/aphoto_button"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:text="@string/lit_photos"
@@ -112,6 +132,7 @@
 				android:onClick="goSearch" />
 
 		<Button
+				android:id="@+id/asound_button"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:text="@string/lit_sounds"
@@ -125,6 +146,7 @@
 				android:onClick="playAllSongs" />
 
 		<Button
+				android:id="@+id/avideo_button"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:text="@string/lit_videos"

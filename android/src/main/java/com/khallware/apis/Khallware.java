@@ -3,7 +3,9 @@
 package com.khallware.apis;
 
 import com.khallware.apis.enums.EntityType;
+import android.provider.MediaStore.Images;
 import android.widget.TextView;
+import android.widget.Button;
 import android.widget.EditText;
 import android.content.Context;
 import android.content.Intent;
@@ -23,12 +25,16 @@ import android.view.View;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.json.JSONObject;
+import java.util.HashMap;
+import java.util.Map;
+import java.io.File;
 
 public class Khallware extends Activity
 {
 	private static final Logger logger = LoggerFactory.getLogger(
 		Khallware.class);
 	public static final String ARG_TAG = "tag";
+	public static final int ACTIVITY_SELECT_IMAGE = 1;
 	private Dialog aboutDialog = null;
 	private Datastore dstore = null;
 
@@ -50,6 +56,7 @@ public class Khallware extends Activity
 							CrudHelper.read(
 								EntityType.tag,
 								id));
+						countAndApply(id);
 					}
 					catch (NetworkException
 							|DatastoreException e) {
@@ -88,16 +95,31 @@ public class Khallware extends Activity
 		return(true);
 	}
 
+	public void addTag(View view)
+	{
+		logger.trace("addTag()...");
+		try {
+			Map<String, String> map = new HashMap<>();
+			map.put(ARG_TAG, ""+dstore.getTag());
+			map.put(CrudActivity.ARG_JSON, "{}");
+			map.put(CrudActivity.ARG_TYPE, ""+EntityType.tag);
+			launchIntent(CrudActivity.class, map);
+		}
+		catch (Exception e) {
+			Util.toastException(e, getApplicationContext());
+		}
+	}
+
 	public void goTags(View view)
 	{
 		logger.trace("goTags()...");
-		lauchIntent(TagsActivity.class);
+		launchIntent(TagsActivity.class);
 	}
 
 	public void goContacts(View view)
 	{
 		logger.trace("goContacts()...");
-		lauchIntent(ContactsActivity.class);
+		launchIntent(ContactsActivity.class);
 	}
 
 	public void postContacts(View view)
@@ -115,55 +137,68 @@ public class Khallware extends Activity
 	public void goBookmarks(View view)
 	{
 		logger.trace("goBookmarks()...");
-		lauchIntent(BookmarksActivity.class);
+		launchIntent(BookmarksActivity.class);
 	}
 
 	public void goBlogs(View view)
 	{
 		logger.trace("goBlogs()...");
-		lauchIntent(BlogsActivity.class);
+		launchIntent(BlogsActivity.class);
 	}
 
 	public void goEvents(View view)
 	{
 		logger.trace("goEvents()...");
-		lauchIntent(EventsActivity.class);
+		launchIntent(EventsActivity.class);
 	}
 
 	public void goFileitems(View view)
 	{
 		logger.trace("goFileitems()...");
-		lauchIntent(FileitemsActivity.class);
+		launchIntent(FileitemsActivity.class);
 	}
 
 	public void goLocations(View view)
 	{
 		logger.trace("goLocations()...");
-		lauchIntent(LocationsActivity.class);
+		launchIntent(LocationsActivity.class);
 	}
 
 	public void goPhotos(View view)
 	{
 		logger.trace("goPhotos()...");
-		lauchIntent(PhotosActivity.class);
+		launchIntent(PhotosActivity.class);
+	}
+
+	public void uploadPhotos(View view)
+	{
+		logger.trace("uploadPhotos()...");
+		try {
+			Intent intent = new Intent(Intent.ACTION_PICK,
+				Images.Media.EXTERNAL_CONTENT_URI);
+			startActivityForResult(intent, ACTIVITY_SELECT_IMAGE);
+		}
+		catch (Exception e) {
+			Util.toastException(e, getApplicationContext());
+		}
 	}
 
 	public void goSearch(View view)
 	{
 		logger.trace("goSearch()...");
-		lauchIntent(SearchActivity.class);
+		launchIntent(SearchActivity.class);
 	}
 
 	public void goSounds(View view)
 	{
 		logger.trace("goSounds()...");
-		lauchIntent(SoundsActivity.class);
+		launchIntent(SoundsActivity.class);
 	}
 
 	public void goVideos(View view)
 	{
 		logger.trace("goVideos()...");
-		lauchIntent(VideosActivity.class);
+		launchIntent(VideosActivity.class);
 	}
 
 	public void goConnect(View view)
@@ -171,18 +206,65 @@ public class Khallware extends Activity
 		try {
 			logger.trace("goConnect()...");
 			dstore.deleteUrlUserPasswd();
-			lauchIntent(Khallware.class);
+			launchIntent(Khallware.class);
 		}
 		catch (Exception e) {
 			Util.toastException(e, getApplicationContext());
 		}
 	}
 
-	protected void lauchIntent(Class clazz)
+	protected void onActivityResult(int request, int result, Intent intent)
+	{
+		super.onActivityResult(request, result, intent);
+
+		switch(request) {
+		case ACTIVITY_SELECT_IMAGE:
+			/*
+			String[] cols = { Images.Media.DATA };
+			Cursor cursor = getContentResolver().query(
+				intent.getData(), cols, null, null, null);
+			cursor.moveToFirst();
+			final File file = new File(cursor.getString(
+				cursor.getColumnIndex(cols[0])));
+			cursor.close();
+			AsyncTask.execute(new Runnable() {
+				public void run()
+				{
+					try {
+						CrudHelper.upload(
+							EntityType.photo,
+							dstore.getTag(), file);
+					}
+					catch (Exception e) {
+						logger.error(""+e,e);
+					}
+				}
+			});
+			*/
+			break;
+		}
+	}
+
+	protected void launchIntent(Class clazz)
+	{
+		Map<String, String> map = new HashMap<>();
+		try {
+			map.put(ARG_TAG, ""+dstore.getTag());
+			launchIntent(clazz, map);
+		}
+		catch (Exception e) {
+			Util.toastException(e, getApplicationContext());
+		}
+	}
+
+	protected void launchIntent(Class clazz, Map<String, String> map)
 	{
 		try {
 			Intent intent = new Intent(this, clazz);
-			intent.putExtra(ARG_TAG, ""+dstore.getTag());
+
+			for (String key : map.keySet()) {
+				intent.putExtra(key, map.get(key));
+			}
 			startActivity(intent);
 		}
 		catch (Exception e) {
@@ -209,5 +291,50 @@ public class Khallware extends Activity
 				}
 			}
 		});
+	}
+
+	protected void applyButtonInfo(final int viewId, final long count)
+	{
+		runOnUiThread(new Runnable() {
+			public void run()
+			{
+				Button button = null;
+				String label = null;
+				int idx = -1;
+				try {
+					button = (Button)findViewById(viewId);
+					label = (button != null)
+						? ""+button.getText()
+						: "";
+					idx = label.indexOf(" (");
+					idx = (idx > 0) ? idx : label.length();
+					label = label.substring(0, idx);
+
+					if (button != null) {
+						button.setText(
+							label+" ("+count+")");
+					}
+				}
+				catch (Exception e) {
+					logger.error(""+e,e);
+				}
+			}
+		});
+	}
+
+	protected void countAndApply(int tagId)
+	{
+		Map<EntityType, Integer> map = new HashMap<>();
+		map.put(EntityType.photo, R.id.aphoto_button);
+
+		try {
+			for (EntityType type : map.keySet()) {
+				long count = CrudHelper.count(type, tagId);
+				applyButtonInfo(map.get(type), count);
+			}
+		}
+		catch (NetworkException|DatastoreException e) {
+			logger.error(""+e, e);
+		}
 	}
 }

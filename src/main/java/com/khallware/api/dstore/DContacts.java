@@ -56,14 +56,17 @@ public class DContacts extends APICrudChain<Contact>
 		final Wrapper<List<Contact>> retval = new Wrapper<>();
 		Operator.<Contact>perform((dao) -> {
 			QueryBuilder<Contact, Integer> qb = dao.queryBuilder()
+				.setCountOf(pg.returnCount())
 				.offset(pg.calcCursorIndex())
 				.limit(pg.getPageSize());
 			retval.item = new ArrayList<Contact>();
 			filterOnMode(qb.where(), creds);
+			retval.count = pg.returnCount() ? qb.countOf() : -1;
 			retval.item.addAll((pattern == null)
 				? qb.query()
 				: dao.queryForMatchingArgs(pattern));
 		}, Contact.class);
+		pg.setCount(retval.count);
 		return(retval.item);
 	}
 
@@ -75,6 +78,7 @@ public class DContacts extends APICrudChain<Contact>
 		Operator.<ContactTags>perform((dao) -> {
 			QueryBuilder<ContactTags, Integer> qb =
 				dao.queryBuilder()
+					.setCountOf(pg.returnCount())
 					.offset(pg.calcCursorIndex())
 					.limit(pg.getPageSize());
 			qb.where().eq(ContactTags.COL_TAG, tag);
@@ -82,6 +86,7 @@ public class DContacts extends APICrudChain<Contact>
 			for (ContactTags ct : qb.query()) {
 				retval.add(ct.getContact());
 			}
+			pg.setCount(pg.returnCount() ? qb.countOf() : -1);
 		}, ContactTags.class);
 		return(retval);
 	}

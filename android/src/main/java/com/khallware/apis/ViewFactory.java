@@ -17,9 +17,11 @@ import com.khallware.apis.enums.EntityType;
 import android.view.InflateException;
 import android.view.View;
 import android.view.LayoutInflater;
-import android.view.ViewGroup.LayoutParams;
 import android.text.method.ScrollingMovementMethod;
+import android.view.ViewGroup.LayoutParams;
 import android.content.Context;
+import android.content.Intent;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.ImageView;
 import android.widget.EditText;
@@ -67,7 +69,7 @@ public class ViewFactory
 				retval = make(R.layout.tag, context);
 				map.put("id",          R.id.tag_id);
 				map.put("name",        R.id.tag_name);
-				map.put("description", R.id.tag_desc);
+				map.put("parent",      R.id.tag_parent);
 
 				if (jsonObj.has("id")) {
 					provision(
@@ -165,6 +167,7 @@ public class ViewFactory
 				public void run()
 				{
 					setEditTexts(map, jsonObj, v);
+					addEditButton((LinearLayout)v);
 				}
 			});
 		}
@@ -276,6 +279,29 @@ public class ViewFactory
 				});
 			}
 			view.postInvalidate();
+		}
+		catch (Exception e) {
+			logger.error(""+e, e);
+		}
+	}
+
+	private static void addEditButton(final LinearLayout parent)
+	{
+		try {
+			final Activity activity = (Activity)parent.getContext();
+			LinearLayout layout = new LinearLayout(
+				parent.getContext());
+			Button button = new Button(layout.getContext());
+			button.setOnClickListener(new View.OnClickListener() {
+				public void onClick(View v)
+				{
+					Intent intent = new Intent(activity,
+						CrudActivity.class);
+					activity.startActivity(intent);
+				}
+			});
+			layout.addView(button);
+			parent.addView(layout);
 		}
 		catch (Exception e) {
 			logger.error(""+e, e);

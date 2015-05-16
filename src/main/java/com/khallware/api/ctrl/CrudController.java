@@ -75,8 +75,8 @@ public abstract class CrudController<T>
 			logger.trace(""+e, e);
 			logger.warn(""+e);
 		}
-		logger.info("({}) "+this.getClass().getSimpleName()+" POST",
-			creds.getUsername());
+		logger.info("(id={}) "+this.getClass().getSimpleName()+" POST",
+			creds.getId());
 		return(retval);
 	}
 
@@ -172,8 +172,8 @@ public abstract class CrudController<T>
 			logger.trace(""+e, e);
 			logger.warn(""+e);
 		}
-		logger.info("({}) GET "+this.getClass().getSimpleName()+" ({})",
-			creds.getUsername(), id);
+		logger.info("(id={}) GET "+this.getClass().getSimpleName()
+			+" ({})", creds.getId(), id);
 		return(retval);
 	}
 
@@ -220,8 +220,8 @@ public abstract class CrudController<T>
 			logger.trace(""+e, e);
 			logger.warn(""+e);
 		}
-		logger.info("({}) PUT "+this.getClass().getSimpleName()+" ({})",
-			creds.getUsername(), id);
+		logger.info("(id={}) PUT "+this.getClass().getSimpleName()
+			+" ({})", creds.getId(), id);
 		return(retval);
 	}
 
@@ -275,8 +275,8 @@ public abstract class CrudController<T>
 			logger.trace(""+e, e);
 			logger.warn(""+e);
 		}
-		logger.info("({}) DELETE "+this.getClass().getSimpleName()
-			+" ({})", creds.getUsername(), id);
+		logger.info("(id={}) DELETE "+this.getClass().getSimpleName()
+			+" ({})", creds.getId(), id);
 		return(retval);
 	}
 
@@ -296,10 +296,14 @@ public abstract class CrudController<T>
 			creds = dstore.getCredentials(
 				Util.getCredentials(request));
 			tag = (tag == null && tagId >= 0) ? new Tag() : tag;
-			retval = Response.status(200)
-				.entity(toJson(this.getClass(), (tag == null)
-					? dstore.get(clazz, pg, creds)
-					: dstore.get(clazz, tag, pg, creds)))
+			retval = Response
+				.status(200)
+				.entity(pg.returnCount()
+					? "{ \"count\" : "+pg.getCount()+" }"
+					: toJson(this.getClass(), (tag == null)
+						? dstore.get(clazz, pg, creds)
+						: dstore.get(clazz, tag, pg,
+							creds)))
 				.build();
 		}
 		catch (APIException|IOException|DatastoreException e) {
@@ -307,8 +311,8 @@ public abstract class CrudController<T>
 			logger.trace(""+e, e);
 			logger.warn(""+e);
 		}
-		logger.info("({}) GET "+this.getClass().getSimpleName(),
-			creds.getUsername());
+		logger.info("(id={}) GET "+this.getClass().getSimpleName(),
+			creds.getId());
 		return(retval);
 	}
 

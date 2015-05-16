@@ -57,9 +57,11 @@ public class DTags extends APICrudChain<Tag>
 		final Wrapper<List<Tag>> retval = new Wrapper<>();
 		Operator.<Tag>perform((dao) -> {
 			QueryBuilder<Tag, Integer> qb = dao.queryBuilder()
+				.setCountOf(pg.returnCount())
 				.offset(pg.calcCursorIndex())
 				.limit(pg.getPageSize());
 			filterOnMode(qb.where(), creds);
+			retval.count = pg.returnCount() ? qb.countOf() : -1;
 			retval.item = new ArrayList<Tag>();
 
 			if (pg.isSorted()) {
@@ -71,6 +73,7 @@ public class DTags extends APICrudChain<Tag>
 			}
 			retval.item.addAll(qb.query());
 		}, Tag.class);
+		pg.setCount(retval.count);
 		return(retval.item);
 	}
 

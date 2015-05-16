@@ -54,14 +54,17 @@ public class DComments extends APICrudChain<Comment>
 		final Wrapper<List<Comment>> retval = new Wrapper<>();
 		Operator.<Comment>perform((dao) -> {
 			QueryBuilder<Comment, Integer> qb = dao.queryBuilder()
+				.setCountOf(pg.returnCount())
 				.offset(pg.calcCursorIndex())
 				.limit(pg.getPageSize());
 			retval.item = new ArrayList<Comment>();
 			filterOnMode(qb.where(), creds);
+			retval.count = pg.returnCount() ? qb.countOf() : -1;
 			retval.item.addAll((pattern == null)
 				? qb.query()
 				: dao.queryForMatchingArgs(pattern));
 		}, Comment.class);
+		pg.setCount(retval.count);
 		return(retval.item);
 	}
 

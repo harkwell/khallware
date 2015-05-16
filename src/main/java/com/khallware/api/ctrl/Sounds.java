@@ -191,11 +191,12 @@ public class Sounds extends CrudController<Sound>
 	public Response handleManyGet(@Context HttpServletRequest request,
 			@QueryParam("page") @DefaultValue("0") int page,
 			@QueryParam("pageSize") @DefaultValue("-1") int pgSize,
+			@QueryParam("count") @DefaultValue("true") boolean cnt,
 			@QueryParam("sort") @DefaultValue("modified") String s,
 			@QueryParam("tagId") int tagId,
 			@QueryParam(value="tagName") String name)
 	{
-		Pagination pg = new Pagination(page, pgSize, false);
+		Pagination pg = new Pagination(page, pgSize, cnt);
 		pg.setSortBy(s);
 		return(handleGet(Sound.class, request, pg, tagId, name));
 	}

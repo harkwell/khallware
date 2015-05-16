@@ -35,6 +35,19 @@
             <scope>provided</scope>
         </dependency>
 
+        <!-- Multipart Mime Encoding -->
+        <!-- <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>${httpclient-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpmime</artifactId>
+            <version>${mme-version}</version>
+        </dependency>
+	-->
+
         <!-- SLF4J -->
         <dependency>
             <groupId>org.slf4j</groupId>

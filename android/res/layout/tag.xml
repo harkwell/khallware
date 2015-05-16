@@ -14,29 +14,12 @@
 		android:orientation="vertical"
 		xmlns:android="http://schemas.android.com/apk/res/android" >
 
-	<EditText
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:id="@+id/tag_name"
-			android:editable="false" />
-
-	<EditText
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:id="@+id/tag_desc"
-			android:editable="false" />
-
-	<EditText
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:id="@+id/tag_id"
-			android:editable="true" />
-
 	<LinearLayout
-			android:layout_width="fill_parent"
-			android:layout_height="fill_parent"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
 			android:orientation="horizontal"
 			xmlns:android="http://schemas.android.com/apk/res/android" >
+
 		<Button
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
@@ -56,7 +39,62 @@
 				android:onClick="goTag" />
 
 	</LinearLayout>
+	<LinearLayout
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:orientation="horizontal"
+			xmlns:android="http://schemas.android.com/apk/res/android" >
 
+		<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/lit_name" />
+
+		<EditText
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:id="@+id/tag_name"
+				android:editable="true" />
+
+	</LinearLayout>
+	<LinearLayout
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:orientation="horizontal"
+			xmlns:android="http://schemas.android.com/apk/res/android" >
+
+
+		<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/lit_id" />
+
+		<EditText
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:id="@+id/tag_id"
+				android:editable="true" />
+
+	</LinearLayout>
+	<LinearLayout
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:orientation="horizontal"
+			xmlns:android="http://schemas.android.com/apk/res/android" >
+
+		<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/lit_parent" />
+
+		<EditText
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:id="@+id/tag_parent"
+				android:editable="true" />
+
+
+	</LinearLayout>
 
 </LinearLayout>
 

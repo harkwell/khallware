@@ -99,6 +99,7 @@ public final class Datastore
 	 */
 	public static class Wrapper<T>
 	{
+		public long count = -1;
 		public T item;
 	}
 

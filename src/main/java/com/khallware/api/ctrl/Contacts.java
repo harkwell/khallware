@@ -188,12 +188,13 @@ public class Contacts extends CrudController<Contact>
 	public Response handleGet(@Context HttpServletRequest request,
 			@QueryParam("page") @DefaultValue("0") int page,
 			@QueryParam("pageSize") @DefaultValue("-1") int pgSize,
+			@QueryParam("count") @DefaultValue("true") boolean cnt,
 			@QueryParam("name") String name,
 			@QueryParam("tagId") int tagId,
 			@QueryParam("sort") @DefaultValue("name") String sort,
 			@QueryParam(value="user") String user)
 	{
-		Pagination pg = new Pagination(page, pgSize, false);
+		Pagination pg = new Pagination(page, pgSize, cnt);
 		pg.setSortBy(sort);
 		return(handleGet(Contact.class, request, pg, tagId, name));
 	}

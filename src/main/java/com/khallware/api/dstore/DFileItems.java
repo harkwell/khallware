@@ -56,14 +56,17 @@ public class DFileItems extends APICrudChain<FileItem>
 		final Wrapper<List<FileItem>> retval = new Wrapper<>();
 		Operator.<FileItem>perform((dao) -> {
 			QueryBuilder<FileItem, Integer> qb = dao.queryBuilder()
+				.setCountOf(pg.returnCount())
 				.offset(pg.calcCursorIndex())
 				.limit(pg.getPageSize());
 			retval.item = new ArrayList<FileItem>();
 			filterOnMode(qb.where(), creds);
+			retval.count = pg.returnCount() ? qb.countOf() : -1;
 			retval.item.addAll((pattern == null)
 				? qb.query()
 				: dao.queryForMatchingArgs(pattern));
 		}, FileItem.class);
+		pg.setCount(retval.count);
 		return(retval.item);
 	}
 
@@ -75,6 +78,7 @@ public class DFileItems extends APICrudChain<FileItem>
 		Operator.<FileItemTags>perform((dao) -> {
 			QueryBuilder<FileItemTags, Integer> qb =
 				dao.queryBuilder()
+					.setCountOf(pg.returnCount())
 					.offset(pg.calcCursorIndex())
 					.limit(pg.getPageSize());
 			qb.where().eq(FileItemTags.COL_TAG, tag);
@@ -82,6 +86,7 @@ public class DFileItems extends APICrudChain<FileItem>
 			for (FileItemTags ft : qb.query()) {
 				retval.add(ft.getFileItem());
 			}
+			pg.setCount(pg.returnCount() ? qb.countOf() : -1);
 		}, FileItemTags.class);
 		return(retval);
 	}

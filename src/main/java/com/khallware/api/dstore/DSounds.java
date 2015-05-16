@@ -56,14 +56,17 @@ public class DSounds extends APICrudChain<Sound>
 		final Wrapper<List<Sound>> retval = new Wrapper<>();
 		Operator.<Sound>perform((dao) -> {
 			QueryBuilder<Sound, Integer> qb = dao.queryBuilder()
+				.setCountOf(pg.returnCount())
 				.offset(pg.calcCursorIndex())
 				.limit(pg.getPageSize());
 			retval.item = new ArrayList<Sound>();
 			filterOnMode(qb.where(), creds);
+			retval.count = pg.returnCount() ? qb.countOf() : -1;
 			retval.item.addAll((pattern == null)
 				? qb.query()
 				: dao.queryForMatchingArgs(pattern));
 		}, Sound.class);
+		pg.setCount(retval.count);
 		return(retval.item);
 	}
 
@@ -74,6 +77,7 @@ public class DSounds extends APICrudChain<Sound>
 		final List<Sound> retval = new ArrayList<>();
 		Operator.<SoundTags>perform((dao) -> {
 			QueryBuilder<SoundTags, Integer> qb = dao.queryBuilder()
+				.setCountOf(pg.returnCount())
 				.offset(pg.calcCursorIndex())
 				.limit(pg.getPageSize());
 			qb.where().eq(SoundTags.COL_TAG, tag);
@@ -81,6 +85,7 @@ public class DSounds extends APICrudChain<Sound>
 			for (SoundTags st : qb.query()) {
 				retval.add(st.getSound());
 			}
+			pg.setCount(pg.returnCount() ? qb.countOf() : -1);
 		}, SoundTags.class);
 		return(retval);
 	}

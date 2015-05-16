@@ -56,14 +56,17 @@ public class DBlogs extends APICrudChain<Blog>
 		final Wrapper<List<Blog>> retval = new Wrapper<>();
 		Operator.<Blog>perform((dao) -> {
 			QueryBuilder<Blog, Integer> qb = dao.queryBuilder()
+				.setCountOf(pg.returnCount())
 				.offset(pg.calcCursorIndex())
 				.limit(pg.getPageSize());
 			retval.item = new ArrayList<Blog>();
 			filterOnMode(qb.where(), creds);
+			retval.count = pg.returnCount() ? qb.countOf() : -1;
 			retval.item.addAll((pattern == null)
 				? qb.query()
 				: dao.queryForMatchingArgs(pattern));
 		}, Blog.class);
+		pg.setCount(retval.count);
 		return(retval.item);
 	}
 
@@ -74,6 +77,7 @@ public class DBlogs extends APICrudChain<Blog>
 		final List<Blog> retval = new ArrayList<>();
 		Operator.<BlogTags>perform((dao) -> {
 			QueryBuilder<BlogTags, Integer> qb = dao.queryBuilder()
+				.setCountOf(pg.returnCount())
 				.offset(pg.calcCursorIndex())
 				.limit(pg.getPageSize());
 			qb.where().eq(BlogTags.COL_TAG, tag);
@@ -81,6 +85,7 @@ public class DBlogs extends APICrudChain<Blog>
 			for (BlogTags bt : qb.query()) {
 				retval.add(bt.getBlog());
 			}
+			pg.setCount(pg.returnCount() ? qb.countOf() : -1);
 		}, BlogTags.class);
 		return(retval);
 	}

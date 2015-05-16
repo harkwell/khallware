@@ -56,14 +56,17 @@ public class DLocations extends APICrudChain<Location>
 		final Wrapper<List<Location>> retval = new Wrapper<>();
 		Operator.<Location>perform((dao) -> {
 			QueryBuilder<Location, Integer> qb = dao.queryBuilder()
+				.setCountOf(pg.returnCount())
 				.offset(pg.calcCursorIndex())
 				.limit(pg.getPageSize());
 			retval.item = new ArrayList<Location>();
 			filterOnMode(qb.where(), creds);
+			retval.count = pg.returnCount() ? qb.countOf() : -1;
 			retval.item.addAll((pattern == null)
 				? qb.query()
 				: dao.queryForMatchingArgs(pattern));
 		}, Location.class);
+		pg.setCount(retval.count);
 		return(retval.item);
 	}
 
@@ -75,6 +78,7 @@ public class DLocations extends APICrudChain<Location>
 		Operator.<LocationTags>perform((dao) -> {
 			QueryBuilder<LocationTags, Integer> qb =
 				dao.queryBuilder()
+					.setCountOf(pg.returnCount())
 					.offset(pg.calcCursorIndex())
 					.limit(pg.getPageSize());
 			qb.where().eq(LocationTags.COL_TAG, tag);
@@ -82,6 +86,7 @@ public class DLocations extends APICrudChain<Location>
 			for (LocationTags lt : qb.query()) {
 				retval.add(lt.getLocation());
 			}
+			pg.setCount(pg.returnCount() ? qb.countOf() : -1);
 		}, LocationTags.class);
 		return(retval);
 	}

@@ -19,6 +19,13 @@
                  <category android:name="android.intent.category.LAUNCHER" />
              </intent-filter>
          </activity>
+         <activity android:name=".CrudActivity"
+	 		android:screenOrientation="portrait">
+             <intent-filter>
+                 <action android:name="android.intent.action.MAIN" />
+                     <category android:name="com.example.android.supportv4.SUPPORT4_SAMPLE_CODE" />
+             </intent-filter>
+         </activity>
          <activity android:name=".TagsActivity"
 	 		android:screenOrientation="portrait">
              <intent-filter>

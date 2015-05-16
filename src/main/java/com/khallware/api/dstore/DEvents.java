@@ -56,14 +56,17 @@ public class DEvents extends APICrudChain<Event>
 		final Wrapper<List<Event>> retval = new Wrapper<>();
 		Operator.<Event>perform((dao) -> {
 			QueryBuilder<Event, Integer> qb = dao.queryBuilder()
+				.setCountOf(pg.returnCount())
 				.offset(pg.calcCursorIndex())
 				.limit(pg.getPageSize());
 			retval.item = new ArrayList<Event>();
 			filterOnMode(qb.where(), creds);
+			retval.count = pg.returnCount() ? qb.countOf() : -1;
 			retval.item.addAll((pattern == null)
 				? qb.query()
 				: dao.queryForMatchingArgs(pattern));
 		}, Event.class);
+		pg.setCount(retval.count);
 		return(retval.item);
 	}
 
@@ -74,6 +77,7 @@ public class DEvents extends APICrudChain<Event>
 		final List<Event> retval = new ArrayList<>();
 		Operator.<EventTags>perform((dao) -> {
 			QueryBuilder<EventTags, Integer> qb = dao.queryBuilder()
+				.setCountOf(pg.returnCount())
 				.offset(pg.calcCursorIndex())
 				.limit(pg.getPageSize());
 			qb.where().eq(EventTags.COL_TAG, tag);
@@ -81,6 +85,7 @@ public class DEvents extends APICrudChain<Event>
 			for (EventTags et : qb.query()) {
 				retval.add(et.getEvent());
 			}
+			pg.setCount(pg.returnCount() ? qb.countOf() : -1);
 		}, EventTags.class);
 		return(retval);
 	}

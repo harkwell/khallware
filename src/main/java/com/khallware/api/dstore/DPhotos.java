@@ -56,14 +56,17 @@ public class DPhotos extends APICrudChain<Photo>
 		final Wrapper<List<Photo>> retval = new Wrapper<>();
 		Operator.<Photo>perform((dao) -> {
 			QueryBuilder<Photo, Integer> qb = dao.queryBuilder()
+				.setCountOf(pg.returnCount())
 				.offset(pg.calcCursorIndex())
 				.limit(pg.getPageSize());
 			retval.item = new ArrayList<Photo>();
 			filterOnMode(qb.where(), creds);
+			retval.count = pg.returnCount() ? qb.countOf() : -1;
 			retval.item.addAll((pattern == null)
 				? qb.query()
 				: dao.queryForMatchingArgs(pattern));
 		}, Photo.class);
+		pg.setCount(retval.count);
 		return(retval.item);
 	}
 
@@ -74,6 +77,7 @@ public class DPhotos extends APICrudChain<Photo>
 		final List<Photo> retval = new ArrayList<>();
 		Operator.<PhotoTags>perform((dao) -> {
 			QueryBuilder<PhotoTags, Integer> qb = dao.queryBuilder()
+				.setCountOf(pg.returnCount())
 				.offset(pg.calcCursorIndex())
 				.limit(pg.getPageSize());
 			qb.where().eq(PhotoTags.COL_TAG, tag);
@@ -81,6 +85,7 @@ public class DPhotos extends APICrudChain<Photo>
 			for (PhotoTags pt : qb.query()) {
 				retval.add(pt.getPhoto());
 			}
+			pg.setCount(pg.returnCount() ? qb.countOf() : -1);
 		}, PhotoTags.class);
 		return(retval);
 	}

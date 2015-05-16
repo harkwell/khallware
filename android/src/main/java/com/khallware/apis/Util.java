@@ -32,9 +32,9 @@ import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.entity.BasicHttpEntity;
 import org.apache.http.entity.BufferedHttpEntity;
+import org.apache.http.entity.BasicHttpEntity;
+import org.apache.http.params.BasicHttpParams;
 import org.apache.http.HttpResponse;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -46,6 +46,13 @@ public class Util
 	private static final Logger logger = LoggerFactory.getLogger(
 		Util.class);
 
+	public static final Map<EntityType, String> mimeMap = new HashMap<>();
+
+	static {
+		mimeMap.put(EntityType.photo, "image/jpeg");
+	}
+
+	// KDH: is this right?
 	public static JSONObject queryREST(HttpRequestBase request,
 			String[] headers) throws NetworkException
 	{
@@ -218,6 +225,34 @@ public class Util
 		retval.setEntity(entity);
 		return(retval);
 	}
+
+	/*
+	public static JSONObject handlePost(EntityType type, int tagId,
+			File file) throws NetworkException, DatastoreException
+	{
+		String[] uup = Datastore.getDatastore().getUrlUserPasswd();
+		String url = uup[0]+"/apis/v1/upload?tagId="+tagId;
+		// HttpClient client = new DefaultHttpClient(
+		DefaultHttpClient client = new DefaultHttpClient(
+			new BasicHttpParams());
+		// client.getParams().setParameter(
+		//	CoreProtocolPNames.PROTOCOL_VERSION,
+		//	HttpVersion.HTTP_1_1);
+		HttpPost request = new HttpPost(url);
+		MultipartEntity entity = new MultipartEntity();
+		// ContentBody contentBody = new FileBody(file);
+		ContentBody contentBody = new FileBody(file, mimeMap.get(type));
+		try {
+			entity.addPart("filecomment", new StringBody(""+type));
+			entity.addPart("image", contentBody);
+		}
+		catch (Exception e) {
+			throw new NetworkException(e);
+		}
+		request.setEntity(entity);
+		return(queryREST(request, defaultHeadersAsMap()));
+	}
+	*/
 
 	public static JSONObject handlePost(String uri, JSONObject body,
 			String[] headers) throws NetworkException

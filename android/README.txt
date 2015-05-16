@@ -6,9 +6,18 @@ cd android && mvn package && ls -ld target/Khallware.apk
 ### ANDROID STUDIO ###
 ######################
 # git checkout
+L='com/google/android/support-v4/r6/support-v4-r6.jar
+   org/slf4j/slf4j-android/1.6.1-RC1/slf4j-android-1.6.1-RC1.jar
+   org/apache/httpcomponents/httpclient/4.3.5/httpclient-4.3.5.jar
+   org/apache/httpcomponents/httpmime/4.0-alpha3/httpmime-4.0-alpha3.jar
+   org/apache/james/apache-mime4j/0.3/apache-mime4j-0.3.jar'
+L='com/google/android/support-v4/r6/support-v4-r6.jar
+   org/slf4j/slf4j-android/1.6.1-RC1/slf4j-android-1.6.1-RC1.jar'
 mkdir android/libs
-cp ~/.m2/repository/com/google/android/support-v4/r6/support-v4-r6.jar android/libs
-cp ~/.m2/repository/org/slf4j/slf4j-android/1.6.1-RC1/slf4j-android-1.6.1-RC1.jar android/libs
+
+for f in $L; do
+    cp ~/.m2/repository/$f android/libs
+done
 bash ~/3rdParty/android-studio/bin/studio.sh
 
 Import the project:

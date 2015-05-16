@@ -114,10 +114,11 @@ public class Bookmarks extends CrudController<Bookmark>
 			@QueryParam("tagId") int tagId,
 			@QueryParam("sort") @DefaultValue("modified") String s,
 			@QueryParam("pageSize") @DefaultValue("25") int pgSize,
+			@QueryParam("count") @DefaultValue("true") boolean cnt,
 			@QueryParam("page") @DefaultValue("0") int page,
 			@QueryParam(value="tagName") String name)
 	{
-		Pagination pg = new Pagination(page, pgSize, false);
+		Pagination pg = new Pagination(page, pgSize, cnt);
 		pg.setSortBy(s);
 		return(handleGet(Bookmark.class, request, pg, tagId, name));
 	}

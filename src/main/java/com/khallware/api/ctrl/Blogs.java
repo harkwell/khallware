@@ -92,10 +92,11 @@ public class Blogs extends CrudController<Blog>
 			@QueryParam("page") @DefaultValue("0") int page,
 			@QueryParam("pageSize") @DefaultValue("-1") int pgSize,
 			@QueryParam("sort") @DefaultValue("created") String val,
+			@QueryParam("count") @DefaultValue("true") boolean cnt,
 			@QueryParam("tagId") int tagId,
 			@QueryParam(value="tagName") String name)
 	{
-		Pagination pg = new Pagination(page, pgSize, false);
+		Pagination pg = new Pagination(page, pgSize, cnt);
 		pg.setSortBy(val);
 		return(handleGet(Blog.class, request, pg, tagId, name));
 	}

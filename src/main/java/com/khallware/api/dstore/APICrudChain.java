@@ -2,12 +2,15 @@
 
 package com.khallware.api.dstore;
 
+import com.khallware.api.Datastore;
+import com.khallware.api.DatastoreException;
 import com.khallware.api.domain.Credentials;
 import com.khallware.api.domain.APIEntity;
 import com.khallware.api.domain.Entity;
 import com.khallware.api.domain.Group;
 import com.j256.ormlite.stmt.Where;
 import java.sql.SQLException;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,19 +36,33 @@ public abstract class APICrudChain<T extends Entity> extends CrudChain<T>
 	}
 
 	protected static Where filterOnModeUnwrapped(Where retval,
-			Credentials creds) throws SQLException
+			Credentials creds) throws SQLException,
+			DatastoreException
 	{
-		Group group = creds.getGroup();
+		List<Group> list = Datastore.DS().getGroups(creds);
 		String maskColumn = APIEntity.COL_MASK;
-		group = (group != null) ? group : new Group();
-		retval.or(
-			retval.and(
-				retval.eq(APIEntity.COL_USER, creds.getId()),
-				retval.ge(maskColumn, new Integer(400))),
-			retval.and(
-				retval.eq(APIEntity.COL_GROUP, group.getId()),
-				retval.raw("("+maskColumn+" % 100) >= 40")),
-			retval.raw("("+maskColumn+" % 10) >= 4"));
+
+		for (Group group : list) {
+			if (group.getId() == Group.ROOT) {
+				list.clear();
+			}
+		}
+		for (Group group : list) {
+			retval.or(
+				retval.and(
+					retval.eq(APIEntity.COL_GROUP,
+						group.getId()),
+					retval.raw("("+maskColumn+" % 100)"
+						+" >= 40")
+				),
+				retval.and(
+					retval.eq(APIEntity.COL_USER,
+						creds.getId()),
+					retval.ge(maskColumn, new Integer(400))
+				),
+				retval.raw("("+maskColumn+" % 10) >= 4")
+			);
+		}
 		return(retval);
 	}
 }

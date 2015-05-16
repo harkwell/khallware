@@ -121,6 +121,7 @@ public class Comments extends CrudController<Comment>
 	public Response handleGet(@Context HttpServletRequest request,
 			@QueryParam("page") @DefaultValue("0") int page,
 			@QueryParam("pageSize") @DefaultValue("-1") int pgSize,
+			@QueryParam("count") @DefaultValue("true") boolean cnt,
 			@QueryParam("sort") @DefaultValue("modified") String st,
 			@PathParam("blogId") @DefaultValue("-1") int blogId)
 	{
@@ -130,7 +131,7 @@ public class Comments extends CrudController<Comment>
 			String s = Comments.class.getSimpleName().toLowerCase();
 			String json = null;
 			Blog blog = Datastore.DS().getBlog(blogId);
-			Pagination pgInfo = new Pagination(page, pgSize, false);
+			Pagination pgInfo = new Pagination(page, pgSize, cnt);
 			pgInfo.setSortBy(st);
 
 			if (blog == null) {
