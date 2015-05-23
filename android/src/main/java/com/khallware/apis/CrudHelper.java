@@ -86,6 +86,7 @@ public class CrudHelper
 		JSONObject rslt = null;
 		url += (type == EntityType.tag) ? "&parentId=" : "&tagId=";
 		url += ""+tag;
+		url += "&pageSize=1024";
 		try {
 			if ((rslt = Util.handleGet(url)) != null
 					&& rslt.has("count")) {

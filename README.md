@@ -46,6 +46,11 @@ cd /tmp/ && wget -c 'https://jvorbiscomment.googlecode.com/files/jvorbiscomment-
 unzip -j ~/tmp/jvorbiscomment-1.0.3.zip jvorbiscomment-1.0.3/jvorbiscomment-1.0.3.jar
 mvn install:install-file -Dfile=/tmp/jvorbiscomment-1.0.3.jar -DgroupId=adamb.vorbis -DartifactId=jvorbis -Dversion=1.0.3 -Dpackaging=jar
 ```
+- replace Google Maps API key with your own
+```shell
+chromium-browser https://code.google.com/apis/console
+vi android/AndroidManifest.xml android/res/layout/map.xml
+```
 
 * use maven
 mvn package

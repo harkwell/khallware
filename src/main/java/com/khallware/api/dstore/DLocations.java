@@ -83,8 +83,10 @@ public class DLocations extends APICrudChain<Location>
 					.limit(pg.getPageSize());
 			qb.where().eq(LocationTags.COL_TAG, tag);
 
-			for (LocationTags lt : qb.query()) {
-				retval.add(lt.getLocation());
+			if (!pg.returnCount()) {
+				for (LocationTags lt : qb.query()) {
+					retval.add(lt.getLocation());
+				}
 			}
 			pg.setCount(pg.returnCount() ? qb.countOf() : -1);
 		}, LocationTags.class);

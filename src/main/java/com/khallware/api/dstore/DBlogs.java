@@ -82,8 +82,10 @@ public class DBlogs extends APICrudChain<Blog>
 				.limit(pg.getPageSize());
 			qb.where().eq(BlogTags.COL_TAG, tag);
 
-			for (BlogTags bt : qb.query()) {
-				retval.add(bt.getBlog());
+			if (!pg.returnCount()) {
+				for (BlogTags bt : qb.query()) {
+					retval.add(bt.getBlog());
+				}
 			}
 			pg.setCount(pg.returnCount() ? qb.countOf() : -1);
 		}, BlogTags.class);

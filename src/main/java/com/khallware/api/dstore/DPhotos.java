@@ -82,8 +82,10 @@ public class DPhotos extends APICrudChain<Photo>
 				.limit(pg.getPageSize());
 			qb.where().eq(PhotoTags.COL_TAG, tag);
 
-			for (PhotoTags pt : qb.query()) {
-				retval.add(pt.getPhoto());
+			if (!pg.returnCount()) {
+				for (PhotoTags pt : qb.query()) {
+					retval.add(pt.getPhoto());
+				}
 			}
 			pg.setCount(pg.returnCount() ? qb.countOf() : -1);
 		}, PhotoTags.class);

@@ -77,6 +77,16 @@ public class Datastore extends SQLiteOpenHelper
 
 		sql = "INSERT INTO current_tag VALUES (1)";
 		db.execSQL(sql);
+
+		sql = "CREATE TABLE favorites ("
+			+          "tag int NOT NULL, "
+			+          "name VARCHAR(255) NOT NULL"
+			+")";
+		logger.debug("sql: " +sql);
+		db.execSQL(sql);
+
+		sql = "INSERT INTO favorites (tag, name) VALUES (1, 'Top')";
+		db.execSQL(sql);
 	}
 
 	@Override
@@ -134,6 +144,49 @@ public class Datastore extends SQLiteOpenHelper
 		catch (Exception e) {
 			throw new DatastoreException(e);
 		}
+	}
+
+	public boolean isFavorite(int tag) throws DatastoreException
+	{
+		try {
+			return(isFavoriteUnwrapped(tag));
+		}
+		catch (Exception e) {
+			throw new DatastoreException(e);
+		}
+	}
+
+	public void addFavorite(int tag, String name) throws DatastoreException
+	{
+		try {
+			addFavoriteUnwrapped(tag, name);
+		}
+		catch (Exception e) {
+			throw new DatastoreException(e);
+		}
+	}
+
+	public void removeFavorite(int tag) throws DatastoreException
+	{
+		try {
+			removeFavoriteUnwrapped(tag);
+		}
+		catch (Exception e) {
+			throw new DatastoreException(e);
+		}
+	}
+
+	public Cursor getFavoritesCursor() throws DatastoreException
+	{
+		Cursor retval = null;
+		String sql = "SELECT tag AS _id, tag, name FROM favorites";
+		try {
+			retval = handle().rawQuery(sql, new String[] {});
+		}
+		catch (Exception e) {
+			throw new DatastoreException(e);
+		}
+		return(retval);
 	}
 
 	private SQLiteDatabase handle()
@@ -208,6 +261,40 @@ public class Datastore extends SQLiteOpenHelper
 
 		sql =    "INSERT INTO current_tag (tag) "
 			+"VALUES ('"+tag+"')";
+		handle().execSQL(sql);
+	}
+
+	private boolean isFavoriteUnwrapped(int tag) throws SQLiteException
+	{
+		boolean retval = false;
+		Cursor cursor = null;
+		String sql = "SELECT tag "
+			+      "FROM favorites "
+			+     "WHERE tag = "+tag;
+		logger.debug("sql: " +sql);
+		cursor = handle().rawQuery(sql, new String[] {});
+
+		if (cursor.moveToNext()) {
+			retval = true;
+		}
+		cursor.close();
+		return(retval);
+	}
+
+	private void addFavoriteUnwrapped(int tag, String name)
+			throws SQLiteException
+	{
+		String sql = "INSERT INTO favorites (tag, name) "
+			+         "VALUES ('"+tag+"','"+name+"')";
+		removeFavoriteUnwrapped(tag);
+		logger.debug("sql: " +sql);
+		handle().execSQL(sql);
+	}
+
+	private void removeFavoriteUnwrapped(int tag) throws SQLiteException
+	{
+		String sql = "DELETE FROM favorites WHERE tag = "+tag;
+		logger.debug("sql: " +sql);
 		handle().execSQL(sql);
 	}
 }

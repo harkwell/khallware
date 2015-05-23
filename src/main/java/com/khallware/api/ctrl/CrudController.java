@@ -296,6 +296,15 @@ public abstract class CrudController<T>
 			creds = dstore.getCredentials(
 				Util.getCredentials(request));
 			tag = (tag == null && tagId >= 0) ? new Tag() : tag;
+
+			if (pg.returnCount()) {
+				if (tag == null) {
+					dstore.get(clazz, pg, creds);
+				}
+				else {
+					dstore.get(clazz, tag, pg, creds);
+				}
+			}
 			retval = Response
 				.status(200)
 				.entity(pg.returnCount()

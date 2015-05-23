@@ -83,8 +83,10 @@ public class DBookmarks extends APICrudChain<Bookmark>
 					.limit(pg.getPageSize());
 			qb.where().eq(BookmarkTags.COL_TAG, tag);
 
-			for (BookmarkTags bt : qb.query()) {
-				retval.add(bt.getBookmark());
+			if (!pg.returnCount()) {
+				for (BookmarkTags bt : qb.query()) {
+					retval.add(bt.getBookmark());
+				}
 			}
 			pg.setCount(pg.returnCount() ? qb.countOf() : -1);
 		}, BookmarkTags.class);

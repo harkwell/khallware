@@ -3,9 +3,13 @@
 package com.khallware.apis;
 
 import com.khallware.apis.enums.EntityType;
-import android.provider.MediaStore.Images;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView;
 import android.widget.TextView;
 import android.widget.Button;
+import android.widget.ListView;
+import android.widget.ToggleButton;
+import android.widget.LinearLayout;
 import android.widget.EditText;
 import android.content.Context;
 import android.content.Intent;
@@ -15,6 +19,7 @@ import android.app.Dialog;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
+import android.provider.MediaStore.Images;
 import android.view.InflateException;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
@@ -24,6 +29,7 @@ import android.view.Menu;
 import android.view.View;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.json.JSONException;
 import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
@@ -35,8 +41,10 @@ public class Khallware extends Activity
 		Khallware.class);
 	public static final String ARG_TAG = "tag";
 	public static final int ACTIVITY_SELECT_IMAGE = 1;
+	public static final int ACTIVITY_SELECT_GEOCODE = 2;
 	private Dialog aboutDialog = null;
 	private Datastore dstore = null;
+	private int tagId = -1;
 
 	@Override
 	public void onCreate(Bundle bundle)
@@ -46,8 +54,11 @@ public class Khallware extends Activity
 		super.onCreate(bundle);
 		setContentView(R.layout.main);
 		try {
-			final int id = dstore.getTag();
+			final int id = (tagId = dstore.getTag());
 			((EditText)findViewById(R.id.atag_id)).setText(""+id);
+			((ToggleButton)findViewById(
+				R.id.favorite_button)).setChecked(
+					dstore.isFavorite(tagId));
 			AsyncTask.execute(new Runnable() {
 				public void run()
 				{
@@ -95,15 +106,84 @@ public class Khallware extends Activity
 		return(true);
 	}
 
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item)
+	{
+		boolean retval = false;
+		Context context = getApplicationContext();
+		try {
+			switch (item.getItemId()) {
+			case R.id.about:
+				showAbout(context);
+				retval = true;
+				break;
+			case R.id.favorites:
+				showFavorites(context);
+				retval = true;
+				break;
+			case R.id.connect:
+				goConnect(null);
+				retval = true;
+				break;
+			default:
+				retval = super.onOptionsItemSelected(item);
+				break;
+			}
+		}
+		catch (Exception e) {
+			Util.toastException(e, getApplicationContext());
+		}
+		return(retval);
+	}
+
+	/** THE FOLLOWING ARE CALLED VIA LAYOUT XML onClick() **/
+
+	public void toggleFavorite(View view)
+	{
+		logger.trace("toggleFavorite()...");
+		try {
+			if (dstore.isFavorite(tagId)) {
+				dstore.removeFavorite(tagId);
+			}
+			else {
+				final int id = tagId;
+				AsyncTask.execute(new Runnable() {
+					public void run()
+					{
+						try {
+							dstore.addFavorite(
+								id,
+								getTagName(id));
+						}
+						catch (Exception e) {
+							logger.error(""+e,e);
+						}
+					}
+				});
+			}
+		}
+		catch (Exception e) {
+			Util.toastException(e, getApplicationContext());
+		}
+	}
+
+	protected String getTagName(int tagId) throws DatastoreException,
+			NetworkException, JSONException
+	{
+		String retval = "unknown tag name";
+		JSONObject jsonObj = CrudHelper.read(EntityType.tag, tagId);
+
+		if (jsonObj != null && jsonObj.has("name")) {
+			retval = jsonObj.getString("name");
+		}
+		return(retval);
+	}
+
 	public void addTag(View view)
 	{
-		logger.trace("addTag()...");
 		try {
-			Map<String, String> map = new HashMap<>();
-			map.put(ARG_TAG, ""+dstore.getTag());
-			map.put(CrudActivity.ARG_JSON, "{}");
-			map.put(CrudActivity.ARG_TYPE, ""+EntityType.tag);
-			launchIntent(CrudActivity.class, map);
+			logger.trace("addTag()...");
+			addEntity(tagId, EntityType.tag);
 		}
 		catch (Exception e) {
 			Util.toastException(e, getApplicationContext());
@@ -114,6 +194,17 @@ public class Khallware extends Activity
 	{
 		logger.trace("goTags()...");
 		launchIntent(TagsActivity.class);
+	}
+
+	public void addContact(View view)
+	{
+		try {
+			logger.trace("addContact()...");
+			addEntity(tagId, EntityType.contact);
+		}
+		catch (Exception e) {
+			Util.toastException(e, getApplicationContext());
+		}
 	}
 
 	public void goContacts(View view)
@@ -130,14 +221,41 @@ public class Khallware extends Activity
 			public void run()
 			{
 				try {
-					Util.postContacts(context,
-						dstore.getTag());
+					Util.postContacts(context, tagId);
 				}
 				catch (Exception e) {
 					logger.error(""+e,e);
 				}
 			}
 		});
+	}
+
+	public void replaceContacts(View view)
+	{
+		final Context context = getApplicationContext();
+		logger.trace("replaceContacts()...");
+		AsyncTask.execute(new Runnable() {
+			public void run()
+			{
+				try {
+					Util.replaceContacts(context, tagId);
+				}
+				catch (Exception e) {
+					logger.error(""+e,e);
+				}
+			}
+		});
+	}
+
+	public void addBookmark(View view)
+	{
+		try {
+			logger.trace("addBookmark()...");
+			addEntity(tagId, EntityType.bookmark);
+		}
+		catch (Exception e) {
+			Util.toastException(e, getApplicationContext());
+		}
 	}
 
 	public void goBookmarks(View view)
@@ -152,16 +270,73 @@ public class Khallware extends Activity
 		launchIntent(BlogsActivity.class);
 	}
 
+	public void addEvent(View view)
+	{
+		try {
+			logger.trace("addEvent()...");
+			addEntity(tagId, EntityType.event);
+		}
+		catch (Exception e) {
+			Util.toastException(e, getApplicationContext());
+		}
+	}
+
+	public void postEvents(View view)
+	{
+		final Context context = getApplicationContext();
+		logger.trace("postEvents()...");
+		AsyncTask.execute(new Runnable() {
+			public void run()
+			{
+				try {
+					Util.postEvents(context, tagId);
+				}
+				catch (Exception e) {
+					logger.error(""+e,e);
+				}
+			}
+		});
+	}
+
 	public void goEvents(View view)
 	{
 		logger.trace("goEvents()...");
 		launchIntent(EventsActivity.class);
 	}
 
+	public void replaceEvents(View view)
+	{
+		final Context context = getApplicationContext();
+		logger.trace("replaceEvents()...");
+		AsyncTask.execute(new Runnable() {
+			public void run()
+			{
+				try {
+					Util.replaceEvents(context, tagId);
+				}
+				catch (Exception e) {
+					logger.error(""+e,e);
+				}
+			}
+		});
+	}
+
 	public void goFileitems(View view)
 	{
 		logger.trace("goFileitems()...");
 		launchIntent(FileitemsActivity.class);
+	}
+
+	public void addLocation(View view)
+	{
+		logger.trace("addLocation()...");
+		try {
+			Intent intent = new Intent(this, KMapActivity.class);
+			startActivityForResult(intent, ACTIVITY_SELECT_GEOCODE);
+		}
+		catch (Exception e) {
+			Util.toastException(e, getApplicationContext());
+		}
 	}
 
 	public void goLocations(View view)
@@ -219,11 +394,78 @@ public class Khallware extends Activity
 		}
 	}
 
+	protected void showAbout(Context ctxt)
+	{
+		if (aboutDialog == null) {
+			aboutDialog = new Builder(Khallware.this)
+				.setTitle(R.string.lit_about)
+				.setView(ViewFactory.make(R.layout.about, ctxt))
+				.create();
+		}
+		aboutDialog.show();
+	}
+
+	protected void showFavorites(Context context) throws DatastoreException
+	{
+		LinearLayout layout = (LinearLayout)ViewFactory.make(
+			R.layout.favorites, context);
+		final Dialog dialog = new Builder(Khallware.this)
+			.setTitle(R.string.lit_favorites)
+			.setView(layout)
+			.create();
+		ListView listView = (ListView)
+			layout.findViewById(R.id.favorites_listview);
+		listView.setOnItemClickListener(new OnItemClickListener() {
+			public void onItemClick(AdapterView<?> parent,
+					View view, int position, long id)
+			{
+				int viewId = R.id.favorite_id;
+				dialog.dismiss();
+				launchIntent(
+					Khallware.class, 
+					Integer.parseInt(""+((TextView)
+						view.findViewById(viewId)
+						).getText()));
+			}
+		});
+		listView.setAdapter(new KResourceCursorAdapter(
+		        this, R.layout.favorites_listview_row,
+			dstore.getFavoritesCursor(), 0));
+		dialog.show();
+	}
+
 	protected void onActivityResult(int request, int result, Intent intent)
 	{
 		super.onActivityResult(request, result, intent);
 
+		if (result != Activity.RESULT_OK) {
+			Util.toastException(
+				new RuntimeException("sub activity failure"),
+				getApplicationContext());
+			return;
+		}
 		switch(request) {
+		case ACTIVITY_SELECT_GEOCODE:
+			Bundle bundle = intent.getExtras();
+			double latitude = (bundle != null)
+				? Double.parseDouble(""+bundle.get(
+					KMapActivity.ARG_LATITUDE))
+				: 0d;
+			double longitude = (bundle != null)
+				? Double.parseDouble(""+bundle.get(
+					KMapActivity.ARG_LONGITUDE))
+				: 0d;
+			String json = new StringBuilder()
+				.append("{\"latitude\":"+latitude)
+				.append(",\"longitude\":"+longitude)
+				.append(",\"name\":\"\"}")
+				.toString();
+			Map<String, String> map = new HashMap<>();
+			map.put(ARG_TAG, ""+tagId);
+			map.put(CrudActivity.ARG_JSON, json);
+			map.put(CrudActivity.ARG_TYPE, ""+EntityType.location);
+			launchIntent(CrudActivity.class, map);
+			break;
 		case ACTIVITY_SELECT_IMAGE:
 			/*
 			String[] cols = { Images.Media.DATA };
@@ -253,9 +495,14 @@ public class Khallware extends Activity
 
 	protected void launchIntent(Class clazz)
 	{
+		launchIntent(clazz, tagId);
+	}
+
+	protected void launchIntent(Class clazz, int tagId)
+	{
 		Map<String, String> map = new HashMap<>();
 		try {
-			map.put(ARG_TAG, ""+dstore.getTag());
+			map.put(ARG_TAG, ""+tagId);
 			launchIntent(clazz, map);
 		}
 		catch (Exception e) {
@@ -272,6 +519,27 @@ public class Khallware extends Activity
 				intent.putExtra(key, map.get(key));
 			}
 			startActivity(intent);
+		}
+		catch (Exception e) {
+			Util.toastException(e, getApplicationContext());
+		}
+	}
+
+	protected void addEntity(int tagId, EntityType type)
+	{
+		try {
+			String json = "{}";
+			Map<String, String> map = new HashMap<>();
+
+			switch (type) {
+			case tag:
+				json = "{\"parent\":"+tagId+"}";
+				break;
+			}
+			map.put(ARG_TAG, ""+tagId);
+			map.put(CrudActivity.ARG_JSON, json);
+			map.put(CrudActivity.ARG_TYPE, ""+type);
+			launchIntent(CrudActivity.class, map);
 		}
 		catch (Exception e) {
 			Util.toastException(e, getApplicationContext());

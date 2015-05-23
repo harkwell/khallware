@@ -23,8 +23,12 @@ import android.util.Base64;
 import android.widget.Toast;
 import android.content.Context;
 import android.database.Cursor;
+import android.accounts.AccountManager;
+import android.provider.CalendarContract;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.CommonDataKinds;
+import android.content.ContentProviderOperation;
+import android.content.ContentValues;
 import android.media.MediaPlayer;
 // httpclient is built into Android
 import org.apache.http.client.methods.HttpGet;
@@ -40,6 +44,7 @@ import org.apache.http.params.BasicHttpParams;
 import org.apache.http.HttpResponse;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.json.JSONArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,10 +54,21 @@ public class Util
 		Util.class);
 
 	public static final Map<EntityType, String> mimeMap = new HashMap<>();
+	public static Map<String, String> map = new HashMap<>();
 
 	static {
 		mimeMap.put(EntityType.photo, "image/jpeg");
-	}
+	};
+	static {
+		map.put("uid", ContactsContract.Contacts._ID);
+		map.put("name", ContactsContract.Contacts.DISPLAY_NAME_PRIMARY);
+		map.put("phone", CommonDataKinds.Phone.NUMBER);
+		map.put("email", CommonDataKinds.Email.ADDRESS );
+		map.put("org", CommonDataKinds.Organization.COMPANY );
+		map.put("title", CommonDataKinds.Organization.TITLE );
+		map.put("address",
+			CommonDataKinds.StructuredPostal.FORMATTED_ADDRESS );
+	};
 
 	// KDH: is this right?
 	public static JSONObject queryREST(HttpRequestBase request,
@@ -93,6 +109,10 @@ public class Util
 		return(retval);
 	}
 
+	/**
+	 * Return the JSONObject representation of a tag from the web service
+	 * or null if not found.  Throw a NetworkException if appropriate.
+	 */
 	public static JSONObject queryREST(HttpRequestBase request,
 			Map<String, String> headers) throws NetworkException
 	{
@@ -358,19 +378,6 @@ public class Util
 		}
 	}
 
-	public static Map<String, String> map = new HashMap<>();
-
-	static {
-		map.put("uid", ContactsContract.Contacts._ID);
-		map.put("name", ContactsContract.Contacts.DISPLAY_NAME_PRIMARY);
-		map.put("phone", CommonDataKinds.Phone.NUMBER);
-		map.put("email", CommonDataKinds.Email.ADDRESS );
-		map.put("org", CommonDataKinds.Organization.COMPANY );
-		map.put("title", CommonDataKinds.Organization.TITLE );
-		map.put("address",
-			CommonDataKinds.StructuredPostal.FORMATTED_ADDRESS );
-	};
-
 	public static JSONObject merge(Context ctxt, JSONObject retval, Uri uri,
 			String id) throws JSONException
 	{
@@ -427,6 +434,224 @@ public class Util
 			}
 		}
 		cursor.close();
+
+		if (errors.size() > 0) {
+			throw new NetworkException(""+errors);
+		}
+	}
+
+	/**
+	 * KDH: This method is too simple...
+	 * developer.android.com/guide/topics/providers/contacts-provider.html
+	 */
+	public static void truncateContacts(Context ctxt)
+			throws NetworkException
+	{
+		List<String> errors = new ArrayList<>();
+		Cursor cursor = ctxt.getContentResolver().query(
+			ContactsContract.Contacts.CONTENT_URI, null, null,
+				null, null);
+		String ckey = ContactsContract.Contacts.LOOKUP_KEY;
+		Uri curi = ContactsContract.Contacts.CONTENT_LOOKUP_URI;
+
+		while (cursor.moveToNext()) {
+			try {
+				int idx = cursor.getColumnIndex(ckey);
+				String key = cursor.getString(idx);
+				Uri uri = Uri.withAppendedPath(curi, key);
+				logger.info("removing contact: ({})", key);
+				ctxt.getContentResolver().delete(uri,null,null);
+			}
+			catch (Exception e) {
+				errors.add(""+e);
+			}
+		}
+		cursor.close();
+
+		if (errors.size() > 0) {
+			throw new NetworkException(""+errors);
+		}
+	}
+
+	public static List<ContentProviderOperation> prepAddContactViaBatch(
+			int idx, JSONObject jsonObj) throws JSONException,
+			DatastoreException, NetworkException
+	{
+		List<ContentProviderOperation> retval = new ArrayList<>();
+		ContentProviderOperation.Builder builder = null;
+		String mime = null;
+
+		// The account record
+		builder = ContentProviderOperation.newInsert(
+				ContactsContract.RawContacts.CONTENT_URI);
+		builder.withValue(ContactsContract.RawContacts.ACCOUNT_TYPE,
+			AccountManager.KEY_ACCOUNT_TYPE);
+		builder.withValue(ContactsContract.RawContacts.ACCOUNT_NAME,
+			AccountManager.KEY_ACCOUNT_NAME);
+		retval.add(builder.build());
+
+		// The contact name
+		String[] name = parseName((jsonObj.has("name"))
+			? jsonObj.getString("name")
+			: "");
+		mime = CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE;
+		builder = ContentProviderOperation.newInsert(
+			ContactsContract.Data.CONTENT_URI);
+		builder.withValueBackReference(
+			ContactsContract.Data.RAW_CONTACT_ID, idx);
+		builder.withValue(ContactsContract.Data.MIMETYPE, mime);
+		builder.withValue(ContactsContract.Data.DISPLAY_NAME_PRIMARY,
+			name[0]+" "+((name[1].isEmpty()) ? "" : name[1]+" ")
+			+name[2]);
+		retval.add(builder.build());
+
+		// Phone Number
+		mime = CommonDataKinds.Phone.CONTENT_ITEM_TYPE;
+		builder = ContentProviderOperation.newInsert(
+			ContactsContract.Data.CONTENT_URI);
+		builder.withValueBackReference(
+			ContactsContract.Data.RAW_CONTACT_ID, idx);
+		builder.withValue(ContactsContract.Data.MIMETYPE, mime);
+		builder.withValue(CommonDataKinds.Phone.TYPE,
+			CommonDataKinds.Phone.TYPE_HOME);
+		builder.withValue(CommonDataKinds.Phone.NUMBER,
+			jsonObj.has("phone")
+				? jsonObj.getString("phone")
+				: "");
+		retval.add(builder.build());
+
+		// Email Address
+		mime = CommonDataKinds.Email.CONTENT_ITEM_TYPE;
+		builder = ContentProviderOperation.newInsert(
+			ContactsContract.Data.CONTENT_URI);
+		builder.withValueBackReference(
+			ContactsContract.Data.RAW_CONTACT_ID, idx);
+		builder.withValue(ContactsContract.Data.MIMETYPE, mime);
+		builder.withValue(CommonDataKinds.Email.TYPE,
+			CommonDataKinds.Email.TYPE_WORK);
+		builder.withValue(CommonDataKinds.Email.DATA,
+			jsonObj.has("email")
+				? jsonObj.getString("email")
+				: "");
+		retval.add(builder.build());
+		return(retval);
+	}
+
+	/**
+	 * Given a token, determine first, middle and last names.
+	 */
+	public static String[] parseName(String token)
+	{
+		String[] retval = new String[] { "", "", "" };
+		String[] dat = token.replaceFirst("\\s+?,",",").split(" ");
+
+		switch (dat.length) {
+		case 1:
+			retval[0] = dat[0];
+			break;
+		case 3:
+			retval[1] = (dat[0].contains(","))
+				? dat[2]
+				: dat[1];
+		case 2:
+			retval[0] = (dat[0].contains(","))
+				? dat[1]
+				: dat[0];
+			retval[2] = (dat[0].contains(","))
+				? dat[0].substring(0, dat[0].indexOf(","))
+				: dat[1];
+			break;
+		}
+		retval[0] = (retval[0].isEmpty()) ? "unknown" : retval[0];
+		return(retval);
+	}
+
+	public static void replaceContacts(Context ctxt, int id)
+			throws JSONException, DatastoreException,
+			NetworkException
+	{
+		List<String> errors = new ArrayList<>();
+		ArrayList<ContentProviderOperation> batch = new ArrayList<>();
+		long count = CrudHelper.count(EntityType.contact, id);
+		JSONArray jsonArray = CrudHelper.getContacts(0, (int)count, id);
+		truncateContacts(ctxt);
+
+		for (int idx=0; idx < jsonArray.length(); idx++) {
+			try {
+				batch.addAll(
+					prepAddContactViaBatch(
+						idx,
+						jsonArray.getJSONObject(idx)));
+			}
+			catch (Exception e) {
+				errors.add(""+e);
+			}
+		}
+		if (batch.size() > 0) {
+			try {
+				ctxt.getContentResolver().applyBatch(
+					ContactsContract.AUTHORITY, batch);
+			}
+			catch (Exception e) {
+				errors.add(""+e);
+			}
+		}
+		if (errors.size() > 0) {
+			throw new NetworkException(""+errors);
+		}
+	}
+
+	public static void postEvents(Context ctxt, int tagId)
+			throws JSONException, DatastoreException,
+			NetworkException
+	{
+		List<String> errors = new ArrayList<>();
+		Map<String,String> map = new HashMap<>();
+		Cursor cursor = null;
+		map.put("title","name");
+		map.put("description","description");
+		map.put("dtstart","start");
+		map.put("dtend","end");
+		map.put("calendar_id","uid");
+		cursor = ctxt.getContentResolver().query(
+			Uri.parse("content://com.android.calendar/events"),
+			new ArrayList<String>(map.keySet()).toArray(
+				new String[map.keySet().size()]),
+			null, null, null, null);
+
+		while (cursor.moveToNext()) {
+			JSONObject jsonObj = new JSONObject();
+
+			for (String key : map.keySet()) {
+				int idx = cursor.getColumnIndex(key);
+				String val = cursor.getString(idx);
+				jsonObj.put(map.get(key), val);
+			}
+			logger.info("json: ({})", ""+jsonObj);
+			try {
+				CrudHelper.create(EntityType.event, jsonObj,
+					tagId);
+			}
+			catch (Exception e) {
+				errors.add(""+e);
+			}
+		}
+		cursor.close();
+
+		if (errors.size() > 0) {
+			throw new NetworkException(""+errors);
+		}
+	}
+
+	public static void replaceEvents(Context ctxt, int id)
+			throws JSONException, DatastoreException,
+			NetworkException
+	{
+		List<String> errors = new ArrayList<>();
+		long count = CrudHelper.count(EntityType.event, id);
+		JSONArray jsonArray = CrudHelper.getEvents(0, (int)count, id);
+		// truncateEvents(ctxt);
+		errors.add("not yet implemented!");
 
 		if (errors.size() > 0) {
 			throw new NetworkException(""+errors);

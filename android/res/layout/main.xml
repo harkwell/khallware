@@ -2,7 +2,7 @@
 <!-- $Id$ -->
 <!-- ==========================================================================
  * The Android "Khallware" application
- * (C) 2014 Kevin D.Hall
+ * (C) 2015 Kevin D.Hall
  *
  * The software, processes, trade secrets and technical/business know-how used
  * on these premises are the property of Kevin D.Hall and are not to be copied,  * divulged or used without the express written consent of the author.
@@ -17,6 +17,15 @@
 			android:layout_width="fill_parent"
 			android:layout_height="fill_parent"
 			android:orientation="vertical" >
+
+		<ToggleButton
+				android:id="@+id/favorite_button"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:drawableTop="@*android:drawable/btn_rating_star_off_normal"
+				android:textOn=""
+				android:textOff=""
+				android:onClick="toggleFavorite" />
 
 		<TextView
 				android:layout_width="fill_parent"
@@ -35,8 +44,8 @@
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:id="@+id/atag_id"
-					android:editable="false" />
-					<!-- android:visibility = "gone" -->
+					android:editable="false"
+					android:visibility="gone" />
 
 			<EditText
 					android:layout_width="wrap_content"
@@ -51,11 +60,11 @@
 					android:editable="false" />
 		</LinearLayout>
 
-		<Button
+		<!-- Button
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:text="@string/lit_reconnect"
-				android:onClick="goConnect" />
+				android:onClick="goConnect" / -->
 
 		<Button
 				android:layout_width="wrap_content"
@@ -68,10 +77,10 @@
 				android:layout_width="match_parent"
 				android:layout_height="match_parent" >
 
-			<Button
+			<ImageButton
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
-					android:text="@string/lit_addtag"
+					android:src="@android:drawable/ic_menu_add"
 					android:onClick="addTag" />
 
 			<Button
@@ -87,10 +96,10 @@
 				android:layout_width="match_parent"
 				android:layout_height="match_parent" >
 
-			<Button
+			<ImageButton
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
-					android:text="@string/lit_uploadphoto"
+					android:src="@android:drawable/ic_menu_upload"
 					android:onClick="uploadPhotos" />
 
 			<Button
@@ -106,6 +115,26 @@
 				android:layout_width="match_parent"
 				android:layout_height="match_parent" >
 
+			<ImageButton
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:src="@android:drawable/ic_menu_add"
+					android:onClick="addContact" />
+
+			<ImageButton
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:src="@android:drawable/ic_menu_upload"
+					android:text="@string/lit_postcontacts"
+					android:onClick="postContacts" />
+
+			<ImageButton
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:src="@android:drawable/ic_menu_set_as"
+					android:text="@string/lit_replacecontacts"
+					android:onClick="replaceContacts" />
+
 			<Button
 					android:id="@+id/acontact_button"
 					android:layout_width="wrap_content"
@@ -113,20 +142,26 @@
 					android:text="@string/lit_contacts"
 					android:onClick="goContacts" />
 
-			<Button
+		</LinearLayout>
+		<LinearLayout
+				android:orientation="horizontal"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent" >
+
+			<ImageButton
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
-					android:text="@string/lit_postcontacts"
-					android:onClick="postContacts" />
+					android:src="@android:drawable/ic_menu_add"
+					android:onClick="addBookmark" />
+
+			<Button
+					android:id="@+id/abookmark_button"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:text="@string/lit_bookmarks"
+					android:onClick="goBookmarks" />
 
 		</LinearLayout>
-		<Button
-				android:id="@+id/abookmark_button"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:text="@string/lit_bookmarks"
-				android:onClick="goBookmarks" />
-
 		<Button
 				android:id="@+id/ablog_button"
 				android:layout_width="wrap_content"
@@ -134,13 +169,39 @@
 				android:text="@string/lit_blogs"
 				android:onClick="goBlogs" />
 
-		<Button
-				android:id="@+id/aevent_button"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:text="@string/lit_events"
-				android:onClick="goEvents" />
+		<LinearLayout
+				android:orientation="horizontal"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent" >
 
+			<ImageButton
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:src="@android:drawable/ic_menu_add"
+					android:onClick="addEvent" />
+
+			<ImageButton
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:src="@android:drawable/ic_menu_my_calendar"
+					android:text="@string/lit_postevents"
+					android:onClick="postEvents" />
+
+			<ImageButton
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:src="@android:drawable/ic_menu_set_as"
+					android:text="@string/lit_replaceevents"
+					android:onClick="replaceEvents" />
+
+			<Button
+					android:id="@+id/aevent_button"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:text="@string/lit_events"
+					android:onClick="goEvents" />
+
+		</LinearLayout>
 		<Button
 				android:id="@+id/afileitem_button"
 				android:layout_width="wrap_content"
@@ -148,13 +209,25 @@
 				android:text="@string/lit_fileitems"
 				android:onClick="goFileitems" />
 
-		<Button
-				android:id="@+id/alocation_button"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:text="@string/lit_locations"
-				android:onClick="goLocations" />
+		<LinearLayout
+				android:orientation="horizontal"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent" >
 
+			<ImageButton
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:src="@android:drawable/ic_menu_compass"
+					android:onClick="addLocation" />
+
+			<Button
+					android:id="@+id/alocation_button"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:text="@string/lit_locations"
+					android:onClick="goLocations" />
+
+		</LinearLayout>
 		<LinearLayout
 				android:orientation="horizontal"
 				android:layout_width="match_parent"
@@ -167,11 +240,11 @@
 					android:text="@string/lit_sounds"
 					android:onClick="goSounds" />
 
-			<Button
+			<ImageButton
 					android:id="@+id/atag_playaudio"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
-					android:text="@string/lit_playallsongs"
+					android:src="@android:drawable/presence_audio_online"
 					android:onClick="playAllSongs" />
 
 		</LinearLayout>

@@ -82,8 +82,10 @@ public class DEvents extends APICrudChain<Event>
 				.limit(pg.getPageSize());
 			qb.where().eq(EventTags.COL_TAG, tag);
 
-			for (EventTags et : qb.query()) {
-				retval.add(et.getEvent());
+			if (!pg.returnCount()) {
+				for (EventTags et : qb.query()) {
+					retval.add(et.getEvent());
+				}
 			}
 			pg.setCount(pg.returnCount() ? qb.countOf() : -1);
 		}, EventTags.class);

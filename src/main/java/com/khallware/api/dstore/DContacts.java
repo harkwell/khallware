@@ -83,8 +83,10 @@ public class DContacts extends APICrudChain<Contact>
 					.limit(pg.getPageSize());
 			qb.where().eq(ContactTags.COL_TAG, tag);
 
-			for (ContactTags ct : qb.query()) {
-				retval.add(ct.getContact());
+			if (!pg.returnCount()) {
+				for (ContactTags ct : qb.query()) {
+					retval.add(ct.getContact());
+				}
 			}
 			pg.setCount(pg.returnCount() ? qb.countOf() : -1);
 		}, ContactTags.class);

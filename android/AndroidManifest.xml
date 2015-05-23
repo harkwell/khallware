@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-        package="com.khallware.apis"
-        android:versionCode="1"
-        android:versionName="1.0">
-     <uses-sdk android:minSdkVersion="4" android:targetSdkVersion="19" />
+         package="com.khallware.apis"
+         android:versionCode="1"
+         android:versionName="1.0">
+     <uses-sdk android:minSdkVersion="4" android:targetSdkVersion="22" />
+     <uses-feature android:glEsVersion="0x00020000" android:required="true"/>
      <uses-permission android:name="android.permission.INTERNET" />
      <uses-permission android:name="android.permission.READ_CONTACTS" />
      <uses-permission android:name="android.permission.WRITE_CONTACTS" />
@@ -11,100 +12,110 @@
      <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
      <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
      <application android:label="@string/app_name"
-             android:icon="@drawable/ic_launcher">
-         <activity android:name="Khallware"
+            android:icon="@drawable/ic_launcher">
+        <uses-library android:name="com.google.android.maps" />
+        <meta-data android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyDO-ZkL5SGm_xIOjnDgPJmqcqsg5mAhpZo"/>
+        <activity android:name="Khallware"
                  android:label="@string/app_name">
-             <intent-filter>
-                 <action android:name="android.intent.action.MAIN" />
-                 <category android:name="android.intent.category.LAUNCHER" />
-             </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
          </activity>
          <activity android:name=".CrudActivity"
-	 		android:screenOrientation="portrait">
+                 android:screenOrientation="portrait">
              <intent-filter>
                  <action android:name="android.intent.action.MAIN" />
                      <category android:name="com.example.android.supportv4.SUPPORT4_SAMPLE_CODE" />
              </intent-filter>
          </activity>
          <activity android:name=".TagsActivity"
-	 		android:screenOrientation="portrait">
+                     android:screenOrientation="portrait">
              <intent-filter>
                  <action android:name="android.intent.action.MAIN" />
                      <category android:name="com.example.android.supportv4.SUPPORT4_SAMPLE_CODE" />
              </intent-filter>
          </activity>
          <activity android:name=".ConnectActivity"
-	 		android:screenOrientation="portrait">
+                         android:screenOrientation="portrait">
              <intent-filter>
                  <action android:name="android.intent.action.MAIN" />
                      <category android:name="com.example.android.supportv4.SUPPORT4_SAMPLE_CODE" />
              </intent-filter>
          </activity>
          <activity android:name=".ContactsActivity"
-			 android:screenOrientation="portrait">
+                         android:screenOrientation="portrait">
              <intent-filter>
                  <action android:name="android.intent.action.MAIN" />
                  <category android:name="com.example.android.supportv4.SUPPORT4_SAMPLE_CODE" />
              </intent-filter>
          </activity>
          <activity android:name=".BookmarksActivity"
-	 		android:screenOrientation="portrait">
+                         android:screenOrientation="portrait">
              <intent-filter>
                  <action android:name="android.intent.action.MAIN" />
                  <category android:name="com.example.android.supportv4.SUPPORT4_SAMPLE_CODE" />
              </intent-filter>
          </activity>
          <activity android:name=".BlogsActivity"
-	 		android:screenOrientation="portrait">
+                         android:screenOrientation="portrait">
              <intent-filter>
                  <action android:name="android.intent.action.MAIN" />
                      <category android:name="com.example.android.supportv4.SUPPORT4_SAMPLE_CODE" />
              </intent-filter>
          </activity>
          <activity android:name=".EventsActivity"
-	 		android:screenOrientation="portrait">
+                         android:screenOrientation="portrait">
              <intent-filter>
                  <action android:name="android.intent.action.MAIN" />
                      <category android:name="com.example.android.supportv4.SUPPORT4_SAMPLE_CODE" />
              </intent-filter>
          </activity>
          <activity android:name=".FileitemsActivity"
-	 		android:screenOrientation="portrait">
+                         android:screenOrientation="portrait">
              <intent-filter>
                  <action android:name="android.intent.action.MAIN" />
                      <category android:name="com.example.android.supportv4.SUPPORT4_SAMPLE_CODE" />
              </intent-filter>
          </activity>
          <activity android:name=".LocationsActivity"
-	 		android:screenOrientation="portrait">
+                         android:screenOrientation="portrait">
+             <intent-filter>
+                 <action android:name="android.intent.action.MAIN" />
+                     <category android:name="com.example.android.supportv4.SUPPORT4_SAMPLE_CODE" />
+             </intent-filter>
+         </activity>
+         <activity android:name=".KMapActivity"
+                         android:screenOrientation="portrait">
              <intent-filter>
                  <action android:name="android.intent.action.MAIN" />
                      <category android:name="com.example.android.supportv4.SUPPORT4_SAMPLE_CODE" />
              </intent-filter>
          </activity>
          <activity android:name=".PhotosActivity"
-	 		android:screenOrientation="portrait">
+                         android:screenOrientation="portrait">
              <intent-filter>
                  <action android:name="android.intent.action.MAIN" />
                      <category android:name="com.example.android.supportv4.SUPPORT4_SAMPLE_CODE" />
              </intent-filter>
          </activity>
          <activity android:name=".SearchActivity"
-	 		android:screenOrientation="portrait">
+                         android:screenOrientation="portrait">
              <intent-filter>
                  <action android:name="android.intent.action.MAIN" />
                      <category android:name="com.example.android.supportv4.SUPPORT4_SAMPLE_CODE" />
              </intent-filter>
          </activity>
          <activity android:name=".SoundsActivity"
-	 		android:screenOrientation="portrait">
+                         android:screenOrientation="portrait">
              <intent-filter>
                  <action android:name="android.intent.action.MAIN" />
                      <category android:name="com.example.android.supportv4.SUPPORT4_SAMPLE_CODE" />
              </intent-filter>
          </activity>
          <activity android:name=".VideosActivity"
-	 		android:screenOrientation="portrait">
+                         android:screenOrientation="portrait">
              <intent-filter>
                  <action android:name="android.intent.action.MAIN" />
                      <category android:name="com.example.android.supportv4.SUPPORT4_SAMPLE_CODE" />

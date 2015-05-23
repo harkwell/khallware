@@ -82,8 +82,10 @@ public class DVideos extends APICrudChain<Video>
 				.limit(pg.getPageSize());
 			qb.where().eq(VideoTags.COL_TAG, tag);
 
-			for (VideoTags vt : qb.query()) {
-				retval.add(vt.getVideo());
+			if (!pg.returnCount()) {
+				for (VideoTags vt : qb.query()) {
+					retval.add(vt.getVideo());
+				}
 			}
 			pg.setCount(pg.returnCount() ? qb.countOf() : -1);
 		}, VideoTags.class);

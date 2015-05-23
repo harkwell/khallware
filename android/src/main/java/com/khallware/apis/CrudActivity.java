@@ -84,6 +84,8 @@ public class CrudActivity extends Activity
 				break;
 			default:
 				String msg = "unhandled type \""+type+"\"";
+				setContentView((layout = (LinearLayout)
+					ViewFactory.make(msg, context)));
 				Util.toastException(
 					new IllegalArgumentException(msg),
 					context);
@@ -149,7 +151,7 @@ public class CrudActivity extends Activity
 			throws JSONException, DatastoreException,
 			NetworkException
 	{
-		update(-1, map);
+		update(-1, map); // KDH handle case where permission denied
 	}
 
 	protected void update(int id, Map<String, Integer> map)

@@ -83,8 +83,10 @@ public class DFileItems extends APICrudChain<FileItem>
 					.limit(pg.getPageSize());
 			qb.where().eq(FileItemTags.COL_TAG, tag);
 
-			for (FileItemTags ft : qb.query()) {
-				retval.add(ft.getFileItem());
+			if (!pg.returnCount()) {
+				for (FileItemTags ft : qb.query()) {
+					retval.add(ft.getFileItem());
+				}
 			}
 			pg.setCount(pg.returnCount() ? qb.countOf() : -1);
 		}, FileItemTags.class);

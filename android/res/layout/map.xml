@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- $Id$ -->
+<!-- ==========================================================================
+ * The Android "Khallware" application
+ * (C) 2014 Kevin D.Hall
+ *
+ * The software, processes, trade secrets and technical/business know-how used
+ * on these premises are the property of Kevin D.Hall and are not to be copied,  * divulged or used without the express written consent of the author.
+ *
+-->
+<LinearLayout
+		xmlns:android="http://schemas.android.com/apk/res/android"
+		android:orientation="vertical"
+		android:layout_width="fill_parent"
+		android:layout_height="fill_parent">
+
+	<TextView
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:text="@string/lit_choosegeo"
+			android:textSize="25sp"
+			android:textStyle="bold"
+			android:paddingBottom="10dp" />
+
+	<Button
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="@string/lit_go"
+			android:onClick="returnResult" />
+
+	<LinearLayout
+				android:layout_height="wrap_content"
+				android:layout_width="match_parent"
+				android:orientation="vertical">
+
+		<RelativeLayout
+				android:layout_height="wrap_content"
+				android:layout_width="match_parent">
+
+			<com.google.android.maps.MapView
+					android:id="@+id/mapview"
+					android:layout_width="fill_parent"
+					android:layout_height="fill_parent"
+					android:clickable="true"
+					android:apiKey="AIzaSyDO-ZkL5SGm_xIOjnDgPJmqcqsg5mAhpZo" />
+		</RelativeLayout>
+
+	</LinearLayout>
+
+</LinearLayout>

@@ -66,7 +66,9 @@ public class ViewFactory
 			final Map<String, Integer> map = new HashMap<>();
 			final int tag = jsonObj.has("tag")
 				? jsonObj.getInt("tag")
-				: 0;
+				: (jsonObj.has("parent"))
+					? jsonObj.getInt("parent")
+					: 0;
 
 			switch (type) {
 			case tag:

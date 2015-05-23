@@ -82,8 +82,10 @@ public class DSounds extends APICrudChain<Sound>
 				.limit(pg.getPageSize());
 			qb.where().eq(SoundTags.COL_TAG, tag);
 
-			for (SoundTags st : qb.query()) {
-				retval.add(st.getSound());
+			if (!pg.returnCount()) {
+				for (SoundTags st : qb.query()) {
+					retval.add(st.getSound());
+				}
 			}
 			pg.setCount(pg.returnCount() ? qb.countOf() : -1);
 		}, SoundTags.class);
