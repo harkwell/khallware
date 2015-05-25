@@ -114,7 +114,7 @@ public class Bookmarks extends CrudController<Bookmark>
 			@QueryParam("tagId") int tagId,
 			@QueryParam("sort") @DefaultValue("modified") String s,
 			@QueryParam("pageSize") @DefaultValue("25") int pgSize,
-			@QueryParam("count") @DefaultValue("true") boolean cnt,
+			@QueryParam("count") @DefaultValue("false") boolean cnt,
 			@QueryParam("page") @DefaultValue("0") int page,
 			@QueryParam(value="tagName") String name)
 	{

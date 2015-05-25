@@ -44,20 +44,20 @@
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:id="@+id/atag_id"
-					android:editable="false"
+					android:focusable="false"
 					android:visibility="gone" />
 
 			<EditText
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:id="@+id/atag_name"
-					android:editable="false" />
+					android:focusable="false" />
 
 			<EditText
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:id="@+id/atag_desc"
-					android:editable="false" />
+					android:focusable="false" />
 		</LinearLayout>
 
 		<!-- Button
@@ -217,8 +217,14 @@
 			<ImageButton
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
-					android:src="@android:drawable/ic_menu_compass"
+					android:src="@android:drawable/ic_menu_add"
 					android:onClick="addLocation" />
+
+			<ImageButton
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:src="@android:drawable/ic_menu_compass"
+					android:onClick="pickLocation" />
 
 			<Button
 					android:id="@+id/alocation_button"
@@ -244,7 +250,7 @@
 					android:id="@+id/atag_playaudio"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
-					android:src="@android:drawable/presence_audio_online"
+					android:src="@*android:drawable/ic_media_play"
 					android:onClick="playAllSongs" />
 
 		</LinearLayout>

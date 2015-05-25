@@ -41,11 +41,16 @@ public abstract class APICrudChain<T extends Entity> extends CrudChain<T>
 	{
 		List<Group> list = Datastore.DS().getGroups(creds);
 		String maskColumn = APIEntity.COL_MASK;
+		boolean amRoot = false;
 
 		for (Group group : list) {
 			if (group.getId() == Group.ROOT) {
-				list.clear();
+				amRoot = true;
 			}
+		}
+		if (amRoot) {
+			list.clear();
+			retval.raw("true");
 		}
 		for (Group group : list) {
 			retval.or(

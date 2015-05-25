@@ -331,6 +331,18 @@ public class Khallware extends Activity
 	{
 		logger.trace("addLocation()...");
 		try {
+			logger.trace("addLocation()...");
+			addEntity(tagId, EntityType.location);
+		}
+		catch (Exception e) {
+			Util.toastException(e, getApplicationContext());
+		}
+	}
+
+	public void pickLocation(View view)
+	{
+		logger.trace("addLocation()...");
+		try {
 			Intent intent = new Intent(this, KMapActivity.class);
 			startActivityForResult(intent, ACTIVITY_SELECT_GEOCODE);
 		}

@@ -121,7 +121,7 @@ public class Comments extends CrudController<Comment>
 	public Response handleGet(@Context HttpServletRequest request,
 			@QueryParam("page") @DefaultValue("0") int page,
 			@QueryParam("pageSize") @DefaultValue("-1") int pgSize,
-			@QueryParam("count") @DefaultValue("true") boolean cnt,
+			@QueryParam("count") @DefaultValue("false") boolean cnt,
 			@QueryParam("sort") @DefaultValue("modified") String st,
 			@PathParam("blogId") @DefaultValue("-1") int blogId)
 	{

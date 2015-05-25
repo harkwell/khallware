@@ -54,7 +54,7 @@
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:id="@+id/tag_name"
-				android:editable="true" />
+				android:focusable="true" />
 
 	</LinearLayout>
 	<LinearLayout
@@ -73,7 +73,7 @@
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:id="@+id/tag_id"
-				android:editable="true" />
+				android:focusable="true" />
 
 	</LinearLayout>
 	<LinearLayout
@@ -91,7 +91,7 @@
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:id="@+id/tag_parent"
-				android:editable="true" />
+				android:focusable="true" />
 
 
 	</LinearLayout>

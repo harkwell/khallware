@@ -18,19 +18,19 @@
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:id="@+id/blog_name"
-			android:editable="false" />
+			android:focusable="false" />
 
 	<EditText
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:id="@+id/blog_desc"
-			android:editable="false" />
+			android:focusable="false" />
 
 	<EditText
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:id="@+id/blog_id"
-			android:editable="true" />
+			android:visibility="gone" />
 
 </LinearLayout>
 

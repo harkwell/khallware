@@ -24,67 +24,67 @@
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:id="@+id/sound_name"
-			android:editable="false" />
+			android:focusable="false" />
 
 	<EditText
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:id="@+id/sound_desc"
-			android:editable="false" />
+			android:focusable="false" />
 
 	<EditText
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:id="@+id/sound_id"
-			android:editable="false" />
+			android:focusable="false" />
 
 	<EditText
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:id="@+id/sound_title"
-			android:editable="false" />
+			android:focusable="false" />
 
 	<EditText
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:id="@+id/sound_artist"
-			android:editable="false" />
+			android:focusable="false" />
 
 	<EditText
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:id="@+id/sound_genre"
-			android:editable="false" />
+			android:focusable="false" />
 
 	<EditText
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:id="@+id/sound_recording"
-			android:editable="false" />
+			android:focusable="false" />
 
 	<EditText
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:id="@+id/sound_publisher"
-			android:editable="false" />
+			android:focusable="false" />
 
 	<EditText
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:id="@+id/sound_updated"
-			android:editable="false" />
+			android:focusable="false" />
 
 	<EditText
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:id="@+id/sound_mask"
-			android:editable="false" />
+			android:focusable="false" />
 
 	<EditText
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:id="@+id/sound_path"
-			android:editable="false" />
+			android:focusable="false" />
 
 </LinearLayout>
 

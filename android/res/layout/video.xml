@@ -24,19 +24,19 @@
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:id="@+id/video_name"
-			android:editable="false" />
+			android:focusable="false" />
 
 	<EditText
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:id="@+id/video_desc"
-			android:editable="false" />
+			android:focusable="false" />
 
 	<EditText
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:id="@+id/video_id"
-			android:editable="true" />
+			android:focusable="true" />
 
 </LinearLayout>
 

@@ -188,7 +188,7 @@ public class Contacts extends CrudController<Contact>
 	public Response handleGet(@Context HttpServletRequest request,
 			@QueryParam("page") @DefaultValue("0") int page,
 			@QueryParam("pageSize") @DefaultValue("-1") int pgSize,
-			@QueryParam("count") @DefaultValue("true") boolean cnt,
+			@QueryParam("count") @DefaultValue("false") boolean cnt,
 			@QueryParam("name") String name,
 			@QueryParam("tagId") int tagId,
 			@QueryParam("sort") @DefaultValue("name") String sort,
@@ -262,8 +262,19 @@ public class Contacts extends CrudController<Contact>
 				JsonNode.class).get("jcard");
 
 			if (jcard != null && !(""+jcard).isEmpty()) {
-				Contact.updateContact(contact,
-					Contact.parseJson(""+jcard));
+				Contact.updateContact(
+					contact, Contact.parseJson(""+jcard));
+			}
+			else {
+				StringBuilder sb = new StringBuilder();
+				sb.append("[\"vcard\",[");
+				sb.append("[\"version\",{},\"text\",\"4.0\"],");
+				sb.append("[\"n\",{},\"text\",");
+				sb.append("[\"\",\"\",\"\",\"\",\"\"]],");
+				sb.append("[\"fn\",{},\"text\",");
+				sb.append("\""+contact.getName()+"\"]]]");
+				Contact.updateContact(
+					contact, Contact.parseJson(""+sb));
 			}
 		}
 		catch (Exception e) {

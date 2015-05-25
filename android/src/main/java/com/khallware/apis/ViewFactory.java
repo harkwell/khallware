@@ -94,7 +94,6 @@ public class ViewFactory
 				map.put("address",      R.id.contact_address);
 				map.put("description",  R.id.contact_desc);
 				map.put("organization", R.id.contact_org);
-				map.put("updated",      R.id.contact_updated);
 				break;
 			case bookmark:
 				retval = make(R.layout.bookmark, context);
@@ -103,7 +102,6 @@ public class ViewFactory
 				map.put("rating",      R.id.bookmark_rating);
 				map.put("url",         R.id.bookmark_url);
 				map.put("title",       R.id.bookmark_title);
-				map.put("updated",     R.id.bookmark_updated);
 				break;
 			case blog:
 				retval = make(R.layout.blog, context);
@@ -116,8 +114,9 @@ public class ViewFactory
 				map.put("name",        R.id.event_name);
 				map.put("description", R.id.event_desc);
 				map.put("duration",    R.id.event_duration);
-				map.put("start",       R.id.event_start);
-				map.put("end",         R.id.event_end);
+				// KDH set datepicker values
+				// map.put("start",       R.id.event_start);
+				// map.put("end",         R.id.event_end);
 				break;
 			case fileitem:
 				retval = make(R.layout.fileitem, context);
@@ -133,7 +132,6 @@ public class ViewFactory
 				map.put("address",     R.id.location_address);
 				map.put("title",       R.id.location_title);
 				map.put("mask",        R.id.location_mask);
-				map.put("modified",    R.id.location_modified);
 				map.put("description", R.id.location_desc);
 				break;
 			case photo:

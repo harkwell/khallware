@@ -14,60 +14,138 @@
 		android:orientation="vertical"
 		xmlns:android="http://schemas.android.com/apk/res/android" >
 
-	<EditText
+	<LinearLayout
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:id="@+id/contact_name"
-			android:editable="false" />
+			android:orientation="horizontal"
+			xmlns:android="http://schemas.android.com/apk/res/android" >
 
-	<EditText
-			android:autoLink="email"
-			android:linksClickable="true"
+		<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/lit_name" />
+
+		<EditText
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:id="@+id/contact_name"
+				android:focusable="false" />
+
+	</LinearLayout>
+	<LinearLayout
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:id="@+id/contact_email"
-			android:editable="false" />
+			android:orientation="horizontal"
+			xmlns:android="http://schemas.android.com/apk/res/android" >
 
-	<EditText
-			android:autoLink="phone"
-			android:linksClickable="true"
+		<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/lit_email" />
+
+		<EditText
+				android:autoLink="email"
+				android:linksClickable="true"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:id="@+id/contact_email"
+				android:focusable="false" />
+
+	</LinearLayout>
+	<LinearLayout
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:id="@+id/contact_phone"
-			android:editable="false" />
+			android:orientation="horizontal"
+			xmlns:android="http://schemas.android.com/apk/res/android" >
 
-	<EditText
+		<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/lit_phone" />
+
+		<EditText
+				android:autoLink="phone"
+				android:linksClickable="true"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:id="@+id/contact_phone"
+				android:focusable="false" />
+
+	</LinearLayout>
+	<LinearLayout
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:id="@+id/contact_title"
-			android:editable="false" />
+			android:orientation="horizontal"
+			xmlns:android="http://schemas.android.com/apk/res/android" >
 
-	<EditText
-			android:autoLink="map"
-			android:linksClickable="true"
+		<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/lit_title" />
+
+		<EditText
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:id="@+id/contact_title"
+				android:focusable="false" />
+
+	</LinearLayout>
+	<LinearLayout
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:id="@+id/contact_address"
-			android:editable="false" />
+			android:orientation="horizontal"
+			xmlns:android="http://schemas.android.com/apk/res/android" >
 
-	<EditText
+		<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/lit_address" />
+
+		<EditText
+				android:autoLink="map"
+				android:linksClickable="true"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:id="@+id/contact_address"
+				android:focusable="false" />
+
+	</LinearLayout>
+	<LinearLayout
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:id="@+id/contact_desc"
-			android:editable="false" />
+			android:orientation="horizontal"
+			xmlns:android="http://schemas.android.com/apk/res/android" >
 
-	<EditText
+		<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/lit_desc" />
+
+		<EditText
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:id="@+id/contact_desc"
+				android:focusable="false" />
+
+	</LinearLayout>
+	<LinearLayout
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:id="@+id/contact_org"
-			android:editable="false" />
+			android:orientation="horizontal"
+			xmlns:android="http://schemas.android.com/apk/res/android" >
 
-	<EditText
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:id="@+id/contact_updated"
-			android:editable="false" />
+		<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/lit_org" />
 
+		<EditText
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:id="@+id/contact_org"
+				android:focusable="false" />
+
+	</LinearLayout>
 	<Button
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"

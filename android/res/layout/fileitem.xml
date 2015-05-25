@@ -14,24 +14,60 @@
 		android:orientation="vertical"
 		xmlns:android="http://schemas.android.com/apk/res/android" >
 
-	<EditText
+	<LinearLayout
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:id="@+id/fileitem_name"
-			android:editable="false" />
+			android:orientation="horizontal"
+			xmlns:android="http://schemas.android.com/apk/res/android" >
 
-	<EditText
+		<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/lit_name" />
+
+		<EditText
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:id="@+id/fileitem_name"
+				android:focusable="false" />
+
+	</LinearLayout>
+	<LinearLayout
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:id="@+id/fileitem_desc"
-			android:editable="false" />
+			android:orientation="horizontal"
+			xmlns:android="http://schemas.android.com/apk/res/android" >
 
-	<EditText
+		<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/lit_desc" />
+
+		<EditText
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:id="@+id/fileitem_desc"
+				android:focusable="false" />
+
+	</LinearLayout>
+	<LinearLayout
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:id="@+id/fileitem_id"
-			android:editable="false" />
+			android:orientation="horizontal"
+			xmlns:android="http://schemas.android.com/apk/res/android" >
 
+		<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/lit_id" />
+
+		<EditText
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:id="@+id/fileitem_id"
+				android:focusable="false" />
+
+	</LinearLayout>
 </LinearLayout>
 
 <!-- http://www.droiddraw.org/ -->

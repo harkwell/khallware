@@ -92,7 +92,7 @@ public class Blogs extends CrudController<Blog>
 			@QueryParam("page") @DefaultValue("0") int page,
 			@QueryParam("pageSize") @DefaultValue("-1") int pgSize,
 			@QueryParam("sort") @DefaultValue("created") String val,
-			@QueryParam("count") @DefaultValue("true") boolean cnt,
+			@QueryParam("count") @DefaultValue("false") boolean cnt,
 			@QueryParam("tagId") int tagId,
 			@QueryParam(value="tagName") String name)
 	{

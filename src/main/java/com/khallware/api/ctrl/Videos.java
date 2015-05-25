@@ -153,7 +153,7 @@ public class Videos extends CrudController<Video>
 	public Response handleGet(@Context HttpServletRequest request,
 			@QueryParam("page") @DefaultValue("0") int page,
 			@QueryParam("pageSize") @DefaultValue("-1") int pgSize,
-			@QueryParam("count") @DefaultValue("true") boolean cnt,
+			@QueryParam("count") @DefaultValue("false") boolean cnt,
 			@QueryParam("sort") @DefaultValue("name") String sort,
 			@QueryParam("tagId") int tagId,
 			@QueryParam(value="tagName") String name)

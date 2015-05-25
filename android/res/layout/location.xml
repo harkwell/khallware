@@ -14,54 +14,132 @@
 		android:orientation="vertical"
 		xmlns:android="http://schemas.android.com/apk/res/android" >
 
-	<EditText
+	<LinearLayout
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:id="@+id/location_name"
-			android:editable="false" />
+			android:orientation="horizontal"
+			xmlns:android="http://schemas.android.com/apk/res/android" >
 
-	<EditText
+		<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/lit_name" />
+
+		<EditText
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:id="@+id/location_name"
+				android:focusable="false" />
+
+	</LinearLayout>
+	<LinearLayout
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:id="@+id/location_latitude"
-			android:editable="false" />
+			android:orientation="horizontal"
+			xmlns:android="http://schemas.android.com/apk/res/android" >
 
-	<EditText
+		<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/lit_lat" />
+
+		<EditText
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:id="@+id/location_latitude"
+				android:focusable="false" />
+
+	</LinearLayout>
+	<LinearLayout
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:id="@+id/location_longitude"
-			android:editable="false" />
+			android:orientation="horizontal"
+			xmlns:android="http://schemas.android.com/apk/res/android" >
 
-	<EditText
+		<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/lit_lon" />
+
+		<EditText
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:id="@+id/location_longitude"
+				android:focusable="false" />
+
+	</LinearLayout>
+	<LinearLayout
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:id="@+id/location_address"
-			android:editable="false" />
+			android:orientation="horizontal"
+			xmlns:android="http://schemas.android.com/apk/res/android" >
 
-	<EditText
+		<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/lit_address" />
+
+		<EditText
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:id="@+id/location_address"
+				android:focusable="false" />
+
+	</LinearLayout>
+	<LinearLayout
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:id="@+id/location_title"
-			android:editable="false" />
+			android:orientation="horizontal"
+			xmlns:android="http://schemas.android.com/apk/res/android" >
 
-	<EditText
+		<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/lit_title" />
+
+		<EditText
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:id="@+id/location_title"
+				android:focusable="false" />
+
+	</LinearLayout>
+	<LinearLayout
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:id="@+id/location_mask"
-			android:editable="false" />
+			android:orientation="horizontal"
+			xmlns:android="http://schemas.android.com/apk/res/android" >
 
-	<EditText
+		<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/lit_mask" />
+
+		<EditText
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:id="@+id/location_mask"
+				android:focusable="false" />
+
+	</LinearLayout>
+	<LinearLayout
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:id="@+id/location_modified"
-			android:editable="false" />
+			android:orientation="horizontal"
+			xmlns:android="http://schemas.android.com/apk/res/android" >
 
-	<EditText
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:id="@+id/location_desc"
-			android:editable="false" />
+		<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/lit_desc" />
 
+		<EditText
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:id="@+id/location_desc"
+				android:focusable="false" />
+
+	</LinearLayout>
 </LinearLayout>
 
 <!-- http://www.droiddraw.org/ -->

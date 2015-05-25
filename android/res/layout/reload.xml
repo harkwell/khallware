@@ -18,7 +18,7 @@
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:text="@string/lit_reloadmsg"
-			android:editable="false" />
+			android:focusable="false" />
 
 	<Button
 			android:layout_width="wrap_content"

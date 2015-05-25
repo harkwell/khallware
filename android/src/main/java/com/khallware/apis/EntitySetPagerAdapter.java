@@ -174,7 +174,7 @@ public class EntitySetPagerAdapter extends FragmentStatePagerAdapter
 				}
 			}
 		}
-		endOfItems =  (count < MAX_REQ_ENTITIES);
+		endOfItems = (count < MAX_REQ_ENTITIES);
 	}
 
 	protected final void replace(Fragment oldFragment, Fragment newFragment)

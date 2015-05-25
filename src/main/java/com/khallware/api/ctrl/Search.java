@@ -44,7 +44,7 @@ public class Search
 			@QueryParam("tagId") @DefaultValue("-1") int tagId,
 			@QueryParam("page") @DefaultValue("0") int page,
 			@QueryParam("pageSize") @DefaultValue("25") int pgSize,
-			@QueryParam("count") @DefaultValue("true") boolean cnt,
+			@QueryParam("count") @DefaultValue("false") boolean cnt,
 			@QueryParam("sort") @DefaultValue("class") String sort,
 			@QueryParam("type") String type,
 			String pattern)

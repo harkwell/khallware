@@ -108,7 +108,7 @@ public class Tags extends CrudController<Tag>
 			@QueryParam("page") @DefaultValue("0") int page,
 			@QueryParam("pageSize") @DefaultValue("-1") int pgSize,
 			@QueryParam("tagName") @DefaultValue("") String tagName,
-			@QueryParam("count") @DefaultValue("true") boolean cnt,
+			@QueryParam("count") @DefaultValue("false") boolean cnt,
 			@QueryParam("tagId") @DefaultValue("-1") int tagId,
 			@QueryParam("parentId")@DefaultValue("-1") int parentId,
 			@QueryParam(value="parentName") @DefaultValue("") 

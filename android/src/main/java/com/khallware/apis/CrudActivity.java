@@ -47,6 +47,31 @@ public class CrudActivity extends Activity
 			this.put("title",   R.id.bookmark_title);
 			// this.put("mask", R.id.tag_mask);
 		}});
+		map.put(EntityType.contact, new HashMap<String, Integer>() {{
+			this.put("name",    R.id.contact_name);
+			this.put("email",   R.id.contact_email);
+			this.put("phone",   R.id.contact_phone);
+			this.put("title",   R.id.contact_title);
+			this.put("address", R.id.contact_address);
+			this.put("desc",    R.id.contact_desc);
+			this.put("org",     R.id.contact_org);
+		}});
+		map.put(EntityType.event, new HashMap<String, Integer>() {{
+			this.put("name",    R.id.event_name);
+			this.put("desc",    R.id.event_desc);
+			this.put("duration",R.id.event_duration);
+			this.put("start",   R.id.event_start);
+			this.put("end",     R.id.event_end);
+		}});
+		map.put(EntityType.location, new HashMap<String, Integer>() {{
+			this.put("name",     R.id.location_name);
+			this.put("latitude", R.id.location_latitude);
+			this.put("longitude",R.id.location_longitude);
+			this.put("address",  R.id.location_address);
+			this.put("title",    R.id.location_title);
+			this.put("mask",     R.id.location_mask);
+			this.put("desc",     R.id.location_desc);
+		}});
 	};
 
 	private int tag = -1;
@@ -82,6 +107,21 @@ public class CrudActivity extends Activity
 					ViewFactory.make(
 						R.layout.bookmark, context)));
 				break;
+			case contact:
+				setContentView((layout = (LinearLayout)
+					ViewFactory.make(
+						R.layout.contact, context)));
+				break;
+			case event:
+				setContentView((layout = (LinearLayout)
+					ViewFactory.make(
+						R.layout.event, context)));
+				break;
+			case location:
+				setContentView((layout = (LinearLayout)
+					ViewFactory.make(
+						R.layout.location, context)));
+				break;
 			default:
 				String msg = "unhandled type \""+type+"\"";
 				setContentView((layout = (LinearLayout)
@@ -93,6 +133,7 @@ public class CrudActivity extends Activity
 			appendCrudButtons(layout);
 			turnOnEditTexts(layout);
 			populateLayout(layout, map.get(type), jsonObj);
+			layout.invalidate();
 		}
 		catch (Exception e) {
 			Util.toastException(e, context);
@@ -202,7 +243,10 @@ public class CrudActivity extends Activity
 				continue;
 			}
 			editText = (EditText)layout.getChildAt(idx);
+			editText.setFocusableInTouchMode(true);
+			editText.setFocusable(true);
 			editText.setEnabled(true);
+			editText.invalidate();
 			/* editText.setLayoutParams(
 				new LinearLayout.LayoutParams(200, 75)); */
 		}
