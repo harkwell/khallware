@@ -2,12 +2,12 @@
 
 package com.khallware.apis;
 
+import com.khallware.apis.tasks.SimpleTask;
 import com.khallware.apis.enums.EntityType;
 import android.widget.LinearLayout;
 import android.widget.EditText;
 import android.widget.Button;
 import android.app.Activity;
-import android.os.AsyncTask;
 import android.content.Context;
 import android.view.View;
 import android.os.Bundle;
@@ -81,13 +81,12 @@ public class CrudActivity extends Activity
 	@Override
 	public void onCreate(Bundle bundle)
 	{
-		Context context = null;
+		Context context = getApplicationContext();
 		super.onCreate(bundle);
 		bundle = (bundle == null) ? getIntent().getExtras() : bundle;
 		try {
 			LinearLayout layout = null;
 			tag = Util.resolveTag(bundle);
-			context = getApplicationContext();
 			jsonObj = new JSONObject(""+bundle.get(ARG_JSON));
 
 			switch ((type = EntityType.valueOf(
@@ -146,24 +145,20 @@ public class CrudActivity extends Activity
 		final LinearLayout layout = (LinearLayout)view.getParent();
 		final JSONObject j = this.jsonObj;
 		logger.trace("update()...");
-		AsyncTask.execute(new Runnable() {
-			public void run()
+		new SimpleTask() {
+			@Override
+			public void perform() throws Exception
 			{
-				try {
-					if (jsonObj.has("id")) {
-						int id = Integer.parseInt(
-							j.getString("id"));
-						update(id, map.get(type));
-					}
-					else {
-						create(map.get(type), layout);
-					}
+				if (jsonObj.has("id")) {
+					int id = Integer.parseInt(
+						j.getString("id"));
+					update(id, map.get(type));
 				}
-				catch (Exception e) {
-					logger.error(""+e, e);
+				else {
+					create(map.get(type), layout);
 				}
 			}
-		});
+		}.execute();
 	}
 
 	public void delete(View view)
@@ -172,19 +167,14 @@ public class CrudActivity extends Activity
 		final EntityType p1 = type;
 		final JSONObject p2 = jsonObj;
 		logger.trace("delete()...");
-		AsyncTask.execute(new Runnable() {
-			public void run()
+		new SimpleTask() {
+			@Override
+			public void perform() throws Exception
 			{
-				try {
-					int id = Integer.parseInt(
-						p2.getString("id"));
-					CrudHelper.delete(p1, id, p3);
-				}
-				catch (Exception e) {
-					logger.error(""+e, e);
-				}
+				int id = Integer.parseInt(p2.getString("id"));
+				CrudHelper.delete(p1, id, p3);
 			}
-		});
+		}.execute();
 		finish();
 	}
 

@@ -2,18 +2,21 @@
 
 package com.khallware.apis;
 
+import com.khallware.apis.tasks.SimpleTask;
+import com.khallware.apis.tasks.FileUpload;
 import com.khallware.apis.enums.EntityType;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.ToggleButton;
 import android.widget.LinearLayout;
 import android.widget.EditText;
+import android.database.Cursor;
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Dialog;
 import android.app.Activity;
@@ -59,22 +62,16 @@ public class Khallware extends Activity
 			((ToggleButton)findViewById(
 				R.id.favorite_button)).setChecked(
 					dstore.isFavorite(tagId));
-			AsyncTask.execute(new Runnable() {
-				public void run()
+			new SimpleTask() {
+				@Override
+				public void perform() throws Exception
 				{
-					try {
-						applyTagInfo(
-							CrudHelper.read(
-								EntityType.tag,
-								id));
-						countAndApply(id);
-					}
-					catch (NetworkException
-							|DatastoreException e) {
-						logger.error(""+e,e);
-					}
+					applyTagInfo(
+						CrudHelper.read(
+							EntityType.tag, id));
+					countAndApply(id);
 				}
-			});
+			}.execute();
 		}
 		catch (DatastoreException e) {
 			Util.toastException(e, getApplicationContext());
@@ -125,6 +122,10 @@ public class Khallware extends Activity
 				goConnect(null);
 				retval = true;
 				break;
+			case R.id.search:
+				goSearch(null);
+				retval = true;
+				break;
 			default:
 				retval = super.onOptionsItemSelected(item);
 				break;
@@ -147,19 +148,14 @@ public class Khallware extends Activity
 			}
 			else {
 				final int id = tagId;
-				AsyncTask.execute(new Runnable() {
-					public void run()
+				new SimpleTask() {
+					@Override
+					public void perform() throws Exception
 					{
-						try {
-							dstore.addFavorite(
-								id,
-								getTagName(id));
-						}
-						catch (Exception e) {
-							logger.error(""+e,e);
-						}
+						dstore.addFavorite(
+							id, getTagName(id));
 					}
-				});
+				}.execute();
 			}
 		}
 		catch (Exception e) {
@@ -190,6 +186,38 @@ public class Khallware extends Activity
 		}
 	}
 
+	public void goParentTag(View view)
+	{
+		final Context ctxt = getApplicationContext();
+		new SimpleTask() {
+			@Override
+			public void perform() throws Exception
+			{
+				logger.trace("goParentTag()...");
+				try {
+					int duration = Toast.LENGTH_SHORT;
+					int parent = CrudHelper.getParentTag(
+						tagId).getInt("id");
+
+					if (parent == 0) {
+						String msg = "Already on top.";
+						Toast toast = Toast.makeText(
+							ctxt, msg, duration);
+						toast.show();
+					}
+					else {
+						Datastore.getDatastore().setTag(
+							parent);
+						launchIntent(Khallware.class);
+					}
+				}
+				catch (Exception e) {
+					Util.toastException(e, ctxt);
+				}
+			}
+		}.execute();
+	}
+
 	public void goTags(View view)
 	{
 		logger.trace("goTags()...");
@@ -217,34 +245,26 @@ public class Khallware extends Activity
 	{
 		final Context context = getApplicationContext();
 		logger.trace("postContacts()...");
-		AsyncTask.execute(new Runnable() {
-			public void run()
+		new SimpleTask() {
+			@Override
+			public void perform() throws Exception
 			{
-				try {
-					Util.postContacts(context, tagId);
-				}
-				catch (Exception e) {
-					logger.error(""+e,e);
-				}
+				Util.postContacts(context, tagId);
 			}
-		});
+		}.execute();
 	}
 
 	public void replaceContacts(View view)
 	{
 		final Context context = getApplicationContext();
 		logger.trace("replaceContacts()...");
-		AsyncTask.execute(new Runnable() {
-			public void run()
+		new SimpleTask() {
+			@Override
+			public void perform() throws Exception
 			{
-				try {
-					Util.replaceContacts(context, tagId);
-				}
-				catch (Exception e) {
-					logger.error(""+e,e);
-				}
+				Util.replaceContacts(context, tagId);
 			}
-		});
+		}.execute();
 	}
 
 	public void addBookmark(View view)
@@ -285,17 +305,13 @@ public class Khallware extends Activity
 	{
 		final Context context = getApplicationContext();
 		logger.trace("postEvents()...");
-		AsyncTask.execute(new Runnable() {
-			public void run()
+		new SimpleTask() {
+			@Override
+			public void perform() throws Exception
 			{
-				try {
-					Util.postEvents(context, tagId);
-				}
-				catch (Exception e) {
-					logger.error(""+e,e);
-				}
+				Util.postEvents(context, tagId);
 			}
-		});
+		}.execute();
 	}
 
 	public void goEvents(View view)
@@ -308,17 +324,13 @@ public class Khallware extends Activity
 	{
 		final Context context = getApplicationContext();
 		logger.trace("replaceEvents()...");
-		AsyncTask.execute(new Runnable() {
-			public void run()
+		new SimpleTask() {
+			@Override
+			public void perform() throws Exception
 			{
-				try {
-					Util.replaceEvents(context, tagId);
-				}
-				catch (Exception e) {
-					logger.error(""+e,e);
-				}
+				Util.replaceEvents(context, tagId);
 			}
-		});
+		}.execute();
 	}
 
 	public void goFileitems(View view)
@@ -396,14 +408,14 @@ public class Khallware extends Activity
 
 	public void goConnect(View view)
 	{
-		try {
-			logger.trace("goConnect()...");
-			dstore.deleteUrlUserPasswd();
-			launchIntent(Khallware.class);
-		}
-		catch (Exception e) {
-			Util.toastException(e, getApplicationContext());
-		}
+		new SimpleTask() {
+			@Override
+			public void perform() throws Exception
+			{
+				logger.trace("goConnect()...");
+				launchIntent(ConnectActivity.class);
+			}
+		}.execute();
 	}
 
 	protected void showAbout(Context ctxt)
@@ -432,12 +444,16 @@ public class Khallware extends Activity
 					View view, int position, long id)
 			{
 				int viewId = R.id.favorite_id;
+				int tagId = Integer.parseInt(""+((TextView)
+					view.findViewById(viewId)).getText());
+				try {
+					Datastore.getDatastore().setTag(tagId);
+				}
+				catch (DatastoreException e) {
+					logger.error(""+e, e);
+				}
 				dialog.dismiss();
-				launchIntent(
-					Khallware.class, 
-					Integer.parseInt(""+((TextView)
-						view.findViewById(viewId)
-						).getText()));
+				launchIntent(Khallware.class);
 			}
 		});
 		listView.setAdapter(new KResourceCursorAdapter(
@@ -451,6 +467,9 @@ public class Khallware extends Activity
 		super.onActivityResult(request, result, intent);
 
 		if (result != Activity.RESULT_OK) {
+			if (result == Activity.RESULT_CANCELED) {
+				return;
+			}
 			Util.toastException(
 				new RuntimeException("sub activity failure"),
 				getApplicationContext());
@@ -479,28 +498,23 @@ public class Khallware extends Activity
 			launchIntent(CrudActivity.class, map);
 			break;
 		case ACTIVITY_SELECT_IMAGE:
-			/*
-			String[] cols = { Images.Media.DATA };
-			Cursor cursor = getContentResolver().query(
-				intent.getData(), cols, null, null, null);
-			cursor.moveToFirst();
-			final File file = new File(cursor.getString(
-				cursor.getColumnIndex(cols[0])));
-			cursor.close();
-			AsyncTask.execute(new Runnable() {
-				public void run()
-				{
-					try {
-						CrudHelper.upload(
-							EntityType.photo,
-							dstore.getTag(), file);
-					}
-					catch (Exception e) {
-						logger.error(""+e,e);
-					}
-				}
-			});
-			*/
+			File file = null;
+			String url = null;
+			try {
+				String[] uup = dstore.getUrlUserPasswd();
+				String[] cols = { Images.Media.DATA };
+				Cursor cursor = getContentResolver().query(
+					intent.getData(), cols,null,null,null);
+				cursor.moveToFirst();
+				file = new File(cursor.getString(
+					cursor.getColumnIndex(cols[0])));
+				url = uup[0]+"/apis/v1/upload?tagId="+tagId;
+				cursor.close();
+			}
+			catch (Exception e) {
+				Util.toastException(e, getApplicationContext());
+			}
+			new FileUpload(EntityType.photo, url).execute(file);
 			break;
 		}
 	}
@@ -558,22 +572,53 @@ public class Khallware extends Activity
 		}
 	}
 
-	protected void applyTagInfo(final JSONObject tag)
+	protected void applyTagInfoOnUI(JSONObject tag, int parent)
+			throws DatastoreException, JSONException
 	{
+		if (!tag.has("id")) {
+			int duration = Toast.LENGTH_LONG;
+			Context context = getApplicationContext();
+			String msg = "This tag is currently unavailable.";
+
+			if (tag.has("error")) {
+				msg += "\n"+tag.getString("error");
+			}
+			Toast.makeText(context, msg, duration).show();
+
+			if (parent > 0) {
+				dstore.setTag(parent);
+			}
+			finish();
+		}
+		else {
+			try {
+				((EditText)findViewById(
+					R.id.atag_name)).setText(
+						tag.getString("name"));
+				((EditText)findViewById(
+					R.id.atag_desc)).setText(
+						tag.getString(
+							"description"));
+			}
+			catch (Exception e) {
+				logger.error(""+e,e);
+			}
+		}
+	}
+
+	protected void applyTagInfo(final JSONObject tag)
+			throws DatastoreException, NetworkException,
+			JSONException
+	{
+		final int parent = CrudHelper.getParentTag(tagId).getInt("id");
 		runOnUiThread(new Runnable() {
 			public void run()
 			{
 				try {
-					((EditText)findViewById(
-						R.id.atag_name)).setText(
-							tag.getString("name"));
-					((EditText)findViewById(
-						R.id.atag_desc)).setText(
-							tag.getString(
-								"description"));
+					applyTagInfoOnUI(tag, parent);
 				}
 				catch (Exception e) {
-					logger.error(""+e,e);
+					logger.error(""+e, e);
 				}
 			}
 		});
@@ -611,15 +656,16 @@ public class Khallware extends Activity
 	protected void countAndApply(int tagId)
 	{
 		Map<EntityType, Integer> map = new HashMap<>();
+		map.put(EntityType.tag,      R.id.atag_button);
 		map.put(EntityType.bookmark, R.id.abookmark_button);
 		map.put(EntityType.location, R.id.alocation_button);
 		map.put(EntityType.fileitem, R.id.afileitem_button);
-		map.put(EntityType.contact, R.id.acontact_button);
-		map.put(EntityType.video, R.id.avideo_button);
-		map.put(EntityType.sound, R.id.asound_button);
-		map.put(EntityType.event, R.id.aevent_button);
-		map.put(EntityType.photo, R.id.aphoto_button);
-		map.put(EntityType.blog, R.id.ablog_button);
+		map.put(EntityType.contact,  R.id.acontact_button);
+		map.put(EntityType.video,    R.id.avideo_button);
+		map.put(EntityType.sound,    R.id.asound_button);
+		map.put(EntityType.event,    R.id.aevent_button);
+		map.put(EntityType.photo,    R.id.aphoto_button);
+		map.put(EntityType.blog,     R.id.ablog_button);
 
 		try {
 			for (EntityType type : map.keySet()) {

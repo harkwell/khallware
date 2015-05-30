@@ -87,7 +87,7 @@ public class DownloadBitmap extends AsyncTask<Integer, Void, Bitmap>
 		String url = uup[0]+"/apis/v1/photos/"+name+"?thumb=true";
 		Map<String, String> map = Util.defaultHeadersAsMap();
 		map.put("Accept","image/jpeg");
-		is = Util.queryRESTasStream(new HttpGet(url), map);
+		is = Util.queryRESTasStream(new HttpGet(url), map, null);
 		is.mark(1024);
 		retval = BitmapFactory.decodeStream(is);
 		is.reset();

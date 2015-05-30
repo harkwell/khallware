@@ -72,7 +72,7 @@ public class DownloadSound extends AsyncTask<Integer, Void, File>
 			map.put("Accept","application/ogg");
 
 			if (!Util.toFile(retval, (is = Util.queryRESTasStream(
-					new HttpGet(url), map)))) {
+					new HttpGet(url), map, null)))) {
 				is.close();
 				throw new NetworkException(
 					"failed to save sound file: "

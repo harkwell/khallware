@@ -2,7 +2,7 @@
 <!-- $Id$ -->
 <!-- ==========================================================================
  * The Android "Khallware" application
- * (C) 2014 Kevin D.Hall
+ * (C) 2014-2015 Kevin D.Hall
  *
  * The software, processes, trade secrets and technical/business know-how used
  * on these premises are the property of Kevin D.Hall and are not to be copied,  * divulged or used without the express written consent of the author.
@@ -14,13 +14,39 @@
 		android:orientation="vertical"
 		xmlns:android="http://schemas.android.com/apk/res/android" >
 
-	<TextView
+	<LinearLayout
 			android:layout_width="fill_parent"
 			android:layout_height="wrap_content"
-			android:text="@string/version"
-			android:gravity="center"
-			android:layout_x="0px"
-			android:layout_y="160px"/>
+			android:orientation="horizontal"
+			xmlns:android="http://schemas.android.com/apk/res/android" >
+
+		<!-- TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/lit_search" / -->
+
+		<EditText
+				android:layout_width="400px"
+				android:layout_height="wrap_content"
+				android:maxLines="1"
+				android:hint="search"
+				android:id="@+id/search_text"
+				android:focusable="true" />
+
+		<ImageButton
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:src="@android:drawable/ic_menu_search"
+				android:onClick="performSearch" />
+
+	</LinearLayout>
+	<ListView
+			android:id="@+id/search_results"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content" >
+	</ListView>
+
 </LinearLayout>
 
 <!-- http://www.droiddraw.org/ -->
+

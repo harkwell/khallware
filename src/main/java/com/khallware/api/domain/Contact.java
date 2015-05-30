@@ -13,6 +13,8 @@ import ezvcard.Ezvcard;
 import ezvcard.VCard;
 import java.util.Date;
 import java.util.UUID;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import org.xml.sax.SAXException;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
@@ -182,6 +184,54 @@ public class Contact extends AtomEntity
 	public static String vcardToJson(VCard vcard)
 	{
 		return(Ezvcard.writeJson(vcard).go());
+	}
+
+	public static String toJcard(Contact contact)
+	{
+		StringBuilder retval = new StringBuilder();
+		String token = null;
+
+		// see: RFC-7095
+		retval.append("[\"vcard\",");
+		retval.append(   "[");
+		retval.append(     "[\"version\",{},\"text\",\"4.0\"],");
+
+		if (!isNullOrEmpty((token = contact.getUID()))) {
+			retval.append("[\"uid\",{},\"text\",\""+token+"\"],");
+		}
+		if (!isNullOrEmpty((token = contact.getName()))) {
+			retval.append("[\"fn\",{},\"text\",\""+token+"\"],");
+		}
+		if (!isNullOrEmpty((token = contact.getEmail()))) {
+			retval.append("[\"email\",{\"type\":\"work\"},");
+			retval.append(   "\"text\",\""+token+"\"],");
+		}
+		if (!isNullOrEmpty((token = contact.getPhone()))) {
+			retval.append("[\"tel\",{\"type\":\"work\"},");
+			retval.append(   "\"uri\",\"tel:+1-"+token+"\"],");
+		}
+		if (!isNullOrEmpty((token = contact.getTitle()))) {
+			retval.append("[\"title\",{},\"text\",\""+token+"\"],");
+		}
+		if (!isNullOrEmpty((token = contact.getOrganization()))) {
+			retval.append("[\"org\",{\"type\":\"work\"},");
+			retval.append(   "\"text\",\""+token+"\"],");
+		}
+		if (!isNullOrEmpty((token = contact.getAddress()))) {
+			retval.append("[\"adr\",{\"type\":\"work\"},");
+			retval.append(   "\"text\",\"[");
+
+			for (String ln : token.split("\n")) {
+				retval.append("\""+ln+"\",");
+			}
+			retval.append(   "]],");
+		}
+		retval.append("[\"rev\",{},\"timestamp\","
+			+"\""+LocalDateTime.now().format(
+				DateTimeFormatter.ISO_INSTANT)+"\"]");
+		retval.append(   "]");
+		retval.append("]");
+		return(""+retval);
 	}
 
 	/**

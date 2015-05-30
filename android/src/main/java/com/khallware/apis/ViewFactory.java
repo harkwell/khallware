@@ -302,9 +302,9 @@ public class ViewFactory
 	{
 		try {
 			final Activity activity = (Activity)parent.getContext();
-			LinearLayout layout = new LinearLayout(
+			final LinearLayout layout = new LinearLayout(
 				parent.getContext());
-			Button button = new Button(layout.getContext());
+			final Button button = new Button(layout.getContext());
 			getLayoutParams(button);
 			button.setText("Edit");
 			button.setOnClickListener(new View.OnClickListener() {
@@ -321,8 +321,14 @@ public class ViewFactory
 					activity.startActivity(intent);
 				}
 			});
-			layout.addView(button);
-			parent.addView(layout);
+			activity.runOnUiThread(
+					new Runnable() {
+				public void run()
+				{
+					layout.addView(button);
+					parent.addView(layout);
+				}
+			});
 		}
 		catch (Exception e) {
 			logger.error(""+e, e);

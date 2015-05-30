@@ -72,7 +72,7 @@ public class DownloadVideo extends AsyncTask<Integer, Void, File>
 			map.put("Accept","application/mp4");
 
 			if (!Util.toFile(retval, (is = Util.queryRESTasStream(
-					new HttpGet(url), map)))) {
+					new HttpGet(url), map, null)))) {
 				is.close();
 				throw new NetworkException(
 					"failed to save sound file: "

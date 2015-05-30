@@ -30,7 +30,11 @@ import android.provider.ContactsContract.CommonDataKinds;
 import android.content.ContentProviderOperation;
 import android.content.ContentValues;
 import android.media.MediaPlayer;
+// httpmime is not built into Android, but needs >= apache httpcore-4.3
+import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.entity.mime.HttpMultipartMode;
 // httpclient is built into Android
+import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpPost;
@@ -38,10 +42,12 @@ import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.entity.BufferedHttpEntity;
-import org.apache.http.entity.BasicHttpEntity;
+import org.apache.http.params.CoreProtocolPNames;
 import org.apache.http.params.BasicHttpParams;
+import org.apache.http.entity.BasicHttpEntity;
+import org.apache.http.entity.BufferedHttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpVersion;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONArray;
@@ -70,11 +76,13 @@ public class Util
 			CommonDataKinds.StructuredPostal.FORMATTED_ADDRESS );
 	};
 
-	// KDH: is this right?
 	public static JSONObject queryREST(HttpRequestBase request,
-			String[] headers) throws NetworkException
+			HttpClient... varargs) throws NetworkException
 	{
-		return(queryREST(request, defaultHeadersAsMap()));
+		HttpClient client = (varargs.length > 0)
+			? varargs[0]
+			: new DefaultHttpClient(new BasicHttpParams());
+		return(queryREST(request, defaultHeadersAsMap(), client));
 	}
 
 	/**
@@ -82,13 +90,15 @@ public class Util
 	 *    android-bitmapfactory-decodestream-returns-null
 	 */
 	public static InputStream queryRESTasStream(HttpRequestBase request,
-			Map<String, String> headers) throws NetworkException
+			Map<String, String> headers, HttpClient client)
+			throws NetworkException
 	{
 		InputStream retval = null;
 		HttpResponse response = null;
 		BufferedHttpEntity entity = null;
-		DefaultHttpClient client = new DefaultHttpClient(
-			new BasicHttpParams());
+		client = (client == null)
+			? new DefaultHttpClient(new BasicHttpParams())
+			: client;
 
 		for (String header : headers.keySet()) {
 			request.setHeader(header, headers.get(header));
@@ -114,13 +124,15 @@ public class Util
 	 * or null if not found.  Throw a NetworkException if appropriate.
 	 */
 	public static JSONObject queryREST(HttpRequestBase request,
-			Map<String, String> headers) throws NetworkException
+			Map<String, String> headers, HttpClient client)
+			throws NetworkException
 	{
 		JSONObject retval = null;
-		String tmp = null;
+		String rslt = "";
 		try {
-			tmp = toString(queryRESTasStream(request, headers));
-			retval = new JSONObject(tmp);
+			rslt = toString(
+				queryRESTasStream(request, headers, client));
+			retval = new JSONObject(rslt);
 		}
 		catch (JSONException e) {
 			logger.warn(""+e, e);
@@ -132,7 +144,7 @@ public class Util
 			}
 		}
 		catch (Exception e) {
-			logger.warn("invalid json returned: ({})", tmp);
+			logger.warn("invalid json returned: ({})", rslt);
 			logger.warn(""+e, e);
 			throw new NetworkException(e);
 		}
@@ -231,88 +243,70 @@ public class Util
 
 	public static JSONObject handleGet(String uri) throws NetworkException
 	{
-		return(handleGet(uri, defaultHeaders()));
-	}
-
-	public static JSONObject handleGet(String uri, String[] headers)
-			throws NetworkException
-	{
-		return(queryREST(new HttpGet(uri), headers));
-	}
-
-	public static JSONObject handlePost(String uri, JSONObject body)
-			throws NetworkException
-	{
-		return(handlePost(uri, body, defaultHeaders()));
+		return(queryREST(new HttpGet(uri)));
 	}
 
 	public static HttpRequestBase setContent(
 			HttpEntityEnclosingRequestBase retval, JSONObject json)
 	{
+		return(setContent(retval, ""+json));
+	}
+
+	public static HttpRequestBase setContent(
+			HttpEntityEnclosingRequestBase retval, String json)
+	{
 		final BasicHttpEntity entity = new BasicHttpEntity();
 		ByteArrayInputStream bis = new ByteArrayInputStream(
-			json.toString().getBytes());
+			json.getBytes());
 		entity.setContent(bis);
 		retval.setEntity(entity);
 		return(retval);
 	}
 
-	/*
+	/**
+	 * BUG:
+	 * The stock version of apache httpclient in android is stuck at
+	 * 4.0beta2 and does not include ContentType.java, so this code throws
+	 * a class cast exception.  (20150527) working to find a way to
+	 * include httpcore/httpmime for httpclient 4.3.5.1...
+	 */
 	public static JSONObject handlePost(EntityType type, int tagId,
 			File file) throws NetworkException, DatastoreException
 	{
 		String[] uup = Datastore.getDatastore().getUrlUserPasswd();
 		String url = uup[0]+"/apis/v1/upload?tagId="+tagId;
-		// HttpClient client = new DefaultHttpClient(
-		DefaultHttpClient client = new DefaultHttpClient(
-			new BasicHttpParams());
-		// client.getParams().setParameter(
-		//	CoreProtocolPNames.PROTOCOL_VERSION,
-		//	HttpVersion.HTTP_1_1);
+		HttpClient client = new DefaultHttpClient();
 		HttpPost request = new HttpPost(url);
-		MultipartEntity entity = new MultipartEntity();
-		// ContentBody contentBody = new FileBody(file);
-		ContentBody contentBody = new FileBody(file, mimeMap.get(type));
-		try {
-			entity.addPart("filecomment", new StringBody(""+type));
-			entity.addPart("image", contentBody);
-		}
-		catch (Exception e) {
-			throw new NetworkException(e);
-		}
-		request.setEntity(entity);
-		return(queryREST(request, defaultHeadersAsMap()));
+		MultipartEntityBuilder builder = MultipartEntityBuilder.create()
+			.setMode(HttpMultipartMode.BROWSER_COMPATIBLE)
+			.addTextBody("filecomment", ""+type)
+			.addBinaryBody(file.getName(), file);
+		request.setEntity(builder.build());
+		return(queryREST(request, client));
 	}
-	*/
 
-	public static JSONObject handlePost(String uri, JSONObject body,
-			String[] headers) throws NetworkException
+	public static JSONObject handlePost(String uri, String body)
+			throws NetworkException
 	{
-		return(queryREST(setContent(new HttpPost(uri), body), headers));
+		return(queryREST(setContent(new HttpPost(uri), body)));
+	}
+
+	public static JSONObject handlePost(String uri, JSONObject body)
+			throws NetworkException
+	{
+		return(queryREST(setContent(new HttpPost(uri), body)));
 	}
 
 	public static JSONObject handlePut(String uri, JSONObject body)
 			throws NetworkException
 	{
-		return(handlePut(uri, body, defaultHeaders()));
-	}
-
-	public static JSONObject handlePut(String uri, JSONObject body,
-			String[] headers) throws NetworkException
-	{
-		return(queryREST(setContent(new HttpPut(uri), body), headers));
+		return(queryREST(setContent(new HttpPut(uri), body)));
 	}
 
 	public static JSONObject handleDelete(String uri)
 			throws NetworkException
 	{
-		return(handleDelete(uri, defaultHeaders()));
-	}
-
-	public static JSONObject handleDelete(String uri, String[] headers)
-			throws NetworkException
-	{
-		return(queryREST(new HttpDelete(uri), headers));
+		return(queryREST(new HttpDelete(uri)));
 	}
 
 	public static String toStringWithStacktrace(Exception exception)

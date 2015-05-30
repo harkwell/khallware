@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- this is the string definitions -->
 <resources>
-	<string name="version">foo</string>
+	<string name="version">version here...</string>
 	<string name="connect">Connection Provisions</string>
 	<string name="browse">Browse Tag Details</string>
 	<string name="contact">Contact Details</string>
@@ -38,7 +38,7 @@
 	<string name="lit_update">Update</string>
 	<string name="lit_delete">Delete</string>
 	<string name="lit_goparenttag">Up</string>
-	<string name="lit_gochildtag">Children</string>
+	<string name="lit_gochildtag">Tags</string>
 	<string name="lit_gotag">Content</string>
 	<string name="lit_addtodroidcal">Add to Calendar</string>
 	<string name="lit_addascontact">Add to Contacts</string>

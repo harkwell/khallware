@@ -100,7 +100,10 @@ public class Tags extends CrudController<Tag>
 	}
 
 	/**
-	 * List tags.
+	 * List tags.  If a valid tagId is specified, include that one.
+	 * If a tagName is specified, include those matching tags.  If
+	 * a valid parentId is specified, include the children of that one.
+	 * If count is specified, return the count json object instead.
 	 */
 	@GET
 	@Produces("application/json")
@@ -135,9 +138,13 @@ public class Tags extends CrudController<Tag>
 				parent = (parent == null) ? new Tag() : parent;
 				tags.addAll(Datastore.DS().getTags(parent));
 			}
-			String json = 
-				CrudController.toJson(this.getClass(), tags);
-			retval = Response.status(200).entity(json).build();
+			retval = Response
+				.status(200)
+				.entity((pg.returnCount())
+					? "{ \"count\" : "+tags.size()+" }"
+					: CrudController.toJson(
+						this.getClass(), tags))
+				.build();
 		}
 		catch (APIException|IOException|DatastoreException e) {
 			retval = Util.failRequest(e);

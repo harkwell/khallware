@@ -2,7 +2,7 @@
 <!-- $Id$ -->
 <!-- ==========================================================================
  * The Android "Khallware" application
- * (C) 2014 Kevin D.Hall
+ * (C) 2014-2015 Kevin D.Hall
  *
  * The software, processes, trade secrets and technical/business know-how used
  * on these premises are the property of Kevin D.Hall and are not to be copied,  * divulged or used without the express written consent of the author.
@@ -15,52 +15,76 @@
 		xmlns:android="http://schemas.android.com/apk/res/android" >
 
 	<TextView
-			android:layout_width="fill_parent"
+			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:text="@string/connect"
 			android:gravity="center"
 			android:layout_x="0px"
-			android:layout_y="160px"/>
+			android:layout_y="160px"
+			android:layout_gravity="center_horizontal" />
 
-	<TextView
-			android:layout_width="fill_parent"
-			android:layout_height="wrap_content"
-			android:text="@string/lit_user" />
-
-	<EditText
-			android:id="@+id/connect_user"
+	<LinearLayout
+			android:orientation="horizontal"
 			android:layout_width="wrap_content"
-			android:layout_height="wrap_content" />
+			android:layout_height="wrap_content" >
 
-	<TextView
-			android:layout_width="fill_parent"
-			android:layout_height="wrap_content"
-			android:text="@string/lit_pass" />
+		<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/lit_user" />
 
-	<EditText
-			android:id="@+id/connect_pass"
-			android:maxLines="1"
-			android:hint="password"
-			android:inputType="textPassword"
+		<EditText
+				android:id="@+id/connect_user"
+				android:maxLines="1"
+				android:hint="username"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content" />
+
+	</LinearLayout>
+	<LinearLayout
+			android:orientation="horizontal"
 			android:layout_width="wrap_content"
-			android:layout_height="wrap_content" />
+			android:layout_height="wrap_content" >
 
-	<TextView
-			android:layout_width="fill_parent"
-			android:layout_height="wrap_content"
-			android:text="@string/lit_host" />
+		<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/lit_pass" />
 
-	<EditText
-			android:id="@+id/connect_host"
-			android:maxLines="1"
+		<EditText
+				android:id="@+id/connect_pass"
+				android:maxLines="1"
+				android:hint="password"
+				android:inputType="textPassword"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content" />
+
+	</LinearLayout>
+	<LinearLayout
+			android:orientation="horizontal"
 			android:layout_width="wrap_content"
-			android:layout_height="wrap_content" />
+			android:layout_height="wrap_content" >
 
-	<Button
+		<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/lit_host" />
+
+		<EditText
+				android:id="@+id/connect_host"
+				android:maxLines="1"
+				android:hint="host url"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content" />
+
+	</LinearLayout>
+	<ImageButton
+			android:gravity="center"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:text="@string/lit_connect"
-			android:onClick="doConnect" />
+			android:onClick="doConnect"
+			android:src="@*android:drawable/stat_notify_sync"
+			android:layout_gravity="center_horizontal" />
 </LinearLayout>
 
 <!-- http://www.droiddraw.org/ -->

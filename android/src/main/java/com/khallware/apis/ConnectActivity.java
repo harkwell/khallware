@@ -39,25 +39,36 @@ public class ConnectActivity extends Activity
 			uup[1] = editText.getText().toString();
 			editText = (EditText)findViewById(R.id.connect_pass);
 			uup[2] = editText.getText().toString();
-			Datastore.getDatastore().setUrlUserPasswd(uup);
-			testConnectionAndFinish();
+			testConnectionAndFinish(uup);
 		}
 		catch (Exception e) {
 			Util.toastException(e, getApplicationContext());
 		}
 	}
 
-	private void testConnectionAndFinish()
+	private void testConnectionAndFinish(final String[] uup)
 	{
+		final Datastore dstore = Datastore.getDatastore();
 		AsyncTask.execute(new Runnable() {
 			public void run()
 			{
+				String[] prev = null;
 				try {
+					prev = dstore.getUrlUserPasswd();
+					dstore.setUrlUserPasswd(uup);
 					CrudHelper.getParentTag(1);
+					dstore.setUrlUserPasswd(uup);
+					dstore.truncateFavorites();
 					finish();
 				}
 				catch (Exception e) {
 					logger.warn(""+e, e);
+					try {
+						dstore.setUrlUserPasswd(prev);
+					}
+					catch (DatastoreException ex) {
+						logger.error(""+ex, ex);
+					}
 					runOnUiThread(new Runnable() {
 						public void run()
 						{
@@ -72,7 +83,6 @@ public class ConnectActivity extends Activity
 	private void failConnect()
 	{
 		try {
-			Datastore.getDatastore().deleteUrlUserPasswd();
 			Toast toast = Toast.makeText(getApplicationContext(),
 				"Could not connect...", Toast.LENGTH_SHORT);
 			toast.show();

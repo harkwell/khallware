@@ -6,13 +6,16 @@
  *
 -->
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
+	<item android:id="@+id/connect"
+		  android:icon="@*android:drawable/ic_menu_login"
+		  android:title="@string/lit_connect" />
 	<item android:id="@+id/about"
 		  android:icon="@android:drawable/ic_menu_view"
 		  android:title="@string/lit_about" />
 	<item android:id="@+id/favorites"
 		  android:icon="@android:drawable/ic_input_get"
 		  android:title="@string/lit_favorites" />
-	<item android:id="@+id/connect"
-		  android:icon="@*android:drawable/ic_menu_login"
-		  android:title="@string/lit_connect" />
+	<item android:id="@+id/search"
+		  android:icon="@android:drawable/ic_input_get"
+		  android:title="@string/lit_search" />
 </menu>

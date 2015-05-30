@@ -212,13 +212,11 @@ public class CrudHelper
 		return(read(EntityType.location, from, to, tag));
 	}
 
-	/*
 	public static JSONObject upload(EntityType type, int tagId, File file)
 			throws NetworkException, DatastoreException
 	{
 		return(Util.handlePost(type, tagId, file));
 	}
-	*/
 
 	public static JSONObject getFileItem(int id) throws DatastoreException,
 			NetworkException

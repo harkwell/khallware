@@ -2,6 +2,7 @@
 
 package com.khallware.apis;
 
+import com.khallware.apis.tasks.SimpleTask;
 import com.khallware.apis.enums.EntityType;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.app.FragmentManager;
@@ -28,10 +29,10 @@ public class EntitySetPagerAdapter extends FragmentStatePagerAdapter
 	private final Map<Integer,Fragment> loadMap = new HashMap<>();
 	private final List<String> jsonList = new Vector<>();
 	private FragmentManager fragmentManager = null;
-	private EntityType entityType = null;
+	private boolean waitWhileReplacing = false;
 	private boolean endOfItems = false;
-	private boolean expanding = false;
-	private boolean replacing = false;
+	private AsyncTask fetchTask = null;
+	private EntityType entityType = null;
 	private int index = 0;
 	private int tag = 0;
 
@@ -48,25 +49,8 @@ public class EntitySetPagerAdapter extends FragmentStatePagerAdapter
 	@Override
 	public int getCount()
 	{
-		int retval = jsonList.size();
-
-		if (index == retval && !expanding) {
-			if (!endOfItems) {
-				expandEntityListViaThread(tag);
-			}
-			else if (!replacing) {
-				Fragment fragment = new NoneAvailableFragment();
-				provision(fragment);
-				replace(getItem(index), fragment);
-				retval++;
-			}
-		}
-		/*
-		else if ((retval - index) <= 1 && !replacing) {
-			replace(getItem(index), index);
-		}
-		*/
-		return(retval);
+		manageFragments();
+		return(jsonList.size());
 	}
 
 	@Override
@@ -78,11 +62,11 @@ public class EntitySetPagerAdapter extends FragmentStatePagerAdapter
 			int numItems = jsonList.size();
 			String json = null;
 
-			if ((numItems == 0 || idx > numItems) && endOfItems) {
+			if ((numItems == 0) && endOfItems) {
 				retval = new NoneAvailableFragment();
 				provision(retval);
 			}
-			else if (numItems > 0 && numItems > idx) {
+			else if ((numItems > 0) && (numItems > idx)) {
 				retval = new EntityFragment();
 				provision(retval, idx);
 			}
@@ -127,59 +111,76 @@ public class EntitySetPagerAdapter extends FragmentStatePagerAdapter
 		return(retval);
 	}
 
+	protected void manageFragments()
+	{
+		if (fetchTask != null) {
+			switch (fetchTask.getStatus()) {
+			case FINISHED:
+				fetchTask = null;
+				break;
+			case PENDING:
+			case RUNNING:
+			default:
+				break;
+			}
+		}
+		if (index >= (jsonList.size() - 1) && (fetchTask == null)) {
+			if (!endOfItems) {
+				expandEntityListViaThread(tag);
+			}
+		}
+	}
+
 	protected void expandEntityListViaThread(final int tag)
 	{
 		if (jsonList.size() >= MAX_ENTITIES) {
 			throw new RuntimeException("maximum entities reached");
 		}
-		AsyncTask.execute(new Runnable() {
-			public void run()
+		fetchTask = new SimpleTask() {
+			@Override
+			public void perform() throws Exception
 			{
-				try {
-					expanding = true;
-					expandEntityList(tag);
-				}
-				catch (Exception e) {
-					logger.warn(""+e, e);
-				}
-				expanding = false;
+				expandEntityList(tag);
 			}
-		});
+		};
+		fetchTask.execute();
 	}
 
 	protected synchronized void expandEntityList(final int tag)
 			throws DatastoreException, NetworkException
 	{
+		if (endOfItems) {
+			throw new IllegalStateException("all entities read");
+		}
 		int page = Math.max(1,(jsonList.size() / MAX_REQ_ENTITIES)+1);
+		JSONArray jarray = CrudHelper.read(
+			entityType, page, MAX_REQ_ENTITIES, tag);
 		int count = 0;
 
-		if (!endOfItems) {
-			JSONArray jarray = CrudHelper.read(entityType, page,
-				MAX_REQ_ENTITIES, tag);
+		for (int j=0; j < jarray.length(); j++) {
+			int idx = ((page-1) * MAX_REQ_ENTITIES) + j;
+			try {
+				jsonList.add(""+jarray.getJSONObject(j));
 
-			for (int j=0; j < jarray.length(); j++) {
-				int idx = ((page-1) * MAX_REQ_ENTITIES) + j;
-				try {
-					jsonList.add(
-						""+jarray.getJSONObject(j));
-
-					if (loadMap.containsKey(idx)) {
-						replace(loadMap.get(idx), idx);
+				if (loadMap.containsKey(idx)) {
+					if (replace(loadMap.get(idx), idx)) {
 						loadMap.remove(idx);
 					}
-					count++;
 				}
-				catch (JSONException e) {
-					throw new NetworkException(e);
-				}
+				count++;
+			}
+			catch (JSONException e) {
+				throw new NetworkException(e);
 			}
 		}
 		endOfItems = (count < MAX_REQ_ENTITIES);
 	}
 
-	protected final void replace(Fragment oldFragment, Fragment newFragment)
+	protected final boolean replace(Fragment oldFragment,
+			Fragment newFragment)
 	{
-		replacing = true;
+		boolean retval = false;
+		waitWhileReplacing = true;
 		fragmentManager
 			.beginTransaction()
 			.detach(oldFragment)
@@ -187,17 +188,21 @@ public class EntitySetPagerAdapter extends FragmentStatePagerAdapter
 			.attach(newFragment)
 			.commit();
 		notifyDataSetChanged(); // NOTE: will invoke getCount()
-		replacing = false;
-		// KDH sometimes we never get here...
+		waitWhileReplacing = false;
+		retval = true;
+		return(retval);
 	}
 
-	protected final void replace(Fragment oldFragment, int idx)
+	protected final boolean replace(Fragment oldFragment, int idx)
 	{
+		boolean retval = false;
+
 		if (jsonList.size() > idx) {
 			Fragment newFragment = new EntityFragment();
 			provision(newFragment, idx);
-			replace(oldFragment, newFragment);
+			retval = replace(oldFragment, newFragment);
 		}
+		return(retval);
 	}
 
 	protected final void provision(Fragment fragment)

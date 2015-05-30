@@ -6,7 +6,7 @@
 
 | Table:smartrics.rest.fitnesse.fixture.RestFixture | http://localhost:8080 |
 | setHeaders |!-
-Authorization:Basic a2hhbGw6a2hhbGw=
+Authorization:Basic Z3Vlc3Q6Z3Vlc3Q=
 Accept:application/json
 Content-Type:application/json
 -!|
@@ -18,7 +18,7 @@ Content-Type:application/json
 
 | Table:smartrics.rest.fitnesse.fixture.RestFixture | http://localhost:8080 |
 | setHeaders |!-
-Authorization:Basic a2hhbGw6a2hhbGw=
+Authorization:Basic Z3Vlc3Q6Z3Vlc3Q=
 Accept:application/json
 Content-Type:application/json
 -!|
@@ -28,7 +28,7 @@ Content-Type:application/json
 
 | Table:smartrics.rest.fitnesse.fixture.RestFixture | http://localhost:8080 |
 | setHeaders |!-
-Authorization:Basic a2hhbGw6a2hhbGw=
+Authorization:Basic Z3Vlc3Q6Z3Vlc3Q=
 Accept:application/json
 Content-Type:application/json
 -!|
@@ -40,7 +40,7 @@ Content-Type:application/json
 
 | Table:smartrics.rest.fitnesse.fixture.RestFixture | http://localhost:8080 |
 | setHeaders |!-
-Authorization:Basic a2hhbGw6a2hhbGw=
+Authorization:Basic Z3Vlc3Q6Z3Vlc3Q=
 Accept:application/json
 Content-Type:application/json
 -!|

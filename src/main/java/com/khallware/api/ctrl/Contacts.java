@@ -266,15 +266,9 @@ public class Contacts extends CrudController<Contact>
 					contact, Contact.parseJson(""+jcard));
 			}
 			else {
-				StringBuilder sb = new StringBuilder();
-				sb.append("[\"vcard\",[");
-				sb.append("[\"version\",{},\"text\",\"4.0\"],");
-				sb.append("[\"n\",{},\"text\",");
-				sb.append("[\"\",\"\",\"\",\"\",\"\"]],");
-				sb.append("[\"fn\",{},\"text\",");
-				sb.append("\""+contact.getName()+"\"]]]");
 				Contact.updateContact(
-					contact, Contact.parseJson(""+sb));
+					contact, Contact.parseJson(
+						Contact.toJcard(contact)));
 			}
 		}
 		catch (Exception e) {

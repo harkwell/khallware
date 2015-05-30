@@ -166,6 +166,16 @@ public class Datastore extends SQLiteOpenHelper
 		}
 	}
 
+	public void truncateFavorites() throws DatastoreException
+	{
+		try {
+			truncateFavoritesUnwrapped();
+		}
+		catch (Exception e) {
+			throw new DatastoreException(e);
+		}
+	}
+
 	public void removeFavorite(int tag) throws DatastoreException
 	{
 		try {
@@ -294,7 +304,16 @@ public class Datastore extends SQLiteOpenHelper
 	private void removeFavoriteUnwrapped(int tag) throws SQLiteException
 	{
 		String sql = "DELETE FROM favorites WHERE tag = "+tag;
-		logger.debug("sql: " +sql);
+
+		if (tag > 1) {
+			logger.debug("sql: " +sql);
+			handle().execSQL(sql);
+		}
+	}
+
+	private void truncateFavoritesUnwrapped() throws SQLiteException
+	{
+		String sql = "DELETE FROM favorites WHERE tag > 1";
 		handle().execSQL(sql);
 	}
 }

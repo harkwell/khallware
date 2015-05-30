@@ -66,11 +66,11 @@
 				android:text="@string/lit_reconnect"
 				android:onClick="goConnect" / -->
 
-		<Button
+		<!-- Button
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:text="@string/lit_search"
-				android:onClick="goSearch" />
+				android:onClick="goSearch" / -->
 
 		<LinearLayout
 				android:orientation="horizontal"
@@ -82,6 +82,13 @@
 					android:layout_height="wrap_content"
 					android:src="@android:drawable/ic_menu_add"
 					android:onClick="addTag" />
+
+			<Button
+					android:id="@+id/aparenttag_button"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:text="@string/lit_goparenttag"
+					android:onClick="goParentTag" />
 
 			<Button
 					android:id="@+id/atag_button"

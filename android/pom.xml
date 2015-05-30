@@ -22,6 +22,7 @@
         <maven-compiler-version>3.1</maven-compiler-version>
         <maven-android-version>3.9.0-rc.2</maven-android-version>
         <android-version>4.1.1.4</android-version>
+        <httpclient-version>4.4.1</httpclient-version>
 
         <!-- Client -->
         <slf4j-version>1.6.1-RC1</slf4j-version>
@@ -36,17 +37,25 @@
         </dependency>
 
         <!-- Multipart Mime Encoding -->
-        <!-- <dependency>
+        <!-- http://stackoverflow.com/questions/27366430/getting-nosuchfielderror-instance-org-apache-http-message-basicheadervalueparser
+        <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
             <version>${httpclient-version}</version>
         </dependency>
+        -->
+        <!-- http://stackoverflow.com/questions/2017414/post-multipart-request-with-android-sdk
+        <dependency>
+            <groupId>com.github.viapp</groupId>
+            <artifactId>httpclient-android</artifactId>
+            <version>4.3.5</version>
+        </dependency>
+        -->
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpmime</artifactId>
-            <version>${mme-version}</version>
+            <version>${httpclient-version}</version>
         </dependency>
-	-->
 
         <!-- SLF4J -->
         <dependency>
