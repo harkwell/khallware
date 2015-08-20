@@ -44,9 +44,15 @@ public class Session extends APIEntity
 	public void preSave()
 	{
 		super.preSave();
-		this.user = credentials.getId();
-		this.group = credentials.getGroup();
-		logger.trace("preSave() finished: ({})", this);
+
+		if (credentials != null) {
+			this.user = credentials.getId();
+			this.group = credentials.getGroup();
+			logger.trace("preSave() finished: ({})", this);
+		}
+		else {
+			throw new IllegalStateException("missing credentials");
+		}
 	}
 
 	public String getName()

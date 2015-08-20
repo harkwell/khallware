@@ -68,7 +68,7 @@ public class EntitySetPagerAdapter extends FragmentStatePagerAdapter
 			}
 			else if ((numItems > 0) && (numItems > idx)) {
 				retval = new EntityFragment();
-				provision(retval, idx);
+				provision(retval, jsonList.get(idx));
 			}
 			else {
 				final Fragment f = new LoadFailureFragment();
@@ -199,7 +199,7 @@ public class EntitySetPagerAdapter extends FragmentStatePagerAdapter
 
 		if (jsonList.size() > idx) {
 			Fragment newFragment = new EntityFragment();
-			provision(newFragment, idx);
+			provision(newFragment, jsonList.get(idx));
 			retval = replace(oldFragment, newFragment);
 		}
 		return(retval);
@@ -207,13 +207,12 @@ public class EntitySetPagerAdapter extends FragmentStatePagerAdapter
 
 	protected final void provision(Fragment fragment)
 	{
-		provision(fragment, -1);
+		provision(fragment, "{}");
 	}
 
-	protected final void provision(Fragment fragment, int idx)
+	protected final void provision(Fragment fragment, String json)
 	{
 		Bundle args = new Bundle();
-		String json = (idx >= 0) ? jsonList.get(idx) : "{}";
 		args.putString(EntityFragment.ARG_JSON, json);
 		args.putString(EntityFragment.ARG_ENTITY, ""+entityType);
 		fragment.setArguments(args);

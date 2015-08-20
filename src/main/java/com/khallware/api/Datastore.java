@@ -46,6 +46,9 @@ import com.khallware.api.domain.ContactTags;
 import com.khallware.api.domain.BookmarkTags;
 import com.khallware.api.domain.FileItemTags;
 import com.khallware.api.domain.LocationTags;
+import com.mchange.v2.c3p0.ComboPooledDataSource;
+import com.j256.ormlite.jdbc.DataSourceConnectionSource;
+import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.db.MysqlDatabaseType;
 import com.j256.ormlite.dao.RawRowMapper;
 import com.j256.ormlite.dao.DaoManager;
@@ -53,8 +56,6 @@ import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.Where;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.DeleteBuilder;
-import com.j256.ormlite.jdbc.JdbcConnectionSource;
-import com.j256.ormlite.support.ConnectionSource;
 import java.text.SimpleDateFormat;
 import java.sql.SQLException;
 import java.util.UUID;
@@ -77,20 +78,22 @@ public final class Datastore
 {
 	private static final Logger logger = LoggerFactory.getLogger(
 		Datastore.class);
+	public static final int DEF_POOLSIZE = 150; // 1 less than mysql def max
 	public static final String PROP_DBURL = "jdbc_url";
 	public static final String PROP_DBUSER = "jdbc_user";
 	public static final String PROP_DBPASS = "jdbc_pass";
+	public static final String DEF_DRIVER = "org.mysql.jdbc.Driver";
 	public static final String DEF_DBURL = "jdbc:mysql://localhost/website";
 	public static final String DEF_DBUSER = "api";
 	public static final String DEF_DBPASS = "api";
 	public static final int MAX_LIST_SIZE = 500;
 
 	private static Datastore instance = null;
+	private static ComboPooledDataSource cpds = null;
 	private static String username = DEF_DBUSER;
 	private static String password = DEF_DBPASS;
 	private static String url = DEF_DBURL;
 	private static Properties props = null;
-
 	private static CrudChain chain = null;
 
 	/**
@@ -135,13 +138,10 @@ public final class Datastore
 	 */
 	public void configure(Properties props)
 	{
+		Datastore.props = props;
 		url = props.getProperty(PROP_DBURL, url);
 		username = props.getProperty(PROP_DBUSER, username);
 		password = props.getProperty(PROP_DBPASS, password);
-		Datastore.props = props;
-		Operator.url = url;
-		Operator.username = username;
-		Operator.password = password;
 	}
 
 	/**
@@ -175,6 +175,24 @@ public final class Datastore
 	public String getProperty(String key, String def)
 	{
 		return(props.getProperty(key, def));
+	}
+
+	public static synchronized ComboPooledDataSource getDataSource()
+	{
+		if (Datastore.cpds == null) {
+			try {
+				Datastore.cpds = new ComboPooledDataSource();
+				Datastore.cpds.setDriverClass(DEF_DRIVER);
+				Datastore.cpds.setMaxPoolSize(DEF_POOLSIZE);
+				Datastore.cpds.setJdbcUrl(url);
+				Datastore.cpds.setUser(username);
+				Datastore.cpds.setPassword(password);
+			}
+			catch (Exception e) {
+				logger.error(""+e, e);
+			}
+		}
+		return(Datastore.cpds);
 	}
 
 	/**
@@ -1023,7 +1041,8 @@ public final class Datastore
 		ConnectionSource cs = null;
 		Where where = null;
 		try {
-			cs = new JdbcConnectionSource(url, username, password,
+			cs = new DataSourceConnectionSource(
+				Datastore.getDataSource(),
 				new MysqlDatabaseType());
 			Dao<BlogTags, Integer> blogTagsDAO =
 				DaoManager.createDao(cs, BlogTags.class);
@@ -1067,7 +1086,8 @@ public final class Datastore
 		ConnectionSource cs = null;
 		Where where = null;
 		try {
-			cs = new JdbcConnectionSource(url, username, password,
+			cs = new DataSourceConnectionSource(
+				Datastore.getDataSource(),
 				new MysqlDatabaseType());
 			Dao<BookmarkTags, Integer> bookmarkTagsDAO =
 				DaoManager.createDao(cs, BookmarkTags.class);
@@ -1111,7 +1131,8 @@ public final class Datastore
 		ConnectionSource cs = null;
 		Where where = null;
 		try {
-			cs = new JdbcConnectionSource(url, username, password,
+			cs = new DataSourceConnectionSource(
+				Datastore.getDataSource(),
 				new MysqlDatabaseType());
 			Dao<LocationTags, Integer> locTagsDAO =
 				DaoManager.createDao(cs, LocationTags.class);
@@ -1155,7 +1176,8 @@ public final class Datastore
 		ConnectionSource cs = null;
 		Where where = null;
 		try {
-			cs = new JdbcConnectionSource(url, username, password,
+			cs = new DataSourceConnectionSource(
+				Datastore.getDataSource(),
 				new MysqlDatabaseType());
 			Dao<PhotoTags, Integer> photoTagsDAO =
 				DaoManager.createDao(cs, PhotoTags.class);
@@ -1199,7 +1221,8 @@ public final class Datastore
 		ConnectionSource cs = null;
 		Where where = null;
 		try {
-			cs = new JdbcConnectionSource(url, username, password,
+			cs = new DataSourceConnectionSource(
+				Datastore.getDataSource(),
 				new MysqlDatabaseType());
 			Dao<FileItemTags, Integer> photoTagsDAO =
 				DaoManager.createDao(cs, FileItemTags.class);
@@ -1243,7 +1266,8 @@ public final class Datastore
 		ConnectionSource cs = null;
 		Where where = null;
 		try {
-			cs = new JdbcConnectionSource(url, username, password,
+			cs = new DataSourceConnectionSource(
+				Datastore.getDataSource(),
 				new MysqlDatabaseType());
 			Dao<SoundTags, Integer> soundTagsDAO =
 				DaoManager.createDao(cs, SoundTags.class);
@@ -1287,7 +1311,8 @@ public final class Datastore
 		ConnectionSource cs = null;
 		Where where = null;
 		try {
-			cs = new JdbcConnectionSource(url, username, password,
+			cs = new DataSourceConnectionSource(
+				Datastore.getDataSource(),
 				new MysqlDatabaseType());
 			Dao<VideoTags, Integer> videoTagsDAO =
 				DaoManager.createDao(cs, VideoTags.class);
@@ -1331,7 +1356,8 @@ public final class Datastore
 		ConnectionSource cs = null;
 		Where where = null;
 		try {
-			cs = new JdbcConnectionSource(url, username, password,
+			cs = new DataSourceConnectionSource(
+				Datastore.getDataSource(),
 				new MysqlDatabaseType());
 			Dao<ContactTags, Integer> contactTagsDAO =
 				DaoManager.createDao(cs, ContactTags.class);
@@ -1375,7 +1401,8 @@ public final class Datastore
 		ConnectionSource cs = null;
 		Where where = null;
 		try {
-			cs = new JdbcConnectionSource(url, username, password,
+			cs = new DataSourceConnectionSource(
+				Datastore.getDataSource(),
 				new MysqlDatabaseType());
 			Dao<EventTags, Integer> eventTagsDAO =
 				DaoManager.createDao(cs, EventTags.class);

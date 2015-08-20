@@ -24,4 +24,4 @@ Import the project:
 * File -> Import project
 * Select android/pom.xml
 
-cd android1 && sed -ni -e '1,18p' -e '18a packagingOptions { exclude "META-INF/DEPENDENCIES"\nexclude "META-INF/NOTICE"\nexclude "META-INF/LICENSE" }' -e '19,28p' app/build.gradle
+# MAY BE NEEDED cd android1 && sed -ni -e '1,18p' -e '18a packagingOptions { exclude "META-INF/DEPENDENCIES"\nexclude "META-INF/NOTICE"\nexclude "META-INF/LICENSE" }' -e '19,28p' app/build.gradle

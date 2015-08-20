@@ -75,7 +75,7 @@ public class Datastore extends SQLiteOpenHelper
 		logger.debug("sql: " +sql);
 		db.execSQL(sql);
 
-		sql = "INSERT INTO current_tag VALUES (1)";
+		sql = "INSERT INTO current_tag VALUES (0)";
 		db.execSQL(sql);
 
 		sql = "CREATE TABLE favorites ("
@@ -85,7 +85,7 @@ public class Datastore extends SQLiteOpenHelper
 		logger.debug("sql: " +sql);
 		db.execSQL(sql);
 
-		sql = "INSERT INTO favorites (tag, name) VALUES (1, 'Top')";
+		sql = "INSERT INTO favorites (tag, name) VALUES (0, 'Top')";
 		db.execSQL(sql);
 	}
 
@@ -233,7 +233,7 @@ public class Datastore extends SQLiteOpenHelper
 		String sql = "DELETE FROM connect";
 		logger.debug("sql: " +sql);
 		handle().execSQL(sql);
-		setTagUnwrapped(1);
+		setTagUnwrapped(0);
 	}
 
 	private void setUrlUserPasswdUnwrapped(String[] uup)
@@ -305,7 +305,7 @@ public class Datastore extends SQLiteOpenHelper
 	{
 		String sql = "DELETE FROM favorites WHERE tag = "+tag;
 
-		if (tag > 1) {
+		if (tag > 0) {
 			logger.debug("sql: " +sql);
 			handle().execSQL(sql);
 		}
@@ -313,7 +313,7 @@ public class Datastore extends SQLiteOpenHelper
 
 	private void truncateFavoritesUnwrapped() throws SQLiteException
 	{
-		String sql = "DELETE FROM favorites WHERE tag > 1";
+		String sql = "DELETE FROM favorites WHERE tag > 0";
 		handle().execSQL(sql);
 	}
 }

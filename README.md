@@ -53,7 +53,9 @@ vi android/AndroidManifest.xml android/res/layout/map.xml
 ```
 
 * use maven
+```shell
 mvn package
+```
 
 
 
