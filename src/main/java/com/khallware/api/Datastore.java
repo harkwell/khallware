@@ -82,7 +82,7 @@ public final class Datastore
 	public static final String PROP_DBURL = "jdbc_url";
 	public static final String PROP_DBUSER = "jdbc_user";
 	public static final String PROP_DBPASS = "jdbc_pass";
-	public static final String DEF_DRIVER = "org.mysql.jdbc.Driver";
+	public static final String DEF_DRIVER = "com.mysql.jdbc.Driver";
 	public static final String DEF_DBURL = "jdbc:mysql://localhost/website";
 	public static final String DEF_DBUSER = "api";
 	public static final String DEF_DBPASS = "api";
@@ -1027,9 +1027,18 @@ public final class Datastore
 		return(retval);
 	}
 
+	/**
+	 * It's possible that by the time this method is called, the tagId
+	 * does not resolve anymore.  For this race condition, just ignore the
+	 * request.
+	 */
 	public void add2Tag(Entity entity, long tagId) throws DatastoreException
 	{
-		chain.add2Tag(entity, getTag(tagId));
+		Tag tag = null;
+
+		if (entity != null && (tag = getTag(tagId)) != null) {
+			chain.add2Tag(entity, tag);
+		}
 	}
 
 	public List<Blog> getOrphanedBlogs(final Pagination pg,

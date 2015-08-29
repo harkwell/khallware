@@ -40,7 +40,7 @@ public class FileItem extends AtomEntity
 			int idx = file.getName().lastIndexOf(".");
 			name(file.getName());
 			path(""+file);
-			ext(file.getName().substring(idx));
+			ext((idx < 0) ? "" : file.getName().substring(idx));
 			try {
 				md5sum(Util.produceHashSum("MD5", file));
 			}

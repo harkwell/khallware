@@ -23,6 +23,6 @@ INSERT INTO edges (_group, parent) VALUES ((SELECT id FROM groups WHERE name = '
 INSERT INTO credentials (username, password, email, _group) VALUES ('guest', '84983c60f7daadc1cb8698621f802c0d9f9a3c3c295c810748fb048115c186ec','guest@myhost.com',(SELECT id FROM groups WHERE name = 'guest'));
 INSERT INTO landing (url, _group) VALUES ("/apis/v1/static/family.html",(SELECT id FROM groups WHERE name = 'family'));
 INSERT INTO landing (url, _group) VALUES ("/apis/v1/static/friends.html",(SELECT id FROM groups WHERE name = 'friends'));
-INSERT INTO quota (user, available, used) SELECT id AS user, 1024, 0 FROM credentials;
+INSERT INTO quota (user, available, used) SELECT id AS user, 102400000, 0 FROM credentials;
 EOF
 $CATALINA_HOME/bin/startup.sh

@@ -1,6 +1,8 @@
 ##############
 ### V0.9.0 ###
 ##############
+writing upload files, too many file descriptors may be consumed slowing /bin/ls
+during consumeQuota in Datastore, value can become negative
 CommunicationsException: Communications link failure (jmeter@100users/1000loops)
 UI spinner does not show for details.html
 UI sort table columns does not show

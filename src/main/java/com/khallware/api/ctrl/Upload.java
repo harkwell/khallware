@@ -62,6 +62,7 @@ public class Upload extends HttpServlet
 		List<String> errors = new ArrayList<>();
 		retval.addHeader("Content-Type", MediaType.APPLICATION_JSON);
 		try {
+			Util.enforceSecurity(request);
 			String p = request.getServletContext().getRealPath("");
 			Credentials creds = Util.getCredentials(request);
 			int tagId = getIntParameter("tagId", request);
@@ -69,10 +70,11 @@ public class Upload extends HttpServlet
 			List<Part> dataParts = new ArrayList<>();
 			File dir = new File(
 				Datastore.DS().getProperty(PROP_UPLOAD_DIR,p));
+			Util.enforceWrite(Datastore.DS().getTag(tagId), creds);
 			Response rsp = null;
 
 			for (Part part : request.getParts()) {
-				if (part.getContentType() == null) {
+				if (isSupplemental(part)) {
 					String value = new String(
 						Util.fileContentAsBytes(
 							part.getInputStream()));
@@ -101,7 +103,9 @@ public class Upload extends HttpServlet
 			}
 			if (errors.size() == 0) {
 				retval.setStatus(200);
-				retval.getWriter().printf("{}");
+				retval.getWriter().printf("%s", (rsp != null)
+					? ""+rsp.getEntity()
+					: "{}");
 			}
 			else {
 				retval.setStatus(400);
@@ -162,8 +166,8 @@ public class Upload extends HttpServlet
 			long total = (available - part.getSize());
 
 			if (creds != null) {
-				Datastore.DS().consumeQuota(creds,
-					part.getSize());
+				Datastore.DS().consumeQuota(
+					creds, part.getSize());
 			}
 		}
 		fname = new SimpleDateFormat("yyyyMMdd").format(
@@ -321,5 +325,19 @@ public class Upload extends HttpServlet
 			Credentials creds, int tagId)
 	{
 		return(ctrl.handlePost(creds, entity, tagId));
+	}
+
+	private static boolean isSupplemental(Part part)
+	{
+		boolean retval = false;
+		String name = (part == null) ? "" : part.getName();
+
+		retval |= (part != null && part.getContentType() == null);
+		retval |= ("name".toLowerCase().equals(name));
+		retval |= ("path".toLowerCase().equals(name));
+		// do not include "image", it's the main part!
+		retval |= ("filename".toLowerCase().equals(name));
+		retval |= ("filecomment".toLowerCase().equals(name));
+		return(retval);
 	}
 }

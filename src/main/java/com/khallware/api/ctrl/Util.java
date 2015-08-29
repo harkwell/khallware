@@ -760,7 +760,7 @@ public final class Util
 
 	public static String sanitize(String fname)
 	{
-		String retval = fname;
+		String retval = (fname == null) ? "" : fname;
 		int flags = Pattern.CASE_INSENSITIVE;
 		String[] regexArray = new String[] {
 			"\\.\\.", File.pathSeparator, " ", ";"
