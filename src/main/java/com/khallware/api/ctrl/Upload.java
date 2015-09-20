@@ -37,6 +37,7 @@ import java.text.SimpleDateFormat;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.UUID;
 import java.util.Map;
 import java.util.List;
 import java.util.Date;
@@ -54,6 +55,7 @@ public class Upload extends HttpServlet
 	private static final String PROP_UPLOAD_DIR = "upload.dir";
 	private static final Logger logger = LoggerFactory.getLogger(
 		Upload.class);
+	private static final Object semaphore = new Object();
 
 	public void doPost(HttpServletRequest request,
 			HttpServletResponse retval)
@@ -72,6 +74,7 @@ public class Upload extends HttpServlet
 				Datastore.DS().getProperty(PROP_UPLOAD_DIR,p));
 			Util.enforceWrite(Datastore.DS().getTag(tagId), creds);
 			Response rsp = null;
+			dir = addScalablePath(dir);
 
 			for (Part part : request.getParts()) {
 				if (isSupplemental(part)) {
@@ -153,27 +156,23 @@ public class Upload extends HttpServlet
 			throws IOException, DatastoreException
 	{
 		File retval = null;
+		Datastore dstore = Datastore.DS();
 		String fname = Util.sanitize(part.getSubmittedFileName());
-		long available = (creds == null)
-			? Long.MAX_VALUE
-			: Datastore.DS().getAvailableQuota(creds);
+		synchronize (semaphore) {
+			long available = (creds == null)
+				? Long.MAX_VALUE
+				: dstore.getAvailableQuota(creds);
 
-		if (part.getSize() > available) {
-			throw new IOException("quota would be exceeded "
-				+"("+available+"bytes available)");
-		}
-		else {
-			long total = (available - part.getSize());
-
-			if (creds != null) {
-				Datastore.DS().consumeQuota(
-					creds, part.getSize());
+			if (part.getSize() > available) {
+				throw new IOException("quota would be exceeded "
+					+"("+available+"bytes available)");
+			}
+			else if (creds != null) {
+				dstore.consumeQuota(creds, part.getSize());
 			}
 		}
-		fname = new SimpleDateFormat("yyyyMMdd").format(
-			new Date()).toString()+"-"+new File(fname).getName();
-		retval = new File(""+dir, fname);
-		part.write(""+retval);
+		fname = (!fname.isEmpty()) ? fname : generateFilename(part);
+		part.write(""+(retval = new File(""+dir, fname)));
 		return(retval);
 	}
 
@@ -339,5 +338,47 @@ public class Upload extends HttpServlet
 		retval |= ("filename".toLowerCase().equals(name));
 		retval |= ("filecomment".toLowerCase().equals(name));
 		return(retval);
+	}
+
+	private static File addScalablePath(File dir)
+	{
+		File retval = dir;
+		Date now = new Date();
+		retval = new File(retval,
+			new SimpleDateFormat("yyyy").format(now).toString());
+		retval = new File(retval,
+			new SimpleDateFormat("DDD").format(now).toString());
+		retval = new File(retval,
+			new SimpleDateFormat("HH").format(now).toString());
+		retval = new File(retval,
+			new SimpleDateFormat("mm").format(now).toString());
+		return(retval);
+	}
+
+	private static String generateFilename(Part part)
+	{
+		StringBuilder retval = new StringBuilder();
+		String fname = (""+UUID.randomUUID()).substring(0,12);
+		String ext = ".dat";
+
+		switch (part.getContentType().toLowerCase()) {
+		case "application/vnd.google-earth.kml+xml":
+			ext = ".kml";
+			break;
+		case "image/jpeg":
+			ext = ".jpg";
+			break;
+		case "application/pdf":
+			ext = ".pdf";
+			break;
+		case "application/ogg":
+			ext = ".ogg";
+			break;
+		case "video/mp4":
+			ext = ".mp4";
+			break;
+		}
+		retval.append(fname).append(".").append(ext);
+		return(""+retval);
 	}
 }
