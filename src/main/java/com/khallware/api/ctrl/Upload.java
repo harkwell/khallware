@@ -158,7 +158,7 @@ public class Upload extends HttpServlet
 		File retval = null;
 		Datastore dstore = Datastore.DS();
 		String fname = Util.sanitize(part.getSubmittedFileName());
-		synchronize (semaphore) {
+		synchronized (semaphore) {
 			long available = (creds == null)
 				? Long.MAX_VALUE
 				: dstore.getAvailableQuota(creds);

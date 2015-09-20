@@ -1,5 +1,5 @@
 #!/bin/bash
-REPOTOP=$HOME/project/
+REPOTOP=$HOME/projects/
 REPOURL=https://github.com/harkwell/khallware.git
 REPO=khallware
 TOP=/home/khall/tmp/blah/$REPO
