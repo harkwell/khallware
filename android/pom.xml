@@ -12,7 +12,7 @@
     <name>Khallware</name>
     <properties>
         <!-- Maven/System -->
-        <android-platform-version>21</android-platform-version>
+        <android-platform-version>22</android-platform-version>
         <android-support-version>r6</android-support-version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8
