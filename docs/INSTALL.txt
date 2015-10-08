@@ -9,11 +9,11 @@ EOF
 
 ## Tomcat8
 # visit: http://tomcat.apache.org/download-80.cgi
-cd /tmp && wget -c 'http://mirror.sdunix.com/apache/tomcat/tomcat-8/v8.0.14/bin/apache-tomcat-8.0.14.tar.gz'
+cd /tmp && wget -c 'http://mirror.sdunix.com/apache/tomcat/tomcat-8/v8.0.26/bin/apache-tomcat-8.0.26.tar.gz'
 sudo mkdir /var/lib/tomcat8
 sudo chown $USER /var/lib/tomcat8
-cd /var/lib/tomcat8 && tar zxvf /tmp/apache-tomcat-8.0.14.tar.gz
-mv apache-tomcat-8.0.14/* . && rm -rf apache-tomcat-8.0.14
+cd /var/lib/tomcat8 && tar zxvf /tmp/apache-tomcat-8.0.26.tar.gz
+mv apache-tomcat-8.0.26/* . && rm -rf apache-tomcat-8.0.26
 cat <<EOF >>~/.bashrc
 export CATALINA_HOME=/var/lib/tomcat8
 export PATH=/usr/local/java8/bin:$PATH

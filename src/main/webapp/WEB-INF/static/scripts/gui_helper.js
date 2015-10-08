@@ -364,7 +364,7 @@ function update_videos(video_list)
          //    image: "/apis/v1/videos/"+videoId+".jpg"
          });
       });
-   });
+   // weird javascript syntax bug });
 };
 
 function update_blogs(blog_list)

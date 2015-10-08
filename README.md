@@ -2,14 +2,21 @@ Khallware (Mobile Computing Services)
 =================
 Overview
 ---------------
-Serve the electronic content you might be tempted to put on facebook from
-this android and web-based application that groups entities with tags (photos,
-bookmarks, music, video, kml, etc.).  Your friends and relatives can register
-and be placed into groups provisioning them with the content.  They may also
-upload some of their own up to an individually customized limit and secure it
-by group.  One may browse new content when posted via RSS.  Contact lists and
-calendar entries may be managed from any android based phone.  Videos, photos
-and playlists are also available.
+Access or modify your contact lists, photo albums, music library, GPS
+destinations, website URL collections, calendar events, blog entries and
+video library in one location organized and grouped by simply tagging them
+with a word or phrase.  Later, search across all content or choose that
+favorite tag from a list.  Watch the RSS feed for new content posted by
+others.
+
+Serve the electronic content you might be tempted to put on facebook.  This
+android and web-based application groups entities with tags (photos, bookmarks,
+music, video, kml, etc.).  Your friends and relatives can register and be placed
+into groups provisioning them with the content.  They may also upload some of
+their own up to an individually customized limit and secure it by group.  One
+may browse new content when posted via RSS.  Contact lists and calendar entries
+may be managed from any android based phone.  Videos, photos and playlists are
+also available.
 
 Khallware utilizes: Android, Bootstrap, JQuery, Javascript, HTTP, Mime, Json,
 Java8, REST/JAX-RS, Jackson, ORMLite, JDBC, c3p0 and Mysql.  Testing is
@@ -24,7 +31,7 @@ curl -s -X GET -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" 'http://tomcat-server:
 mplayer -noconsolecontrols -user guest -passwd guest -shuffle -prefer-ipv4 -playlist /tmp/playlist.m3u
 ```
 
-### GPS (mapping, geo-location)...
+### GPS (maps, geo-location)...
 ```
 - open google earth, add network link location: http://tomcat-server:8080/apis/v1/locations?tagId=35
 ```
@@ -47,6 +54,24 @@ feh ~/tmp/photo.jpg
 curl -i -X POST -H "Accept:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" -F "filecomment=selfie" -F "image=@$HOME/tmp/photo.jpg" http://localhost:8080/apis/v1/upload?tagId=5
 ```
 
+Quick Start
+---------------
+### Deploy Application Server
+```shell
+docker run -i -t khall/khallware
+```
+
+### Connect Web Browser
+```shell
+chromium-browser http://tomcat-server:8080/apis/
+```
+
+### Connect Phone
+```shell
+Play Store -> Search "khallware" -> download -> start, provision server
+```
+
+
 Web Application (back-end)
 ---------------
 ### Deployment (Docker)
@@ -65,7 +90,7 @@ mysql -uroot -pmypasswd website < db_load.sql
 ### Build
 * via maven
 ```shell
-svn export https://github.com/harkwell/khallware
+svn export https://github.com/harkwell/khallware/trunk khallware
 cd khallware
 mvn package
 ```
@@ -87,11 +112,17 @@ Android (front-end)
 ### Google Play
 * search for "Khallware"
 
+### Web Browser
+* Google Chrome
+```shell
+chromium-browser http://tomcat-server:8080/apis/
+```
+
 ### Build
 * use maven
 ```shell
 export ANDROID_HOME=/usr/local/adt-bundle-linux-x86_64-20140702/sdk/
-svn export https://github.com/harkwell/khallware/android && cd android
+svn export https://github.com/harkwell/khallware/trunk/android && cd android
 grep $ANDROID_HOME local.properties || echo edit local.properties
 grep $ANDROID_HOME ~/.m2/settings.xml || echo add maven android.sdk.path
 mvn package && ls -ld target/Khallware.apk
@@ -119,7 +150,7 @@ android list targets
 android create avd -n khallware --force -t "Google Inc.:Google APIs:22" --abi google_apis/x86_64
 mksdcard 256M ~/tmp/sdcard1.iso
 emulator -sdcard ~/tmp/sdcard1.iso -avd khallware
-svn export https://github.com/harkwell/khallware/android 
+svn export https://github.com/harkwell/khallware/trunk/android 
 L='com/google/android/support-v4/r6/support-v4-r6.jar
    org/slf4j/slf4j-android/1.6.1-RC1/slf4j-android-1.6.1-RC1.jar
    google/apis/google.maps/2.2/google.maps-2.2.jar
