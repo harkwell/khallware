@@ -2,9 +2,9 @@
 REPOTOP=$HOME/projects/
 REPOURL=https://github.com/harkwell/khallware.git
 REPO=khallware
-TOP=/home/khall/tmp/blah/$REPO
+TOP=$HOME/tmp/build/$REPO
 
-mkdir -p $REPOTOP && cd $REPOTOP
+mkdir -p $REPOTOP && cd $REPOTOP || { echo build failed; exit 1; }
 [ ! -e $REPO ] && git clone $REPOURL $REPO
 cd $REPO && git pull
 rm -rf $TOP && mkdir -p $TOP && cp -r $REPOTOP/$REPO/* $TOP

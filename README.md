@@ -2,21 +2,20 @@ Khallware (Mobile Computing Services)
 =================
 Overview
 ---------------
-Access or modify your contact lists, photo albums, music library, GPS
-destinations, website URL collections, calendar events, blog entries and
-video library in one location organized and grouped by simply tagging them
-with a word or phrase.  Later, search across all content or choose that
-favorite tag from a list.  Watch the RSS feed for new content posted by
-others.
+Create and maintain photo albums, music playlists, GPS coordinates,
+website URL collections, calendar events, contact lists, blog entries and
+video libraries in one location organized and grouped with tags.  Later,
+perform searches across all content or browse that favorite tag from a
+list.  Also, watch the RSS feed for new content posted by others.
 
 Serve the electronic content you might be tempted to put on facebook.  This
 android and web-based application groups entities with tags (photos, bookmarks,
 music, video, kml, etc.).  Your friends and relatives can register and be placed
-into groups provisioning them with the content.  They may also upload some of
-their own up to an individually customized limit and secure it by group.  One
-may browse new content when posted via RSS.  Contact lists and calendar entries
-may be managed from any android based phone.  Videos, photos and playlists are
-also available.
+into groups that collate the content.  They may also upload some of their own
+files (up to a customized, set limit) and secure it by group.  One may browse
+new content when posted via RSS.  Contact lists and calendar entries may be
+managed from any android based phone.  Videos, photos and playlists are also
+available.
 
 Khallware utilizes: Android, Bootstrap, JQuery, Javascript, HTTP, Mime, Json,
 Java8, REST/JAX-RS, Jackson, ORMLite, JDBC, c3p0 and Mysql.  Testing is
@@ -27,6 +26,7 @@ Usage
 ---------------
 ### streaming music...
 ```shell
+echo guest:guest |base64
 curl -s -X GET -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" 'http://tomcat-server:8080/apis/v1/sounds/playlist.m3u?tagId=35' -o /tmp/playlist.m3u 
 mplayer -noconsolecontrols -user guest -passwd guest -shuffle -prefer-ipv4 -playlist /tmp/playlist.m3u
 ```
@@ -56,14 +56,98 @@ curl -i -X POST -H "Accept:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3V
 
 Quick Start
 ---------------
+### Evaluate entirely from http://hub.docker.com/  (Optional/Easiest)
+```shell
+docker run -it khall/khallware
+```
+
+### Create MySQL Docker Image (One Time Only)
+```shell
+mkdir -p /tmp/khallware-mysql && cd /tmp/khallware-mysql
+wget -q -c 'https://raw.githubusercontent.com/harkwell/khallware/github/src/scripts/Docker-mysql' -O - |docker build --no-cache -t docker-repo:5000/khallware-mysql:v1.0 -
+```
+
+### Create Tomcat8 Docker Image (One Time Only)
+```shell
+mkdir -p /tmp/khallware-tomcat8 && cd /tmp/khallware-tomcat8
+# chromium-browser https://tomcat.apache.org/download-80.cgi
+wget -q -c 'http://mirrors.gigenet.com/apache/tomcat/tomcat-8/v8.0.36/bin/apache-tomcat-8.0.36.tar.gz' -O apache-tomcat.tgz
+wget -q -c 'https://raw.githubusercontent.com/harkwell/khallware/github/src/scripts/Docker-tomcat8' -O - |docker build --no-cache -t docker-repo:5000/khallware-tomcat:v1.0 -
+```
+
+### Create khallware.com Build Docker Image (One Time Only)
+```shell
+mkdir -p /tmp/khallware-build && cd /tmp/khallware-build
+
+for x in build.sh Dockerfile; do
+   wget -q -c "https://raw.githubusercontent.com/harkwell/khallware/github/src/scripts/$x"
+done
+sed -i -e 's#^rm -rf.*mkdir#mkdir#' build.sh
+docker build --no-cache -t docker-repo:5000/khallware-build:v1.0 .
+```
+
+### Build Application Server (apis.war file)
+```shell
+mkdir -p /tmp/artifacts
+docker run -h build --name khallware-build -v /tmp/artifacts:/root/tmp/build/khallware/target docker-repo:5000/khallware-build:v1.0
+ls -ld /tmp/artifacts/apis.war
+```
+
+### Create MySQL Database Files (One Time Only)
+```shell
+mkdir -p $HOME/tmp/khallware-mysql
+docker run -it -h mysql --name khallware-mysql -v $HOME/tmp/khallware-mysql:/var/lib/mysql docker-repo:5000/khallware-mysql:v1.0 bash
+mysql_install_db --user=mysql --ldata=/var/lib/mysql/
+/usr/bin/mysqld_safe &
+mysql -uroot mysql
+CREATE DATABASE website;
+CREATE USER 'api'@'%' IDENTIFIED BY 'api';
+GRANT ALL PRIVILEGES ON website.* TO 'api'@'%' WITH GRANT OPTION;
+USE mysql;
+SET PASSWORD FOR 'api'@'%' = PASSWORD('api');
+exit
+wget -q -c 'https://raw.githubusercontent.com/harkwell/khallware/github/src/scripts/db_schema.sql' -O - |mysql -uroot website
+wget -q -c 'https://raw.githubusercontent.com/harkwell/khallware/github/src/scripts/db_load.sql' -O - |mysql -uroot website
+exit
+docker rm $(docker ps -a |grep mysql |cut -d\  -f1)
+```
+
+### Deploy MySQL Server as Docker Container
+```shell
+docker run -d -h mysql --name khallware-mysql -p 3306:3306 -v $HOME/tmp/khallware-mysql:/var/lib/mysql docker-repo:5000/khallware-mysql:v1.0
+echo 'SHOW TABLES;' |mysql -uapi -papi -h 127.0.0.1 website
+```
+
 ### Deploy Application Server
 ```shell
-docker run -i -t khall/khallware
+mkdir -p /tmp/khallware/media/{thumbs,photo,uploads}
+mkdir -p /tmp/khallware/share/ogg
+mkdir -p /tmp/khallware/webapps && cp /tmp/artifacts/apis.war /tmp/khallware/webapps
+docker run -d -h khallware --name khallware -p 8080:8080 -v /tmp/khallware/share:/usr/local/share -v /tmp/khallware/webapps:/var/lib/tomcat8/webapps --link khallware-mysql docker-repo:5000/khallware-tomcat:v1.0
+```
+
+### Prime Website with "guest" User
+```shell
+echo -n "guest" |sha256sum # "84983c60.."
+mysql -uapi -papi mysql <<EOF
+INSERT INTO groups (name, description) VALUES ('root', 'root group');
+UPDATE groups SET id=0 WHERE name = 'root';
+INSERT INTO groups (name, description) VALUES ('guest', 'guest group');
+INSERT INTO groups (name, description) VALUES ('family', 'family group');
+INSERT INTO edges (_group, parent) VALUES ((SELECT id FROM groups WHERE name = 
+'guest'), (SELECT id FROM groups WHERE name = 'root'));
+INSERT INTO edges (_group, parent) VALUES ((SELECT id FROM groups WHERE name = 
+'guest'), (SELECT id FROM groups WHERE name = 'family'));
+INSERT INTO credentials (username, password, email, _group) VALUES ('guest', '84983c60f7daadc1cb8698621f802c0d9f9a3c3c295c810748fb048115c186ec','guest@mybox.com',(SELECT id FROM groups WHERE name = 'guest'));
+INSERT INTO landing (url, _group) VALUES ("/apis/v1/static/family.html",(SELECT id FROM groups WHERE name = 'family'));
+INSERT INTO landing (url, _group) VALUES ("/apis/v1/static/friends.html",(SELECT id FROM groups WHERE name = 'friends'));
+INSERT INTO quota (user, available, used) SELECT id AS user, 102400000, 0 FROM credentials;
+EOF
 ```
 
 ### Connect Web Browser
 ```shell
-chromium-browser http://tomcat-server:8080/apis/
+chromium-browser http://localhost:8080/apis/   # use credentials guest/guest
 ```
 
 ### Connect Phone
@@ -76,7 +160,7 @@ Web Application (back-end)
 ---------------
 ### Deployment (Docker)
 ```shell
-docker run -i -t khall/khallware
+docker run -it khall/khallware
 ```
 
 ### Deployment (manual)

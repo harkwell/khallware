@@ -1,0 +1,14 @@
+#-------------------------------------------------------------------------------
+# khallware.com docker tomcat8 instance based on centos7 linux
+#-------------------------------------------------------------------------------
+FROM centos:7
+MAINTAINER Kevin@khallware.com
+COPY apache-tomcat.tgz /tmp/apache-tomcat.tgz
+RUN mkdir -p /var/lib/tomcat8 \
+   && yum install -y epel-release \
+   && yum install -y java-1.8.0-openjdk \
+   && tar zxvf /tmp/apache-tomcat.tgz -C /var/lib/tomcat8 --strip-components=1
+VOLUME /var/lib/tomcat8/webapps
+VOLUME /usr/local/share
+EXPOSE 8080
+CMD /var/lib/tomcat8/bin/startup.sh; tail -f /var/lib/tomcat8/logs/catalina.out

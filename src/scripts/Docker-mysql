@@ -1,0 +1,9 @@
+#-------------------------------------------------------------------------------
+# khallware.com mysql instance based on centos7 linux
+#-------------------------------------------------------------------------------
+FROM centos:7
+MAINTAINER Kevin@khallware.com
+RUN yum install -y epel-release \
+   && yum install -y mariadb mariadb-server less wget
+CMD /usr/bin/mysqld_safe
+EXPOSE 3306
