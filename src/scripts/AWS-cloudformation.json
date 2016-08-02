@@ -1,0 +1,159 @@
+{
+   "Description" : "khallware - Mobile Computing Services",
+   "Mappings" : {
+      "Vars" : {
+         "ec2size" : { "Val" : "t2.micro" }
+      }
+   },
+   "Resources"   : {
+      "vpc" : {
+         "Type"       : "AWS::EC2::VPC",
+         "Properties" : {
+            "CidrBlock"          : "10.0.23.0/24",
+            "EnableDnsSupport"   : "true",
+            "EnableDnsHostnames" : "true",
+            "InstanceTenancy"    : "default"
+         }
+      },
+      "dot23subnet" : {
+         "Type" : "AWS::EC2::Subnet",
+         "Properties" : {
+            "VpcId" : { "Ref" : "vpc" },
+            "CidrBlock" : "10.0.23.0/24",
+            "AvailabilityZone" : {
+               "Fn::Join" : [ "", [{ "Ref" : "AWS::Region" }, "a" ]]
+            }
+         }
+      },
+      "assocSubnetNetworkACL" : {
+         "Type" : "AWS::EC2::SubnetNetworkAclAssociation",
+         "Properties" : {
+            "NetworkAclId" : { "Ref" : "netacl" },
+            "SubnetId"     : { "Ref" : "dot23subnet" }
+         }
+      },
+      "internetGw" : {
+         "Type" : "AWS::EC2::InternetGateway"
+      },
+      "vpcGatewayAttachment" : {
+         "Type"       : "AWS::EC2::VPCGatewayAttachment",
+         "Properties" : {
+            "VpcId"             : { "Ref" : "vpc" },
+            "InternetGatewayId" : { "Ref" : "internetGw" }
+         }
+      },
+      "routetable" : {
+         "Type"       : "AWS::EC2::RouteTable",
+         "Properties" : {
+            "VpcId" : { "Ref" : "vpc" }
+         }
+      },
+      "inetroute" : {
+         "Type"       : "AWS::EC2::Route",
+         "DependsOn"  : "vpcGatewayAttachment",
+         "Properties" : {
+            "RouteTableId" : { "Ref" : "routetable" },
+            "DestinationCidrBlock" : "0.0.0.0/0",
+            "GatewayId" : { "Ref" : "internetGw" }
+         }
+      },
+      "dot23subnetRoutetableAssoc" : {
+         "Type"       : "AWS::EC2::SubnetRouteTableAssociation",
+         "Properties" : {
+            "SubnetId"     : { "Ref" : "dot23subnet" },
+            "RouteTableId" : { "Ref" : "routetable" }
+         }
+      },
+      "netacl" : {
+         "Type"       : "AWS::EC2::NetworkAcl",
+         "Properties" : {
+            "VpcId" : { "Ref" : "vpc" }
+         }
+      },
+      "netAclEntry1" : {
+         "Type"       : "AWS::EC2::NetworkAclEntry",
+         "Properties" : {
+            "RuleNumber" : "100",
+            "RuleAction" : "allow",
+            "Protocol"   : "-1",
+            "Egress"     : "true",
+            "CidrBlock"  : "0.0.0.0/0",
+            "NetworkAclId" : { "Ref" : "netacl" }
+         }
+      },
+      "netAclEntry2" : {
+         "Type"       : "AWS::EC2::NetworkAclEntry",
+         "Properties" : {
+            "RuleNumber" : "200",
+            "RuleAction" : "allow",
+            "Protocol"   : "-1",
+            "CidrBlock"  : "0.0.0.0/0",
+            "NetworkAclId" : { "Ref" : "netacl" }
+         }
+      },
+      "securityGroup" : {
+         "Type" : "AWS::EC2::SecurityGroup",
+         "Properties" : {
+            "VpcId"                : { "Ref" : "vpc" },
+            "GroupDescription"     : "Enable SSH, HTTP, and HTTPS",
+            "SecurityGroupIngress" : [
+               {
+                  "IpProtocol" : "tcp",
+                  "FromPort"   : "22",
+                  "ToPort"     : "22",
+                  "CidrIp"     : "0.0.0.0/0"
+               },
+               {
+                  "IpProtocol" : "tcp",
+                  "FromPort"   : "80",
+                  "ToPort"     : "80",
+                  "CidrIp"     : "0.0.0.0/0"
+               },
+               {
+                  "IpProtocol" : "tcp",
+                  "FromPort"   : "443",
+                  "ToPort"     : "443",
+                  "CidrIp"     : "0.0.0.0/0"
+               }
+            ]
+         }
+      },
+      "nginx" : {
+         "Type"       : "AWS::EC2::Instance",
+         "DependsOn"  : "dot23subnetRoutetableAssoc",
+         "Properties" : {
+            "KeyName"           : "khallware",
+            "InstanceType"      : "t2.micro",
+            "AvailabilityZone"  : {
+               "Fn::Join" : [ "", [{ "Ref" : "AWS::Region" }, "a" ]]
+            },
+            "ImageId"           : "ami-7172b611",
+            "Monitoring"        : "false",
+            "NetworkInterfaces" : [{
+               "DeviceIndex"              : 0,
+               "SubnetId"                 : { "Ref" : "dot23subnet" },
+               "PrivateIpAddresses"       : [{
+                   "PrivateIpAddress": "10.0.23.100", "Primary": "true"
+               }],
+               "GroupSet"                 : [{ "Ref" : "securityGroup" }],
+               "AssociatePublicIpAddress" : "true",
+               "DeleteOnTermination"      : "true"
+            }],
+            "UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
+               "#!/bin/bash\n",
+               "#yum install -y epel-release\n",
+               "#yum install -y nginx\n",
+               "#yum update -y\n",
+               "echo khallware >/usr/share/nginx/html/index.html\n",
+               "/usr/sbin/nginx\n"
+            ]]}}
+         }
+      }
+   },
+   "Outputs" : {
+      "khallware" : {
+         "Description" : "Connecting to khallware...",
+         "Value" : { "Fn::Join" : [ "", [{ "Ref" : "AWS::Region" }, "a" ]] }
+      }
+   }
+}

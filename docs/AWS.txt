@@ -1,0 +1,20 @@
+###########################
+### Amazon Web Services ###
+###########################
+## khallware can be deployed to the AWS cloud similar to:
+
+# web browser -> Internet -> AWS VPC [ AWS Internet Gateway
+   -> AWS Subnet (local AZ) { has route table } -> AWS Network ACL ]
+   -> AWS EC2 Instance -> AWS Security Group
+
+# Tier 1 (nginx)
+
+# Tier 2a (production instance of khallware.war under tomcat8)
+
+# Tier 2b (development instance of khallware.war under tomcat8)
+
+# Tier 2c (test instance of khallware.war under tomcat8)
+
+# Tier 2d (gitlab instance for VCS)
+
+# Tier 2e (jenkins instance for CI/CD)

@@ -56,9 +56,15 @@ curl -i -X POST -H "Accept:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3V
 
 Quick Start
 ---------------
-### Evaluate entirely from http://hub.docker.com/  (Optional/Easiest)
+### Run entirely from http://hub.docker.com/  (Optional/Easiest)
 ```shell
 docker run -it khall/khallware
+```
+
+### Utilize Amazon Web Services (AWS) (Optional/Complete/Easy/Cost)
+```shell
+aws configure
+svn cat https://github.com/harkwell/khallware/trunk/src/scripts/AWS-cloudformation.json |aws cloudformation create-stack --stack-name khallware --capabilities CAPABILITY_NAMED_IAM --template-body file:///dev/stdin
 ```
 
 ### Create MySQL Docker Image (One Time Only)
