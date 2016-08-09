@@ -2,14 +2,15 @@
    "Description" : "khallware - Mobile Computing Services",
    "Mappings" : {
       "Vars" : {
-         "ec2size" : { "Val" : "t2.micro" }
+         "ec2size" : { "Val" : "t2.micro" },
+         "rdssize" : { "Val" : "db.t2.micro" }
       }
    },
    "Resources"   : {
       "vpc" : {
          "Type"       : "AWS::EC2::VPC",
          "Properties" : {
-            "CidrBlock"          : "10.0.23.0/24",
+            "CidrBlock"          : "10.0.0.0/16",
             "EnableDnsSupport"   : "true",
             "EnableDnsHostnames" : "true",
             "InstanceTenancy"    : "default"
@@ -22,6 +23,26 @@
             "CidrBlock" : "10.0.23.0/24",
             "AvailabilityZone" : {
                "Fn::Join" : [ "", [{ "Ref" : "AWS::Region" }, "a" ]]
+            }
+         }
+      },
+      "dot24subnet" : {
+         "Type" : "AWS::EC2::Subnet",
+         "Properties" : {
+            "VpcId" : { "Ref" : "vpc" },
+            "CidrBlock" : "10.0.24.0/24",
+            "AvailabilityZone" : {
+               "Fn::Join" : [ "", [{ "Ref" : "AWS::Region" }, "a" ]]
+            }
+         }
+      },
+      "dot25subnet" : {
+         "Type" : "AWS::EC2::Subnet",
+         "Properties" : {
+            "VpcId" : { "Ref" : "vpc" },
+            "CidrBlock" : "10.0.25.0/24",
+            "AvailabilityZone" : {
+               "Fn::Join" : [ "", [{ "Ref" : "AWS::Region" }, "b" ]]
             }
          }
       },
@@ -91,7 +112,7 @@
             "NetworkAclId" : { "Ref" : "netacl" }
          }
       },
-      "securityGroup" : {
+      "t1securityGroup" : {
          "Type" : "AWS::EC2::SecurityGroup",
          "Properties" : {
             "VpcId"                : { "Ref" : "vpc" },
@@ -114,11 +135,17 @@
                   "FromPort"   : "443",
                   "ToPort"     : "443",
                   "CidrIp"     : "0.0.0.0/0"
+               },
+               {
+                  "IpProtocol" : "tcp",
+                  "FromPort"   : "3306",
+                  "ToPort"     : "3306",
+                  "CidrIp"     : "10.0.0.0/16"
                }
             ]
          }
       },
-      "nginx" : {
+      "webserver" : {
          "Type"       : "AWS::EC2::Instance",
          "DependsOn"  : "dot23subnetRoutetableAssoc",
          "Properties" : {
@@ -135,18 +162,49 @@
                "PrivateIpAddresses"       : [{
                    "PrivateIpAddress": "10.0.23.100", "Primary": "true"
                }],
-               "GroupSet"                 : [{ "Ref" : "securityGroup" }],
+               "GroupSet"                 : [{ "Ref" : "t1securityGroup" }],
                "AssociatePublicIpAddress" : "true",
                "DeleteOnTermination"      : "true"
             }],
             "UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
                "#!/bin/bash\n",
-               "#yum install -y epel-release\n",
-               "#yum install -y nginx\n",
-               "#yum update -y\n",
+               "yum install -y nginx\n",
                "echo khallware >/usr/share/nginx/html/index.html\n",
                "/usr/sbin/nginx\n"
             ]]}}
+         }
+      },
+      "dbsubnetgroup" : {
+         "Type" : "AWS::RDS::DBSubnetGroup",
+         "Properties" : {
+            "DBSubnetGroupDescription" : "khallware db subnet group",
+            "SubnetIds" : [
+               { "Ref" : "dot23subnet" },
+               { "Ref" : "dot24subnet" },
+               { "Ref" : "dot25subnet" }
+            ]
+         }
+      },
+      "database" : {
+         "Type"       : "AWS::RDS::DBInstance",
+         "DependsOn"  : "t1securityGroup",
+         "Properties" : {
+            "Engine"             : "MariaDB",
+            "DBName"             : "website",
+            "DBSubnetGroupName"  : { "Ref" : "dbsubnetgroup" },
+            "DBInstanceClass"    :
+               { "Fn::FindInMap" : [ "Vars", "rdssize", "Val"]},
+            "VPCSecurityGroups"  : [{ "Ref" : "t1securityGroup" }],
+            "PubliclyAccessible" : "false",
+            "MultiAZ"            : "false",
+            "StorageType"        : "gp2",
+            "AvailabilityZone"   :
+               { "Fn::Join" : [ "", [{ "Ref" : "AWS::Region" }, "a" ]] },
+            "MasterUsername"     : "api",
+            "MasterUserPassword" : "khallware",
+            "AllocatedStorage"   : "5",
+            "StorageEncrypted"   : "false",
+            "Tags" : [ { "Key" : "Name", "Value" : "khallware database" } ]
          }
       }
    },

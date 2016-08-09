@@ -2,7 +2,7 @@
 sudo apt-get install mysql-server  # remember mysql root password "mypasswd"
 mysql -uroot -pmypasswd mysql <<EOF
 CREATE DATABASE website;
-CREATE USER 'api'@'localhost' IDENTIFIED BY 'api';
+CREATE USER 'api'@'localhost' IDENTIFIED BY 'khallware';
 GRANT ALL PRIVILEGES ON website.* TO 'api'@'localhost' WITH GRANT OPTION;
 EOF
 
@@ -36,11 +36,11 @@ vi /var/lib/tomcat8/webapps/apis/WEB-INF/classes/apis.properties
 $CATALINA_HOME/bin/shutdown.sh
 
 ### Prep database
-mysql -uapi -papi website <src/scripts/db_schema.sql
-mysql -uapi -papi website <src/scripts/db_load.sql
+mysql -uapi -pkhallware website <src/scripts/db_schema.sql
+mysql -uapi -pkhallware website <src/scripts/db_load.sql
 # choose password:
 echo -n "guest" |sha256sum # "84983c60.."
-mysql -uapi -papi mysql <<EOF
+mysql -uapi -pkhallware mysql <<EOF
 INSERT INTO groups (name, description) VALUES ('root', 'root group');
 UPDATE groups SET id=0 WHERE name = 'root';
 INSERT INTO groups (name, description) VALUES ('guest', 'guest group');

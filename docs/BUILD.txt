@@ -663,10 +663,10 @@ curl -q -X POST -H "Cookie: khallware=$(cat cookie.txt);Version=1" http://localh
 ######################
 mysql -uroot -pmypasswd mysql <<EOF
 CREATE DATABASE website;
-CREATE USER 'api'@'localhost' IDENTIFIED BY 'somepass';
+CREATE USER 'api'@'localhost' IDENTIFIED BY 'khallware';
 GRANT ALL PRIVILEGES ON website.* TO 'api'@'localhost' WITH GRANT OPTION;
 EOF
-mysql -uapi -psomepass website <src/scripts/db_schema.sql
+mysql -uapi -pkhallware website <src/scripts/db_schema.sql
 
 
 ###################
@@ -678,9 +678,9 @@ vi pom.xml
 ######################
 ### DATA MIGRATION ###
 ######################
-mysql -h tomcat-server -u api -psomepass website <src/scripts/db_schema.sql
-mysql -h tomcat-server -u api -psomepass website <src/scripts/db_load.sql
-mysql -h tomcat-server -u api -psomepass website <<EOF
+mysql -h tomcat-server -u api -pkhallware website <src/scripts/db_schema.sql
+mysql -h tomcat-server -u api -pkhallware website <src/scripts/db_load.sql
+mysql -h tomcat-server -u api -pkhallware website <<EOF
 INSERT INTO bookmarks (name, modified, url, _group, mask, rating) SELECT name, modified, url, (SELECT id FROM groups WHERE name = 'guest'), 770, rating FROM homepage.url WHERE url_type IN (SELECT id FROM homepage.url_type WHERE name = "http");
 UPDATE bookmarks SET rating = LOWER(rating);
 INSERT INTO groups (name, description) VALUES ('root', 'root group');
