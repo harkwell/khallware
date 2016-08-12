@@ -56,15 +56,17 @@ curl -i -X POST -H "Accept:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3V
 
 Quick Start
 ---------------
-### Run entirely from http://hub.docker.com/  (Optional/Easiest)
-```shell
-docker run -it khall/khallware
-```
-
 ### Utilize Amazon Web Services (AWS) (Optional/Complete/Easy/Cost)
 ```shell
-aws configure
-svn cat https://github.com/harkwell/khallware/trunk/src/scripts/AWS-cloudformation.json |aws cloudformation create-stack --stack-name khallware --capabilities CAPABILITY_NAMED_IAM --template-body file:///dev/stdin
+chromium-browser http://aws.amazon.com/  # create a "free-tier" account
+aws configure # use the AccessKey and Secret Access Key from above
+wget -q -c 'https://raw.githubusercontent.com/harkwell/khallware/github/aws/AWS-cloudformation.json' -O - |aws cloudformation create-stack --stack-name khallware --capabilities CAPABILITY_NAMED_IAM --template-body file:///dev/stdin
+chromium-browser http://<ipaddr-of-aws-host>/
+```
+
+### Run from http://hub.docker.com/  (Optional/No CI-CD/Easy)
+```shell
+docker run -it khall/khallware
 ```
 
 ### Create MySQL Docker Image (One Time Only)
@@ -107,10 +109,10 @@ mysql_install_db --user=mysql --ldata=/var/lib/mysql/
 /usr/bin/mysqld_safe &
 mysql -uroot mysql
 CREATE DATABASE website;
-CREATE USER 'api'@'%' IDENTIFIED BY 'api';
+CREATE USER 'api'@'%' IDENTIFIED BY 'khallware';
 GRANT ALL PRIVILEGES ON website.* TO 'api'@'%' WITH GRANT OPTION;
 USE mysql;
-SET PASSWORD FOR 'api'@'%' = PASSWORD('api');
+SET PASSWORD FOR 'api'@'%' = PASSWORD('khallware');
 exit
 wget -q -c 'https://raw.githubusercontent.com/harkwell/khallware/github/src/scripts/db_schema.sql' -O - |mysql -uroot website
 wget -q -c 'https://raw.githubusercontent.com/harkwell/khallware/github/src/scripts/db_load.sql' -O - |mysql -uroot website
@@ -121,7 +123,7 @@ docker rm $(docker ps -a |grep mysql |cut -d\  -f1)
 ### Deploy MySQL Server as Docker Container
 ```shell
 docker run -d -h mysql --name khallware-mysql -p 3306:3306 -v $HOME/tmp/khallware-mysql:/var/lib/mysql docker-repo:5000/khallware-mysql:v1.0
-echo 'SHOW TABLES;' |mysql -uapi -papi -h 127.0.0.1 website
+echo 'SHOW TABLES;' |mysql -uapi -pkhallware -h 127.0.0.1 website
 ```
 
 ### Deploy Application Server
@@ -135,7 +137,7 @@ docker run -d -h khallware --name khallware -p 8080:8080 -v /tmp/khallware/share
 ### Prime Website with "guest" User
 ```shell
 echo -n "guest" |sha256sum # "84983c60.."
-mysql -uapi -papi mysql <<EOF
+mysql -uapi -pkhallware mysql <<EOF
 INSERT INTO groups (name, description) VALUES ('root', 'root group');
 UPDATE groups SET id=0 WHERE name = 'root';
 INSERT INTO groups (name, description) VALUES ('guest', 'guest group');

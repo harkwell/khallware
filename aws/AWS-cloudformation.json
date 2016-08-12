@@ -13,7 +13,42 @@
             "CidrBlock"          : "10.0.0.0/16",
             "EnableDnsSupport"   : "true",
             "EnableDnsHostnames" : "true",
-            "InstanceTenancy"    : "default"
+            "InstanceTenancy"    : "default",
+            "Tags" : [ { "Key" : "projects", "Value" : "khallware" } ]
+         }
+      },
+      "role" : {
+         "Type"       : "AWS::IAM::Role",
+         "Properties" : {
+            "AssumeRolePolicyDocument" : {
+               "Version" : "2012-10-17",
+               "Statement": [{
+                  "Effect"    : "Allow",
+                  "Principal" : { "Service": [ "ec2.amazonaws.com" ] },
+                  "Action"    : [ "sts:AssumeRole" ]
+               }]
+            },
+            "Path"    : "/"
+         }
+      },
+      "policy" : {
+         "Type"       : "AWS::IAM::Policy",
+         "Properties" : {
+            "PolicyName"     : "policy",
+            "Roles"          : [ { "Ref" : "role" } ],
+            "PolicyDocument" : {
+               "Version" : "2012-10-17",
+               "Statement": [
+                  { "Effect": "Allow", "Action": "*", "Resource": "*" }
+               ]
+            }
+         }
+      },
+      "instanceprofile" : {
+         "Type"       : "AWS::IAM::InstanceProfile",
+         "Properties" : {
+            "Path"    : "/",
+            "Roles"   : [ { "Ref" : "role" } ]
          }
       },
       "dot23subnet" : {
@@ -23,7 +58,8 @@
             "CidrBlock" : "10.0.23.0/24",
             "AvailabilityZone" : {
                "Fn::Join" : [ "", [{ "Ref" : "AWS::Region" }, "a" ]]
-            }
+            },
+            "Tags" : [ { "Key" : "projects", "Value" : "khallware" } ]
          }
       },
       "dot24subnet" : {
@@ -33,7 +69,8 @@
             "CidrBlock" : "10.0.24.0/24",
             "AvailabilityZone" : {
                "Fn::Join" : [ "", [{ "Ref" : "AWS::Region" }, "a" ]]
-            }
+            },
+            "Tags" : [ { "Key" : "projects", "Value" : "khallware" } ]
          }
       },
       "dot25subnet" : {
@@ -43,7 +80,8 @@
             "CidrBlock" : "10.0.25.0/24",
             "AvailabilityZone" : {
                "Fn::Join" : [ "", [{ "Ref" : "AWS::Region" }, "b" ]]
-            }
+            },
+            "Tags" : [ { "Key" : "projects", "Value" : "khallware" } ]
          }
       },
       "assocSubnetNetworkACL" : {
@@ -85,10 +123,18 @@
             "RouteTableId" : { "Ref" : "routetable" }
          }
       },
+      "dot24subnetRoutetableAssoc" : {
+         "Type"       : "AWS::EC2::SubnetRouteTableAssociation",
+         "Properties" : {
+            "SubnetId"     : { "Ref" : "dot24subnet" },
+            "RouteTableId" : { "Ref" : "routetable" }
+         }
+      },
       "netacl" : {
          "Type"       : "AWS::EC2::NetworkAcl",
          "Properties" : {
-            "VpcId" : { "Ref" : "vpc" }
+            "VpcId" : { "Ref" : "vpc" },
+            "Tags" : [ { "Key" : "projects", "Value" : "khallware" } ]
          }
       },
       "netAclEntry1" : {
@@ -112,11 +158,12 @@
             "NetworkAclId" : { "Ref" : "netacl" }
          }
       },
-      "t1securityGroup" : {
+      "securitygroup" : {
          "Type" : "AWS::EC2::SecurityGroup",
          "Properties" : {
             "VpcId"                : { "Ref" : "vpc" },
             "GroupDescription"     : "Enable SSH, HTTP, and HTTPS",
+            "Tags" : [ { "Key" : "projects", "Value" : "khallware" } ],
             "SecurityGroupIngress" : [
                {
                   "IpProtocol" : "tcp",
@@ -145,32 +192,75 @@
             ]
          }
       },
-      "webserver" : {
+      "appserver" : {
          "Type"       : "AWS::EC2::Instance",
-         "DependsOn"  : "dot23subnetRoutetableAssoc",
+         "DependsOn"  : "dot24subnetRoutetableAssoc",
          "Properties" : {
-            "KeyName"           : "khallware",
-            "InstanceType"      : "t2.micro",
-            "AvailabilityZone"  : {
+            "KeyName"            : "khallware",
+            "InstanceType"       : "t2.micro",
+            "IamInstanceProfile" : { "Ref" : "instanceprofile" },
+            "AvailabilityZone"   : {
                "Fn::Join" : [ "", [{ "Ref" : "AWS::Region" }, "a" ]]
             },
-            "ImageId"           : "ami-7172b611",
-            "Monitoring"        : "false",
-            "NetworkInterfaces" : [{
+            "ImageId"            : "ami-7172b611",
+            "Monitoring"         : "false",
+            "Tags" : [ { "Key" : "projects", "Value" : "khallware" } ],
+            "NetworkInterfaces"  : [{
                "DeviceIndex"              : 0,
-               "SubnetId"                 : { "Ref" : "dot23subnet" },
+               "SubnetId"                 : { "Ref" : "dot24subnet" },
                "PrivateIpAddresses"       : [{
-                   "PrivateIpAddress": "10.0.23.100", "Primary": "true"
+                   "PrivateIpAddress": "10.0.24.100", "Primary": "true"
                }],
-               "GroupSet"                 : [{ "Ref" : "t1securityGroup" }],
+               "GroupSet"                 : [{ "Ref" : "securitygroup" }],
                "AssociatePublicIpAddress" : "true",
                "DeleteOnTermination"      : "true"
             }],
             "UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
                "#!/bin/bash\n",
-               "yum install -y nginx\n",
-               "echo khallware >/usr/share/nginx/html/index.html\n",
-               "/usr/sbin/nginx\n"
+               "yum install -y wget\n",
+               "cd /tmp && wget -c 'http://mirrors.ocf.berkeley.edu/apache/tomcat/tomcat-8/v8.5.4/bin/apache-tomcat-8.5.4.tar.gz'\n",
+               "mkdir -p /var/lib/tomcat8\n",
+               "tar zxvf apache-tomcat-8.5.4.tar.gz -C /var/lib/tomcat8 --strip-components=1\n",
+               "yum install -y java-1.8.0-openjdk\n",
+               "update-alternatives --set java /usr/lib/jvm/jre-1.8.0-openjdk.x86_64/bin/java\n",
+               "export JAVA_HOME=/usr/lib/jvm/jre-1.8.0-openjdk.x86_64/\n",
+               "/var/lib/tomcat8/bin/startup.sh"
+            ]]}}
+         }
+      },
+      "webserver" : {
+         "Type"       : "AWS::EC2::Instance",
+         "DependsOn"  : "dot23subnetRoutetableAssoc",
+         "Properties" : {
+            "KeyName"            : "khallware",
+            "InstanceType"       : "t2.micro",
+            "IamInstanceProfile" : { "Ref" : "instanceprofile" },
+            "AvailabilityZone"   : {
+               "Fn::Join" : [ "", [{ "Ref" : "AWS::Region" }, "a" ]]
+            },
+            "ImageId"            : "ami-7172b611",
+            "Monitoring"         : "false",
+            "Tags" : [ { "Key" : "projects", "Value" : "khallware" } ],
+            "NetworkInterfaces"  : [{
+               "DeviceIndex"              : 0,
+               "SubnetId"                 : { "Ref" : "dot23subnet" },
+               "PrivateIpAddresses"       : [{
+                   "PrivateIpAddress": "10.0.23.100", "Primary": "true"
+               }],
+               "GroupSet"                 : [{ "Ref" : "securitygroup" }],
+               "AssociatePublicIpAddress" : "true",
+               "DeleteOnTermination"      : "true"
+            }],
+            "UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
+               "#!/bin/bash\n",
+               "yum install -y nginx git git-daemon\n",
+               "/usr/sbin/nginx\n",
+               "mkdir -p /opt/khallware/gitrepo\n",
+               "cd /opt/khallware/gitrepo\n",
+               "git clone https://github.com/harkwell/khallware.git\n",
+               "touch /opt/khallware/gitrepo/khallware/.git/git-daemon-export-ok\n",
+               "nohup git daemon --reuseaddr --verbose --base-path=/opt/khallware/gitrepo --enable=receive-pack -- /opt/khallware/gitrepo/khallware &\n",
+               "bash /opt/khallware/gitrepo/khallware/aws/setup-webserver.sh\n"
             ]]}}
          }
       },
@@ -187,14 +277,14 @@
       },
       "database" : {
          "Type"       : "AWS::RDS::DBInstance",
-         "DependsOn"  : "t1securityGroup",
+         "DependsOn"  : "securitygroup",
          "Properties" : {
             "Engine"             : "MariaDB",
             "DBName"             : "website",
             "DBSubnetGroupName"  : { "Ref" : "dbsubnetgroup" },
             "DBInstanceClass"    :
                { "Fn::FindInMap" : [ "Vars", "rdssize", "Val"]},
-            "VPCSecurityGroups"  : [{ "Ref" : "t1securityGroup" }],
+            "VPCSecurityGroups"  : [{ "Ref" : "securitygroup" }],
             "PubliclyAccessible" : "false",
             "MultiAZ"            : "false",
             "StorageType"        : "gp2",
@@ -204,7 +294,7 @@
             "MasterUserPassword" : "khallware",
             "AllocatedStorage"   : "5",
             "StorageEncrypted"   : "false",
-            "Tags" : [ { "Key" : "Name", "Value" : "khallware database" } ]
+            "Tags" : [ { "Key" : "projects", "Value" : "khallware" } ]
          }
       }
    },
