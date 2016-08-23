@@ -188,6 +188,24 @@
                   "FromPort"   : "3306",
                   "ToPort"     : "3306",
                   "CidrIp"     : "10.0.0.0/16"
+               },
+               {
+                  "IpProtocol" : "tcp",
+                  "FromPort"   : "8080",
+                  "ToPort"     : "8080",
+                  "CidrIp"     : "10.0.0.0/16"
+               },
+               {
+                  "IpProtocol" : "tcp",
+                  "FromPort"   : "8081",
+                  "ToPort"     : "8081",
+                  "CidrIp"     : "10.0.0.0/16"
+               },
+               {
+                  "IpProtocol" : "tcp",
+                  "FromPort"   : "9418",
+                  "ToPort"     : "9418",
+                  "CidrIp"     : "10.0.0.0/16"
                }
             ]
          }
@@ -217,14 +235,18 @@
             }],
             "UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
                "#!/bin/bash\n",
-               "yum install -y wget\n",
-               "cd /tmp && wget -c 'http://mirrors.ocf.berkeley.edu/apache/tomcat/tomcat-8/v8.5.4/bin/apache-tomcat-8.5.4.tar.gz'\n",
+               "yum install -y wget git\n",
+               "cd /tmp && wget --quiet -c 'http://mirrors.ocf.berkeley.edu/apache/tomcat/tomcat-8/v8.5.4/bin/apache-tomcat-8.5.4.tar.gz'\n",
                "mkdir -p /var/lib/tomcat8\n",
                "tar zxvf apache-tomcat-8.5.4.tar.gz -C /var/lib/tomcat8 --strip-components=1\n",
-               "yum install -y java-1.8.0-openjdk\n",
+               "yum install -y java-1.8.0-openjdk-devel\n",
                "update-alternatives --set java /usr/lib/jvm/jre-1.8.0-openjdk.x86_64/bin/java\n",
                "export JAVA_HOME=/usr/lib/jvm/jre-1.8.0-openjdk.x86_64/\n",
-               "/var/lib/tomcat8/bin/startup.sh"
+               "/var/lib/tomcat8/bin/startup.sh\n",
+               "mkdir -p /opt/khallware/gitrepo\n",
+               "cd /opt/khallware/gitrepo\n",
+               "git clone https://github.com/harkwell/khallware.git\n",
+               "bash /opt/khallware/gitrepo/khallware/aws/setup-appserver.sh"
             ]]}}
          }
       },
@@ -253,7 +275,7 @@
             }],
             "UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
                "#!/bin/bash\n",
-               "yum install -y nginx git git-daemon\n",
+               "yum install -y nginx git git-daemon mysql\n",
                "/usr/sbin/nginx\n",
                "mkdir -p /opt/khallware/gitrepo\n",
                "cd /opt/khallware/gitrepo\n",

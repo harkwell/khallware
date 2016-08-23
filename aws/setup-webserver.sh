@@ -19,6 +19,7 @@ echo khallware: configure nginx
 cp $REPOTOP/$REPO/aws/index.html /usr/share/nginx/html/
 cp $REPOTOP/$REPO/aws/nginx-khallware.conf /etc/nginx/conf.d/
 sed -i -e "s#XXXX#$EC2HOST#g" /etc/nginx/conf.d/nginx-khallware.conf
+sed -ni -e 1,14p -e 14i'\    server_names_hash_bucket_size 128;' -e 15,\$p /etc/nginx/nginx.conf
 nginx -s reload
 
 echo khallware: populate database
