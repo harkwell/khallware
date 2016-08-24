@@ -203,6 +203,12 @@
                },
                {
                   "IpProtocol" : "tcp",
+                  "FromPort"   : "8000",
+                  "ToPort"     : "8000",
+                  "CidrIp"     : "10.0.0.0/16"
+               },
+               {
+                  "IpProtocol" : "tcp",
                   "FromPort"   : "9418",
                   "ToPort"     : "9418",
                   "CidrIp"     : "10.0.0.0/16"
@@ -213,6 +219,7 @@
       "appserver" : {
          "Type"       : "AWS::EC2::Instance",
          "DependsOn"  : "dot24subnetRoutetableAssoc",
+         "DependsOn"  : "webserver",
          "Properties" : {
             "KeyName"            : "khallware",
             "InstanceType"       : "t2.micro",
@@ -253,6 +260,7 @@
       "webserver" : {
          "Type"       : "AWS::EC2::Instance",
          "DependsOn"  : "dot23subnetRoutetableAssoc",
+         "DependsOn"  : "database",
          "Properties" : {
             "KeyName"            : "khallware",
             "InstanceType"       : "t2.micro",
