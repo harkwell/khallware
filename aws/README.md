@@ -26,6 +26,16 @@ chromium-browser http://<ec2-instance>.compute.amazonaws.com/khallware-dev/
 echo guest/guest
 ```
 
+Fitnesse
+---------------
+### First-time
+```shell
+chromium-browser http://<ec2-instance>.compute.amazonaws.com/IntegrationTests
+```
+
+
+Miscellaneous
+---------------
 ### Startup/Shutdown
 ```shell
 ssh -i *.pem ec2-user@10.0.24.100

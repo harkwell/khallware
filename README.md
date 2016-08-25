@@ -61,7 +61,7 @@ Quick Start
 chromium-browser http://aws.amazon.com/  # create a "free-tier" account
 aws configure # use the AccessKey and Secret Access Key from above
 wget -q -c 'https://raw.githubusercontent.com/harkwell/khallware/github/aws/AWS-cloudformation.json' -O - |aws cloudformation create-stack --stack-name khallware --capabilities CAPABILITY_NAMED_IAM --template-body file:///dev/stdin
-chromium-browser http://<ipaddr-of-aws-host>/
+chromium-browser http://<ipaddr-of-aws-host>/index.html
 ```
 
 ### Run from http://hub.docker.com/  (Optional/No CI-CD/Easy)
