@@ -261,6 +261,8 @@
          "Type"       : "AWS::EC2::Instance",
          "DependsOn"  : "dot23subnetRoutetableAssoc",
          "DependsOn"  : "database",
+         "DependsOn"  : "databaseDev",
+         "DependsOn"  : "databaseQA",
          "Properties" : {
             "KeyName"            : "khallware",
             "InstanceType"       : "t2.micro",
@@ -320,6 +322,50 @@
             "StorageType"        : "gp2",
             "AvailabilityZone"   :
                { "Fn::Join" : [ "", [{ "Ref" : "AWS::Region" }, "a" ]] },
+            "MasterUsername"     : "api",
+            "MasterUserPassword" : "khallware",
+            "AllocatedStorage"   : "5",
+            "StorageEncrypted"   : "false",
+            "Tags" : [ { "Key" : "projects", "Value" : "khallware" } ]
+         }
+      },
+      "databaseQA" : {
+         "Type"       : "AWS::RDS::DBInstance",
+         "DependsOn"  : "securitygroup",
+         "Properties" : {
+            "Engine"             : "MariaDB",
+            "DBName"             : "qawebsite",
+            "DBSubnetGroupName"  : { "Ref" : "dbsubnetgroup" },
+            "DBInstanceClass"    :
+               { "Fn::FindInMap" : [ "Vars", "rdssize", "Val"]},
+            "VPCSecurityGroups"  : [{ "Ref" : "securitygroup" }],
+            "PubliclyAccessible" : "false",
+            "MultiAZ"            : "false",
+            "StorageType"        : "gp2",
+            "AvailabilityZone"   :
+               { "Fn::Join" : [ "", [{ "Ref" : "AWS::Region" }, "b" ]] },
+            "MasterUsername"     : "api",
+            "MasterUserPassword" : "khallware",
+            "AllocatedStorage"   : "5",
+            "StorageEncrypted"   : "false",
+            "Tags" : [ { "Key" : "projects", "Value" : "khallware" } ]
+         }
+      },
+      "databaseDev" : {
+         "Type"       : "AWS::RDS::DBInstance",
+         "DependsOn"  : "securitygroup",
+         "Properties" : {
+            "Engine"             : "MariaDB",
+            "DBName"             : "devwebsite",
+            "DBSubnetGroupName"  : { "Ref" : "dbsubnetgroup" },
+            "DBInstanceClass"    :
+               { "Fn::FindInMap" : [ "Vars", "rdssize", "Val"]},
+            "VPCSecurityGroups"  : [{ "Ref" : "securitygroup" }],
+            "PubliclyAccessible" : "false",
+            "MultiAZ"            : "false",
+            "StorageType"        : "gp2",
+            "AvailabilityZone"   :
+               { "Fn::Join" : [ "", [{ "Ref" : "AWS::Region" }, "b" ]] },
             "MasterUsername"     : "api",
             "MasterUserPassword" : "khallware",
             "AllocatedStorage"   : "5",

@@ -1,9 +1,21 @@
 Khallware on AWS
 =================
+Provision AWS CloudFormation Stack
+---------------
+### Utilizing http://aws.amazon.com/ Website
+```shell
+chromium-browser https://github.com/harkwell/khallware/blob/github/aws/AWS-cloudformation.json
+# right click on "Raw", "Save link as..."
+chromium-browser http://aws.amazon.com/  # login to console
+# box -> CloudFormation -> "Create New Stack" -> "Choose..." -> "Upload..." -> Chose
+```
+
 Jenkins
 ---------------
 ### Access
 ```shell
+chromium-browser http://aws.amazon.com/  # login to console
+# box -> EC2 -> "Running Instances"
 chromium-browser http://<ec2-instance>.compute.amazonaws.com/jenkins/
 ```
 
@@ -28,7 +40,7 @@ echo guest/guest
 
 Fitnesse
 ---------------
-### First-time
+### Access
 ```shell
 chromium-browser http://<ec2-instance>.compute.amazonaws.com/IntegrationTests
 ```

@@ -22,7 +22,7 @@
     </userRemoteConfigs>
     <branches>
       <hudson.plugins.git.BranchSpec>
-        <name>*/dev</name>
+        <name>*/github</name>
       </hudson.plugins.git.BranchSpec>
     </branches>
     <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
@@ -43,14 +43,23 @@
   <builders>
     <hudson.tasks.Shell>
       <command>AWSREGION=$(curl http://169.254.169.254/latest/meta-data/placement/availability-zone |sed &apos;s#.$##&apos;)
-DBHOST=$(aws rds describe-db-instances --region $AWSREGION |jq &apos;.DBInstances[] |select(.DBName == &quot;devwebsite&quot;) | .Endpoint | .Address&apos; |sed &apos;s#&quot;##g&apos;)
+DBHOST=$(aws rds describe-db-instances --region $AWSREGION |jq &apos;.DBInstances[] |select(.DBName == &quot;qawebsite&quot;) | .Endpoint | .Address&apos; |sed &apos;s#&quot;##g&apos;)
 sed -i -e &quot;s#jdbc:mysql://mysql#jdbc:mysql://$DBHOST#&quot; src/main/webapp/WEB-INF/classes/apis.properties</command>
     </hudson.tasks.Shell>
     <hudson.tasks.Shell>
       <command>/usr/local/maven/bin/mvn -Dmaven.repo.local=/usr/share/maven-repo clean package
-cp target/apis.war /var/lib/tomcat8/webapps/apis-dev.war</command>
+cp target/apis.war /var/lib/tomcat8/webapps/apis-qa.war</command>
     </hudson.tasks.Shell>
   </builders>
-  <publishers/>
+  <publishers>
+    <hudson.tasks.ArtifactArchiver>
+      <artifacts>target/apis.war</artifacts>
+      <allowEmptyArchive>false</allowEmptyArchive>
+      <onlyIfSuccessful>true</onlyIfSuccessful>
+      <fingerprint>false</fingerprint>
+      <defaultExcludes>true</defaultExcludes>
+      <caseSensitive>true</caseSensitive>
+    </hudson.tasks.ArtifactArchiver>
+  </publishers>
   <buildWrappers/>
 </project>

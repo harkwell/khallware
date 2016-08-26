@@ -7,6 +7,7 @@ echo "khallware: setup system"
 #-------------------------------------------------------------------------------
 cp $REPO/aws/khall-prefs.sh /etc/profile.d/
 echo set editing-mode vi >>/etc/inputrc
+yum install -y mysql jq
 
 #echo "khallware: setup gitlab"
 #-------------------------------------------------------------------------------
@@ -25,7 +26,8 @@ chown -R jenkins:jenkins /var/lib/jenkins/jobs/ /var/lib/jenkins/users/
 service jenkins start
 sleep 20  # give it time to start-up and provision resources
 wget -c 'http://localhost:8081/jnlpJars/jenkins-cli.jar' -O /tmp/jenkins-cli.jar
-java -jar /tmp/jenkins-cli.jar -s http://localhost:8081/ install-plugin --username jenkins --password khallware git
+java -jar /tmp/jenkins-cli.jar -s http://localhost:8081/ install-plugin --username jenkins --password khallware --restart git
+#java -jar /tmp/jenkins-cli.jar -s http://localhost:8081/ restart --username jenkins --password khallware
 
 echo "khallware: setup maven3"
 #-------------------------------------------------------------------------------
@@ -46,9 +48,11 @@ mvn install:install-file -Dmaven.repo.local=/usr/share/maven-repo -Dfile=/tmp/jv
 chown -R jenkins:jenkins /usr/share/maven-repo/ /var/lib/tomcat8/webapps/
 rm /tmp/jvorbiscomment*
 
-echo "khallware: build khallware webapp (apis.war)"
+echo "khallware: build webapp artifacts (apis.war, apis-dev.war, apis-qa.war)"
 #-------------------------------------------------------------------------------
 java -jar /tmp/jenkins-cli.jar -s http://localhost:8081/ build --username jenkins --password khallware khallware
+java -jar /tmp/jenkins-cli.jar -s http://localhost:8081/ build --username jenkins --password khallware khallware-DEV
+java -jar /tmp/jenkins-cli.jar -s http://localhost:8081/ build --username jenkins --password khallware khallware-QA
 
 echo "khallware: setup fitnesse"
 #-------------------------------------------------------------------------------

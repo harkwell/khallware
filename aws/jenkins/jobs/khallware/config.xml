@@ -17,7 +17,7 @@
     <configVersion>2</configVersion>
     <userRemoteConfigs>
       <hudson.plugins.git.UserRemoteConfig>
-        <url>git://10.0.23.100/khallware</url>
+        <url>https://github.com/harkwell/khallware.git</url>
       </hudson.plugins.git.UserRemoteConfig>
     </userRemoteConfigs>
     <branches>
@@ -33,17 +33,12 @@
   <disabled>false</disabled>
   <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
   <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
-  <triggers>
-    <hudson.triggers.SCMTrigger>
-      <spec>H/15 * * * * </spec>
-      <ignorePostCommitHooks>false</ignorePostCommitHooks>
-    </hudson.triggers.SCMTrigger>
-  </triggers>
+  <triggers/>
   <concurrentBuild>false</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
       <command>AWSREGION=$(curl http://169.254.169.254/latest/meta-data/placement/availability-zone |sed &apos;s#.$##&apos;)
-DBHOST=$(aws rds describe-db-instances --region $AWSREGION |grep Address |head -1 |cut -d\&quot; -f4)
+DBHOST=$(aws rds describe-db-instances --region $AWSREGION |jq &apos;.DBInstances[] |select(.DBName == &quot;website&quot;) | .Endpoint | .Address&apos; |sed &apos;s#&quot;##g&apos;)
 sed -i -e &quot;s#jdbc:mysql://mysql#jdbc:mysql://$DBHOST#&quot; src/main/webapp/WEB-INF/classes/apis.properties</command>
     </hudson.tasks.Shell>
     <hudson.tasks.Shell>
@@ -56,7 +51,7 @@ cp target/apis.war /var/lib/tomcat8/webapps/apis.war</command>
       <artifacts>target/apis.war</artifacts>
       <allowEmptyArchive>false</allowEmptyArchive>
       <onlyIfSuccessful>true</onlyIfSuccessful>
-      <fingerprint>false</fingerprint>
+      <fingerprint>true</fingerprint>
       <defaultExcludes>true</defaultExcludes>
       <caseSensitive>true</caseSensitive>
     </hudson.tasks.ArtifactArchiver>
