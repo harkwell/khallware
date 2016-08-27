@@ -1,19 +1,35 @@
 #!/bin/bash
 
+echo "khallware: init script"
+#-------------------------------------------------------------------------------
 export JAVA_HOME=/usr/lib/jvm/jre-1.8.0-openjdk.x86_64/
-REPO=/opt/khallware/gitrepo/khallware/
+RAWROOT=https://raw.githubusercontent.com/harkwell/khallware/dev/aws/
+
 
 echo "khallware: setup system"
 #-------------------------------------------------------------------------------
-cp $REPO/aws/khall-prefs.sh /etc/profile.d/
+yum install -y wget mysql jq java-1.8.0-openjdk-devel
+update-alternatives --set java /usr/lib/jvm/jre-1.8.0-openjdk.x86_64/bin/java
+curl -sS $RAWROOT/khall-prefs.sh >/etc/profile.d/khall-prefs.sh
 echo set editing-mode vi >>/etc/inputrc
-yum install -y mysql jq
 
-#echo "khallware: setup gitlab"
+
+echo "khallware: setup tomcat8"
 #-------------------------------------------------------------------------------
-#curl -sS https://packages.gitlab.com/install/repositories/gitlab/gitlab-ce/script.rpm.sh |sudo bash
-#yum install -y gitlab-ce
-#gitlab-ctl reconfigure
+wget --quiet -c 'http://mirrors.ocf.berkeley.edu/apache/tomcat/tomcat-8/v8.5.4/bin/apache-tomcat-8.5.4.tar.gz' -O /tmp/tomcat8.tgz
+mkdir -p /var/lib/tomcat8
+tar zxvf /tmp/tomcat8.tgz -C /var/lib/tomcat8 --strip-components=1
+rm tmp/tomcat8.tgz
+/var/lib/tomcat8/bin/startup.sh
+
+
+echo "khallware: clone khallware git project"
+#-------------------------------------------------------------------------------
+mkdir -p /opt/khallware/gitrepo && cd /opt/khallware/gitrepo
+git clone https://github.com/harkwell/khallware.git
+git branch dev
+REPO=/opt/khallware/gitrepo/khallware
+
 
 echo "khallware: setup jenkins"
 #-------------------------------------------------------------------------------
@@ -29,6 +45,7 @@ wget -c 'http://localhost:8081/jnlpJars/jenkins-cli.jar' -O /tmp/jenkins-cli.jar
 java -jar /tmp/jenkins-cli.jar -s http://localhost:8081/ install-plugin --username jenkins --password khallware --restart git
 #java -jar /tmp/jenkins-cli.jar -s http://localhost:8081/ restart --username jenkins --password khallware
 
+
 echo "khallware: setup maven3"
 #-------------------------------------------------------------------------------
 wget --quiet -O /tmp/maven.tgz http://mirrors.ocf.berkeley.edu/apache/maven/maven-3/3.3.9/binaries/apache-maven-3.3.9-bin.tar.gz
@@ -39,6 +56,7 @@ EOF
 rm /tmp/maven.tgz
 source /etc/profile.d/maven.sh
 
+
 echo "khallware: setup local maven repo"
 #-------------------------------------------------------------------------------
 mkdir -p /usr/share/maven-repo && cd /usr/share/maven-repo
@@ -48,11 +66,13 @@ mvn install:install-file -Dmaven.repo.local=/usr/share/maven-repo -Dfile=/tmp/jv
 chown -R jenkins:jenkins /usr/share/maven-repo/ /var/lib/tomcat8/webapps/
 rm /tmp/jvorbiscomment*
 
+
 echo "khallware: build webapp artifacts (apis.war, apis-dev.war, apis-qa.war)"
 #-------------------------------------------------------------------------------
 java -jar /tmp/jenkins-cli.jar -s http://localhost:8081/ build --username jenkins --password khallware khallware
 java -jar /tmp/jenkins-cli.jar -s http://localhost:8081/ build --username jenkins --password khallware khallware-DEV
 java -jar /tmp/jenkins-cli.jar -s http://localhost:8081/ build --username jenkins --password khallware khallware-QA
+
 
 echo "khallware: setup fitnesse"
 #-------------------------------------------------------------------------------
@@ -69,6 +89,7 @@ cat <<'EOF' >/root/tmp/fitnesse/FitNesseRoot/content.txt
 !path /root/tmp/RestFixture-3.0/target/smartrics-RestFixture-3.0.jar
 EOF
 touch /tmp/photo1.jpg /tmp/video1.mp4
+
 
 echo "khallware: setup jmeter"
 #-------------------------------------------------------------------------------
