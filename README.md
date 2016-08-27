@@ -2,61 +2,62 @@ Khallware (Mobile Computing Services)
 =================
 Overview
 ---------------
-Create and maintain photo albums, music playlists, GPS coordinates,
-website URL collections, calendar events, contact lists, blog entries and
-video libraries in one location organized and grouped with tags.  Later,
-perform searches across all content or browse that favorite tag from a
-list.  Also, watch the RSS feed for new content posted by others.
+Create and maintain photo albums, play music playlists, enter GPS coordinates,
+add website URL collections, note calendar events, make contact lists, write
+blog entries and add to video libraries in one location organized and grouped
+with tags.  Later, perform searches across all these items or browse that
+favorite tag from a list.  Also, watch the RSS feed for new content posted by
+others.
 
 Serve the electronic content you might be tempted to put on facebook.  This
 android and web-based application groups entities with tags (photos, bookmarks,
-music, video, kml, etc.).  Your friends and relatives can register and be placed
-into groups that collate the content.  They may also upload some of their own
-files (up to a customized, set limit) and secure it by group.  One may browse
-new content when posted via RSS.  Contact lists and calendar entries may be
-managed from any android based phone.  Videos, photos and playlists are also
+music, video, kml, etc.).  Your friends and relatives can register a user to be
+placed into a group where content is collated.  They may also upload some of
+their own files (up to a customized, set limit) and group secure it.  One may
+browse new content from the RSS feed and contact lists and calendar entries may
+be managed from any android based phone.  Videos, photos and playlists are also
 available.
 
 Khallware utilizes: Android, Bootstrap, JQuery, Javascript, HTTP, Mime, Json,
 Java8, REST/JAX-RS, Jackson, ORMLite, JDBC, c3p0 and Mysql.  Testing is
 performed with fitnesse and jmeter.  Builds and deployments are made with
-maven and tomcat or Docker.
+maven, tomcat, Docker or Amazon Web Services.
 
-Usage
+USAGE
 ---------------
-### streaming music...
+### Streaming music...
 ```shell
 echo guest:guest |base64
 curl -s -X GET -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" 'http://tomcat-server:8080/apis/v1/sounds/playlist.m3u?tagId=35' -o /tmp/playlist.m3u 
 mplayer -noconsolecontrols -user guest -passwd guest -shuffle -prefer-ipv4 -playlist /tmp/playlist.m3u
 ```
 
-### GPS (maps, geo-location)...
+### GPS coordinates (maps, geo-location)...
 ```
 - open google earth, add network link location: http://tomcat-server:8080/apis/v1/locations?tagId=35
 ```
 
-### address book...
+### Address book...
 ```shell
 curl -s -X GET -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" 'http://tomcat-server:8080/apis/v1/contacts/cards.vcf?tagId=5' -o /tmp/cards.vcf
 file import, /tmp/cards.vcf
 ```
 
-### calendering...
+### Calendering...
 ```shell
 curl -s -X GET -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" 'http://tomcat-server:8080/apis/v1/events/calendar.ics?tagId=35' -o /tmp/calendar.ics
 - import into rainlendar2
 ```
 
-### upload content...
+### Upload content...
 ```shell
 feh ~/tmp/photo.jpg
 curl -i -X POST -H "Accept:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" -F "filecomment=selfie" -F "image=@$HOME/tmp/photo.jpg" http://localhost:8080/apis/v1/upload?tagId=5
 ```
 
-Quick Start
+QUICK START
 ---------------
-### Utilize Amazon Web Services (AWS) (Optional/Complete/Easy/Cost)
+### Utilize Amazon Web Services (AWS) (Optional/Complete/Easy)
 ```shell
 chromium-browser http://aws.amazon.com/  # create a "free-tier" account
 aws configure # use the AccessKey and Secret Access Key from above

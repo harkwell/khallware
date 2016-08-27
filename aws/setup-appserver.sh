@@ -8,7 +8,7 @@ RAWROOT=https://raw.githubusercontent.com/harkwell/khallware/dev/aws/
 
 echo "khallware: setup system"
 #-------------------------------------------------------------------------------
-yum install -y wget mysql jq java-1.8.0-openjdk-devel
+yum install -y wget mysql jq java-1.8.0-openjdk-devel git
 update-alternatives --set java /usr/lib/jvm/jre-1.8.0-openjdk.x86_64/bin/java
 curl -sS $RAWROOT/khall-prefs.sh >/etc/profile.d/khall-prefs.sh
 echo set editing-mode vi >>/etc/inputrc
@@ -26,8 +26,8 @@ rm tmp/tomcat8.tgz
 echo "khallware: clone khallware git project"
 #-------------------------------------------------------------------------------
 mkdir -p /opt/khallware/gitrepo && cd /opt/khallware/gitrepo
-git clone https://github.com/harkwell/khallware.git
-git branch dev
+git clone https://github.com/harkwell/khallware.git && cd khallware
+git checkout dev
 REPO=/opt/khallware/gitrepo/khallware
 
 
@@ -37,7 +37,7 @@ wget --quiet -O /etc/yum.repos.d/jenkins.repo http://pkg.jenkins-ci.org/redhat/j
 rpm --import https://jenkins-ci.org/redhat/jenkins-ci.org.key
 yum install -y jenkins
 sed -i -e 's#^JENKINS_PORT="8080"#JENKINS_PORT="8081"#' /etc/sysconfig/jenkins
-cp -r $REPO/aws/jenkins/* /var/lib/jenkins/
+\cp -fr $REPO/aws/jenkins/* /var/lib/jenkins/
 chown -R jenkins:jenkins /var/lib/jenkins/jobs/ /var/lib/jenkins/users/
 service jenkins start
 sleep 20  # give it time to start-up and provision resources

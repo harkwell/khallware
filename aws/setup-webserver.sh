@@ -11,7 +11,7 @@ echo "khallware: setup system"
 #-------------------------------------------------------------------------------
 curl -sS $RAWROOT/khall-prefs.sh >/etc/profile.d/khall-prefs.sh
 echo set editing-mode vi >>/etc/inputrc
-yum install -y nginx git mysql
+yum install -y nginx git mysql jq
 #/usr/sbin/nginx
 systemctl start nginx
 
@@ -19,8 +19,8 @@ systemctl start nginx
 echo "khallware: clone khallware git project"
 #-------------------------------------------------------------------------------
 mkdir -p /opt/khallware/gitrepo && cd /opt/khallware/gitrepo
-git clone https://github.com/harkwell/khallware.git
-git branch dev  # KDH comment this out when merged into github
+git clone https://github.com/harkwell/khallware.git && cd khallware
+git checkout dev  # KDH comment this out when merged into github
 REPO=/opt/khallware/gitrepo/khallware
 
 
@@ -30,7 +30,7 @@ cp $REPO/aws/index.html /usr/share/nginx/html/
 cp $REPO/aws/nginx-khallware.conf /etc/nginx/conf.d/
 sed -i -e "s#XXXX#$EC2HOST#g" /etc/nginx/conf.d/nginx-khallware.conf
 sed -ni -e 1,14p -e 14i'\    server_names_hash_bucket_size 128;' -e 15,\$p /etc/nginx/nginx.conf
-nginx -s reload
+service nginx start
 
 
 echo "khallware: populate databases"
