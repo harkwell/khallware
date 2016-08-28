@@ -42,7 +42,7 @@ chown -R jenkins:jenkins /var/lib/jenkins/jobs/ /var/lib/jenkins/users/
 service jenkins start
 sleep 20  # give it time to start-up and provision resources
 wget -c 'http://localhost:8081/jnlpJars/jenkins-cli.jar' -O /tmp/jenkins-cli.jar
-java -jar /tmp/jenkins-cli.jar -s http://localhost:8081/ install-plugin --username jenkins --password khallware --restart git
+java -jar /tmp/jenkins-cli.jar -s http://localhost:8081/ install-plugin --username jenkins --password khallware -restart git
 #java -jar /tmp/jenkins-cli.jar -s http://localhost:8081/ restart --username jenkins --password khallware
 
 
