@@ -12,6 +12,20 @@
         <artifactNumToKeep>-1</artifactNumToKeep>
       </strategy>
     </jenkins.model.BuildDiscarderProperty>
+    <hudson.model.ParametersDefinitionProperty>
+      <parameterDefinitions>
+        <hudson.model.StringParameterDefinition>
+          <name>SMTP_USERNAME</name>
+          <description>Used to connect via smtps when registering for the site defined in WEB-INF/classes/apis.properties.</description>
+          <defaultValue>SEE_AMAZON</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>SMTP_PASSWORD</name>
+          <description>Used to connect via smtps when registering for the site defined in WEB-INF/classes/apis.properties.</description>
+          <defaultValue>SEE_AMAZON</defaultValue>
+        </hudson.model.StringParameterDefinition>
+      </parameterDefinitions>
+    </hudson.model.ParametersDefinitionProperty>
   </properties>
   <scm class="hudson.plugins.git.GitSCM" plugin="git@2.5.3">
     <configVersion>2</configVersion>
@@ -39,7 +53,9 @@
     <hudson.tasks.Shell>
       <command>AWSREGION=$(curl http://169.254.169.254/latest/meta-data/placement/availability-zone |sed &apos;s#.$##&apos;)
 DBHOST=$(aws rds describe-db-instances --region $AWSREGION |jq &apos;.DBInstances[] |select(.DBName == &quot;website&quot;) | .Endpoint | .Address&apos; |sed &apos;s#&quot;##g&apos;)
-sed -i -e &quot;s#jdbc:mysql://mysql#jdbc:mysql://$DBHOST#&quot; src/main/webapp/WEB-INF/classes/apis.properties</command>
+sed -i -e &quot;s#jdbc:mysql://mysql#jdbc:mysql://$DBHOST#&quot; src/main/webapp/WEB-INF/classes/apis.properties
+sed -i -e &quot;s#^smtp_username=.*\$#smtp_username=$SMTP_USERNAME#&quot; src/main/webapp/WEB-INF/classes/apis.properties
+sed -i -e &quot;s#^smtp_password=.*\$#smtp_username=$PROP_SMTP_PASS#&quot; src/main/webapp/WEB-INF/classes/apis.properties</command>
     </hudson.tasks.Shell>
     <hudson.tasks.Shell>
       <command>/usr/local/maven/bin/mvn -Dmaven.repo.local=/usr/share/maven-repo clean package

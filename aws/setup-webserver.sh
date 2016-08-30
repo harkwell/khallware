@@ -91,6 +91,9 @@ nginx -s reload
 wget -c 'https://github.com/Flyspray/flyspray/archive/v1.0-rc1.tar.gz' -O /tmp/flyspray.tgz
 mkdir -p /usr/share/nginx/html/flyspray
 tar zxvf /tmp/flyspray.tgz -C /usr/share/nginx/html/flyspray --strip-components=1
+cd /usr/local/bin && curl -sS https://getcomposer.org/installer | php
+cd /usr/share/nginx/html/flyspray
+php /usr/local/bin/composer.phar install
 CONF=/usr/share/nginx/html/flyspray/flyspray.conf.php
 DBHOST=$(aws rds describe-db-instances --region $AWSREGION |jq '.DBInstances[] |select(.DBName == "flyspray") | .Endpoint | .Address' |sed 's#"##g')
 mysql -u flyspray -pkhallware -h $DBHOST flyspray <$REPO/aws/flyspray/flyspray.mysql
@@ -101,13 +104,3 @@ sed -in -e 's#^dbname =.*$#dbname = "flyspray"#' $CONF
 sed -in -e 's#^dbpass =.*$#dbpass = "khallware"#' $CONF
 rm -f /tmp/flyspray.tgz
 chown -R nginx:nginx /usr/share/nginx/html
-cat <<'EOF' >/etc/nginx/default.d/php-fpm.conf
-location ~ \.php$ {
-    root           /usr/share/nginx/html;
-    fastcgi_pass   127.0.0.1:9000;
-    fastcgi_index  index.php;
-    fastcgi_param  SCRIPT_FILENAME   $document_root$fastcgi_script_name;
-    include        fastcgi_params;
-}
-EOF
-nginx -s reload

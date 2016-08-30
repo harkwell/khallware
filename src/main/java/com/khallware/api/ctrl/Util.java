@@ -66,6 +66,8 @@ public final class Util
 	public static final String PROP_REGIURL = "registration_url";
 	public static final String PROP_ADMIN_EMAIL = "admin_email";
 	public static final String PROP_FROM = "registration_from";
+	public static final String PROP_SMTP_USER = "smtp_username";
+	public static final String PROP_SMTP_PASS = "smtp_password";
 	public static final String DEF_FROM = "system@fakedomain.com";
 	public static final String DEF_ADMIN_EMAIL = "admin@fakedomain.com";
 	public static final String DEF_REGIURL =
@@ -698,7 +700,19 @@ public final class Util
 		message.setRecipients(Message.RecipientType.TO, email);
 		message.setSubject(subject);
 		message.setText(body);
-		Transport.send(message);
+
+		if (props.getProperty("mail.transport.protocol","").isEmpty()) {
+			Transport.send(message);
+		}
+		else {
+			Transport transport = session.getTransport();
+			String host = props.getProperty("mail.smtp.host");
+			String user = props.getProperty(PROP_SMTP_USER);
+			String pass = props.getProperty(PROP_SMTP_PASS);
+			transport.connect(host, user, pass);
+			transport.sendMessage(
+				message, message.getAllRecipients());
+		}
 	}
 
 	public static File resolveFile(File file)
