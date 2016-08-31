@@ -93,6 +93,7 @@ mkdir -p /usr/share/nginx/html/flyspray
 tar zxvf /tmp/flyspray.tgz -C /usr/share/nginx/html/flyspray --strip-components=1
 cd /usr/local/bin && curl -sS https://getcomposer.org/installer | php
 cd /usr/share/nginx/html/flyspray
+export COMPOSER_HOME=/root
 php /usr/local/bin/composer.phar install
 CONF=/usr/share/nginx/html/flyspray/flyspray.conf.php
 DBHOST=$(aws rds describe-db-instances --region $AWSREGION |jq '.DBInstances[] |select(.DBName == "flyspray") | .Endpoint | .Address' |sed 's#"##g')

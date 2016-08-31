@@ -14,7 +14,7 @@
             "EnableDnsSupport"   : "true",
             "EnableDnsHostnames" : "true",
             "InstanceTenancy"    : "default",
-            "Tags" : [ { "Key" : "projects", "Value" : "khallware" } ]
+            "Tags" : [{ "Key" : "projects", "Value" : "khallware" }]
          }
       },
       "role" : {
@@ -35,7 +35,7 @@
          "Type"       : "AWS::IAM::Policy",
          "Properties" : {
             "PolicyName"     : "policy",
-            "Roles"          : [ { "Ref" : "role" } ],
+            "Roles"          : [{ "Ref" : "role" }],
             "PolicyDocument" : {
                "Version" : "2012-10-17",
                "Statement": [
@@ -48,7 +48,7 @@
          "Type"       : "AWS::IAM::InstanceProfile",
          "Properties" : {
             "Path"    : "/",
-            "Roles"   : [ { "Ref" : "role" } ]
+            "Roles"   : [{ "Ref" : "role" }]
          }
       },
       "dot23subnet" : {
@@ -59,7 +59,7 @@
             "AvailabilityZone" : {
                "Fn::Join" : [ "", [{ "Ref" : "AWS::Region" }, "a" ]]
             },
-            "Tags" : [ { "Key" : "projects", "Value" : "khallware" } ]
+            "Tags" : [{ "Key" : "projects", "Value" : "khallware" }]
          }
       },
       "dot24subnet" : {
@@ -70,7 +70,7 @@
             "AvailabilityZone" : {
                "Fn::Join" : [ "", [{ "Ref" : "AWS::Region" }, "a" ]]
             },
-            "Tags" : [ { "Key" : "projects", "Value" : "khallware" } ]
+            "Tags" : [{ "Key" : "projects", "Value" : "khallware" }]
          }
       },
       "dot25subnet" : {
@@ -81,7 +81,7 @@
             "AvailabilityZone" : {
                "Fn::Join" : [ "", [{ "Ref" : "AWS::Region" }, "b" ]]
             },
-            "Tags" : [ { "Key" : "projects", "Value" : "khallware" } ]
+            "Tags" : [{ "Key" : "projects", "Value" : "khallware" }]
          }
       },
       "assocSubnetNetworkACL" : {
@@ -134,7 +134,7 @@
          "Type"       : "AWS::EC2::NetworkAcl",
          "Properties" : {
             "VpcId" : { "Ref" : "vpc" },
-            "Tags" : [ { "Key" : "projects", "Value" : "khallware" } ]
+            "Tags" : [{ "Key" : "projects", "Value" : "khallware" }]
          }
       },
       "netAclEntry1" : {
@@ -158,12 +158,12 @@
             "NetworkAclId" : { "Ref" : "netacl" }
          }
       },
-      "securitygroup" : {
+      "t1securitygroup" : {
          "Type" : "AWS::EC2::SecurityGroup",
          "Properties" : {
             "VpcId"                : { "Ref" : "vpc" },
             "GroupDescription"     : "Enable SSH, HTTP, and HTTPS",
-            "Tags" : [ { "Key" : "projects", "Value" : "khallware" } ],
+            "Tags" : [{ "Key" : "projects", "Value" : "khallware" }],
             "SecurityGroupIngress" : [
                {
                   "IpProtocol" : "tcp",
@@ -182,6 +182,22 @@
                   "FromPort"   : "443",
                   "ToPort"     : "443",
                   "CidrIp"     : "0.0.0.0/0"
+               }
+            ]
+         }
+      },
+      "t2securitygroup" : {
+         "Type" : "AWS::EC2::SecurityGroup",
+         "Properties" : {
+            "VpcId"                : { "Ref" : "vpc" },
+            "GroupDescription"     : "Enable Middle Tier Traffic",
+            "Tags" : [{ "Key" : "projects", "Value" : "khallware" }],
+            "SecurityGroupIngress" : [
+               {
+                  "IpProtocol" : "tcp",
+                  "FromPort"   : "22",
+                  "ToPort"     : "22",
+                  "CidrIp"     : "10.0.0.0/16"
                },
                {
                   "IpProtocol" : "tcp",
@@ -216,6 +232,22 @@
             ]
          }
       },
+      "t3securitygroup" : {
+         "Type" : "AWS::EC2::SecurityGroup",
+         "Properties" : {
+            "VpcId"                : { "Ref" : "vpc" },
+            "GroupDescription"     : "Enable Back End Tier Traffic",
+            "Tags" : [{ "Key" : "projects", "Value" : "khallware" }],
+            "SecurityGroupIngress" : [
+               {
+                  "IpProtocol" : "tcp",
+                  "FromPort"   : "3306",
+                  "ToPort"     : "3306",
+                  "CidrIp"     : "10.0.0.0/16"
+               }
+            ]
+         }
+      },
       "appserver" : {
          "Type"       : "AWS::EC2::Instance",
          "DependsOn"  : "dot24subnetRoutetableAssoc",
@@ -225,18 +257,18 @@
             "InstanceType"       : "t2.micro",
             "IamInstanceProfile" : { "Ref" : "instanceprofile" },
             "AvailabilityZone"   : {
-               "Fn::Join" : [ "", [{ "Ref" : "AWS::Region" }, "a" ]]
+               "Fn::Join" : [ "", [{ "Ref" : "AWS::Region" }, "b" ]]
             },
             "ImageId"            : "ami-7172b611",
             "Monitoring"         : "false",
-            "Tags" : [ { "Key" : "projects", "Value" : "khallware" } ],
+            "Tags" : [{ "Key" : "projects", "Value" : "khallware" }],
             "NetworkInterfaces"  : [{
                "DeviceIndex"              : 0,
                "SubnetId"                 : { "Ref" : "dot24subnet" },
                "PrivateIpAddresses"       : [{
                    "PrivateIpAddress": "10.0.24.100", "Primary": "true"
                }],
-               "GroupSet"                 : [{ "Ref" : "securitygroup" }],
+               "GroupSet"                 : [{ "Ref" : "t2securitygroup" }],
                "AssociatePublicIpAddress" : "true",
                "DeleteOnTermination"      : "true"
             }],
@@ -262,14 +294,14 @@
             },
             "ImageId"            : "ami-7172b611",
             "Monitoring"         : "false",
-            "Tags" : [ { "Key" : "projects", "Value" : "khallware" } ],
+            "Tags" : [{ "Key" : "projects", "Value" : "khallware" }],
             "NetworkInterfaces"  : [{
                "DeviceIndex"              : 0,
                "SubnetId"                 : { "Ref" : "dot23subnet" },
                "PrivateIpAddresses"       : [{
                    "PrivateIpAddress": "10.0.23.100", "Primary": "true"
                }],
-               "GroupSet"                 : [{ "Ref" : "securitygroup" }],
+               "GroupSet"                 : [{ "Ref" : "t1securitygroup" }],
                "AssociatePublicIpAddress" : "true",
                "DeleteOnTermination"      : "true"
             }],
@@ -292,14 +324,14 @@
       },
       "database" : {
          "Type"       : "AWS::RDS::DBInstance",
-         "DependsOn"  : "securitygroup",
+         "DependsOn"  : "t3securitygroup",
          "Properties" : {
             "Engine"                : "MariaDB",
             "DBName"                : "website",
             "DBSubnetGroupName"     : { "Ref" : "dbsubnetgroup" },
             "DBInstanceClass"       :
                { "Fn::FindInMap" : [ "Vars", "rdssize", "Val"]},
-            "VPCSecurityGroups"     : [{ "Ref" : "securitygroup" }],
+            "VPCSecurityGroups"     : [{ "Ref" : "t3securitygroup" }],
             "PubliclyAccessible"    : "false",
             "BackupRetentionPeriod" : "0",
             "MultiAZ"               : "false",
@@ -310,19 +342,19 @@
             "MasterUserPassword"    : "khallware",
             "AllocatedStorage"      : "5",
             "StorageEncrypted"      : "false",
-            "Tags" : [ { "Key" : "projects", "Value" : "khallware" } ]
+            "Tags" : [{ "Key" : "projects", "Value" : "khallware" }]
          }
       },
       "databaseQA" : {
          "Type"       : "AWS::RDS::DBInstance",
-         "DependsOn"  : "securitygroup",
+         "DependsOn"  : "t3securitygroup",
          "Properties" : {
             "Engine"                : "MariaDB",
             "DBName"                : "qawebsite",
             "DBSubnetGroupName"     : { "Ref" : "dbsubnetgroup" },
             "DBInstanceClass"       :
                { "Fn::FindInMap" : [ "Vars", "rdssize", "Val"]},
-            "VPCSecurityGroups"     : [{ "Ref" : "securitygroup" }],
+            "VPCSecurityGroups"     : [{ "Ref" : "t3securitygroup" }],
             "PubliclyAccessible"    : "false",
             "BackupRetentionPeriod" : "0",
             "MultiAZ"               : "false",
@@ -333,19 +365,19 @@
             "MasterUserPassword"    : "khallware",
             "AllocatedStorage"      : "5",
             "StorageEncrypted"      : "false",
-            "Tags" : [ { "Key" : "projects", "Value" : "khallware" } ]
+            "Tags" : [{ "Key" : "projects", "Value" : "khallware" }]
          }
       },
       "databaseDev" : {
          "Type"       : "AWS::RDS::DBInstance",
-         "DependsOn"  : "securitygroup",
+         "DependsOn"  : "t3securitygroup",
          "Properties" : {
             "Engine"                : "MariaDB",
             "DBName"                : "devwebsite",
             "DBSubnetGroupName"     : { "Ref" : "dbsubnetgroup" },
             "DBInstanceClass"       :
                { "Fn::FindInMap" : [ "Vars", "rdssize", "Val"]},
-            "VPCSecurityGroups"     : [{ "Ref" : "securitygroup" }],
+            "VPCSecurityGroups"     : [{ "Ref" : "t3securitygroup" }],
             "PubliclyAccessible"    : "false",
             "BackupRetentionPeriod" : "0",
             "MultiAZ"               : "false",
@@ -356,19 +388,19 @@
             "MasterUserPassword"    : "khallware",
             "AllocatedStorage"      : "5",
             "StorageEncrypted"      : "false",
-            "Tags" : [ { "Key" : "projects", "Value" : "khallware" } ]
+            "Tags" : [{ "Key" : "projects", "Value" : "khallware" }]
          }
       },
       "databaseFlyspray" : {
          "Type"       : "AWS::RDS::DBInstance",
-         "DependsOn"  : "securitygroup",
+         "DependsOn"  : "t3securitygroup",
          "Properties" : {
             "Engine"                : "MariaDB",
             "DBName"                : "flyspray",
             "DBSubnetGroupName"     : { "Ref" : "dbsubnetgroup" },
             "DBInstanceClass"       :
                { "Fn::FindInMap" : [ "Vars", "rdssize", "Val"]},
-            "VPCSecurityGroups"     : [{ "Ref" : "securitygroup" }],
+            "VPCSecurityGroups"     : [{ "Ref" : "t3securitygroup" }],
             "PubliclyAccessible"    : "false",
             "BackupRetentionPeriod" : "0",
             "MultiAZ"               : "false",
@@ -379,7 +411,7 @@
             "MasterUserPassword"    : "khallware",
             "AllocatedStorage"      : "5",
             "StorageEncrypted"      : "false",
-            "Tags" : [ { "Key" : "projects", "Value" : "khallware" } ]
+            "Tags" : [{ "Key" : "projects", "Value" : "khallware" }]
          }
       }
    },
