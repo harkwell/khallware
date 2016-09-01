@@ -56,3 +56,7 @@ service jenkins start
 service jenkins stop
 tail -f /var/log/jenkins/jenkins.log
 ```
+
+Tear Down AWS CloudFormation Stack
+---------------
+aws cloudformation delete-stack --stack-name khallware

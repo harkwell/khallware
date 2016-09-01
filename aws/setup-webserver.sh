@@ -51,9 +51,9 @@ INSERT INTO credentials (username, password, email, _group) VALUES ('guest', '84
 EOF
 
 DBHOST=$(aws rds describe-db-instances --region $AWSREGION |jq '.DBInstances[] |select(.DBName == "devwebsite") | .Endpoint | .Address' |sed 's#"##g')
-mysql -u api -pkhallware -h $DBHOST website <$REPO/src/scripts/db_schema.sql
-mysql -u api -pkhallware -h $DBHOST website <$REPO/src/scripts/db_load.sql
-mysql -u api -pkhallware -h $DBHOST website <<EOF
+mysql -u api -pkhallware -h $DBHOST devwebsite <$REPO/src/scripts/db_schema.sql
+mysql -u api -pkhallware -h $DBHOST devwebsite <$REPO/src/scripts/db_load.sql
+mysql -u api -pkhallware -h $DBHOST devwebsite <<EOF
 INSERT INTO groups (name, description) VALUES ('root', 'root group');
 UPDATE groups SET id=0 WHERE name = 'root';
 INSERT INTO groups (name, description) VALUES ('guest', 'guest group');
@@ -66,9 +66,9 @@ INSERT INTO credentials (username, password, email, _group) VALUES ('guest', '84
 EOF
 
 DBHOST=$(aws rds describe-db-instances --region $AWSREGION |jq '.DBInstances[] |select(.DBName == "qawebsite") | .Endpoint | .Address' |sed 's#"##g')
-mysql -u api -pkhallware -h $DBHOST website <$REPO/src/scripts/db_schema.sql
-mysql -u api -pkhallware -h $DBHOST website <$REPO/src/scripts/db_load.sql
-mysql -u api -pkhallware -h $DBHOST website <<EOF
+mysql -u api -pkhallware -h $DBHOST qawebsite <$REPO/src/scripts/db_schema.sql
+mysql -u api -pkhallware -h $DBHOST qawebsite <$REPO/src/scripts/db_load.sql
+mysql -u api -pkhallware -h $DBHOST qawebsite <<EOF
 INSERT INTO groups (name, description) VALUES ('root', 'root group');
 UPDATE groups SET id=0 WHERE name = 'root';
 INSERT INTO groups (name, description) VALUES ('guest', 'guest group');

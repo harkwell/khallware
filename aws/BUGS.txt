@@ -1,3 +1,7 @@
+need a bug tracker (eg flyspray) that can deploy without manual intervention
+create tickets for each bug listed in BUGS.txt and ../BUGS.txt
+
+FIXED:
 new route table for tier 2 (10.0.24.255); should not allow packets out to Inet
-need a bug tracker (eg flyspray)
 setup SES in the stack and configure apis.properties for it (see http://docs.aws.amazon.com/ses/latest/DeveloperGuide/send-using-smtp-java.html)
+/apis-dev not able to login

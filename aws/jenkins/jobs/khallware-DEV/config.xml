@@ -44,7 +44,7 @@
     <hudson.tasks.Shell>
       <command>AWSREGION=$(curl http://169.254.169.254/latest/meta-data/placement/availability-zone |sed &apos;s#.$##&apos;)
 DBHOST=$(aws rds describe-db-instances --region $AWSREGION |jq &apos;.DBInstances[] |select(.DBName == &quot;devwebsite&quot;) | .Endpoint | .Address&apos; |sed &apos;s#&quot;##g&apos;)
-sed -i -e &quot;s#jdbc:mysql://mysql#jdbc:mysql://$DBHOST#&quot; src/main/webapp/WEB-INF/classes/apis.properties
+sed -i -e &quot;s#jdbc:mysql://mysql/#jdbc:mysql://$DBHOST/dev#&quot; src/main/webapp/WEB-INF/classes/apis.properties
 find . -type f -exec sed -i -e &quot;s#/apis/#/apis-dev/#&quot; {} \;
 </command>
     </hudson.tasks.Shell>
