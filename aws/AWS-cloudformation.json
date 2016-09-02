@@ -274,7 +274,7 @@
             }],
             "UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
                "#!/bin/bash\n",
-               "curl -sS 'https://raw.githubusercontent.com/harkwell/khallware/dev/aws/setup-appserver.sh' |bash\n"
+               "curl -sS 'https://raw.githubusercontent.com/harkwell/khallware/dev/aws/setup-appserver.sh' |bash 2>&1 |tee /tmp/setup-appserver.log\n"
             ]]}}
          }
       },
@@ -307,7 +307,7 @@
             }],
             "UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
                "#!/bin/bash\n",
-               "curl -sS 'https://raw.githubusercontent.com/harkwell/khallware/dev/aws/setup-webserver.sh' |bash\n"
+               "curl -sS 'https://raw.githubusercontent.com/harkwell/khallware/dev/aws/setup-webserver.sh' |bash 2>&1 |tee /tmp/setup-webserver.log\n"
             ]]}}
          }
       },

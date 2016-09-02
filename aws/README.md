@@ -30,12 +30,20 @@ Jenkins -> Manage Jenkins -> Manage Plugins -> Available -> "Git plugin"
 ### Build/Deploy
 ```
 Jenkins -> "khallware" -> Build Now
+# use AWS-SES smtp credentials with a validated from and to email
 ```
 
 ### Devlopment Instance
 ```shell
 chromium-browser http://<ec2-instance>.compute.amazonaws.com/khallware-dev/
 echo guest/guest
+```
+
+Flyspray
+---------------
+```shell
+chromium-browser http://<ec2-instance>.compute.amazonaws.com/flyspray/
+# click through to install
 ```
 
 Fitnesse

@@ -25,6 +25,12 @@
           <defaultValue>SEE_AMAZON</defaultValue>
         </hudson.model.StringParameterDefinition>
       </parameterDefinitions>
+        <hudson.model.StringParameterDefinition>
+          <name>SMTP_FROM</name>
+          <description>Email to registrants are from this user as defined in WEB-INF/classes/apis.properties.</description>
+          <defaultValue>SEE_AMAZON</defaultValue>
+        </hudson.model.StringParameterDefinition>
+      </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
   </properties>
   <scm class="hudson.plugins.git.GitSCM" plugin="git@2.5.3">
@@ -54,8 +60,9 @@
       <command>AWSREGION=$(curl http://169.254.169.254/latest/meta-data/placement/availability-zone |sed &apos;s#.$##&apos;)
 DBHOST=$(aws rds describe-db-instances --region $AWSREGION |jq &apos;.DBInstances[] |select(.DBName == &quot;website&quot;) | .Endpoint | .Address&apos; |sed &apos;s#&quot;##g&apos;)
 sed -i -e &quot;s#jdbc:mysql://mysql#jdbc:mysql://$DBHOST#&quot; src/main/webapp/WEB-INF/classes/apis.properties
+echo registration_from=$SMTP_FROM &#x3E;&#x3E; src/main/webapp/WEB-INF/classes/apis.properties
 sed -i -e &quot;s#^smtp_username=.*\$#smtp_username=$SMTP_USERNAME#&quot; src/main/webapp/WEB-INF/classes/apis.properties
-sed -i -e &quot;s#^smtp_password=.*\$#smtp_username=$PROP_SMTP_PASS#&quot; src/main/webapp/WEB-INF/classes/apis.properties</command>
+sed -i -e &quot;s#^smtp_password=.*\$#smtp_password=$SMTP_PASSWORD#&quot; src/main/webapp/WEB-INF/classes/apis.properties</command>
     </hudson.tasks.Shell>
     <hudson.tasks.Shell>
       <command>/usr/local/maven/bin/mvn -Dmaven.repo.local=/usr/share/maven-repo clean package
