@@ -24,7 +24,6 @@
           <description>Used to connect via smtps when registering for the site defined in WEB-INF/classes/apis.properties.</description>
           <defaultValue>SEE_AMAZON</defaultValue>
         </hudson.model.StringParameterDefinition>
-      </parameterDefinitions>
         <hudson.model.StringParameterDefinition>
           <name>SMTP_FROM</name>
           <description>Email to registrants are from this user as defined in WEB-INF/classes/apis.properties.</description>
