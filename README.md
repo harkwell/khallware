@@ -43,7 +43,7 @@ curl -s -X GET -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" 'http://tomcat-server:
 file import, /tmp/cards.vcf
 ```
 
-### Calendering...
+### Calendaring...
 ```shell
 curl -s -X GET -H "Authorization:Basic Z3Vlc3Q6Z3Vlc3QK=" 'http://tomcat-server:8080/apis/v1/events/calendar.ics?tagId=35' -o /tmp/calendar.ics
 - import into rainlendar2
