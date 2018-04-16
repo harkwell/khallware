@@ -58,18 +58,52 @@ curl -i -X POST -H "Accept:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3V
 QUICK START
 ---------------
 ### Run it locally
+```shell
+# download the software
+wget -c 'http://central.maven.org/maven2/org/eclipse/jetty/jetty-runner/9.4.9.v20180320/jetty-runner-9.4.9.v20180320.jar' -O /tmp/jetty-runner.jar
+wget -c 'https://github.com/harkwell/khallware/releases/download/v0.9.0/khallware-0.9.0.war' -O /tmp/apis.war
+
+# configure it to your liking:
+cat <<EOF >/tmp/main.properties
+images=$HOME/tmp/apis/images
+thumbs=$HOME/tmp/apis/thumbs
+audio=$HOME/tmp/apis/audio
+upload.dir=$HOME/tmp/apis/uploads
+captcha_file=$HOME/tmp/apis/captcha.png
+jdbc_user=webapp
+jdbc_pass=webapp
+jdbc_url=jdbc:hsqldb:$HOME/tmp/apis/db
+EOF
+
+# start up the email server (optional)
+chromium-browser https://github.com/harkwell/java-poc/3rdParty/
+java -jar 
+
+# start up khallware
+java -jar /tmp/jetty-runner.jar /tmp/apis.war
+
+# begin to use it...
+chromium-browser http://localhost:8080/
+```
 
 ### Or, build and run it locally
 ```shell
 git clone https://github.com/harkwell/khallware.git /tmp/khallware
 export MAVEN_REPO=/tmp/delete-me-later
 rm -rf $MAVEN_REPO && cd /tmp/khallware
-mvn -Dmaven.repo.local=$MAVEN_REPO package assembly:single
-mv target/apis-jar-with-dependencies.jar /tmp/khallware.jar
+mvn -Dmaven.repo.local=$MAVEN_REPO package
+mv target/apis.war /tmp/
+
 mvn -Dmaven.repo.local=$MAVEN_REPO clean
+mvn org.apache.maven.plugins:maven-dependency-plugin:2.1:get \
+    -Dmaven.repo.local=$MAVEN_REPO \
+    -DrepoUrl=https://mvnrepository.com/ \
+    -Dartifact=org.eclipse.jetty:jetty-runner:9.4.9.v20180320
+RUNNER_JAR=$(find $MAVEN_REPO -name \*runner\*jar)
+java -jar $RUNNER_JAR /tmp/apis.war
+chromium-browser http://localhost:8080/apis/
+
 rm -rf $MAVEN_REPO
-java -jar /tmp/khallware.jar
-chromium-browser http://localhost/apis/
 ```
 
 ### Or, run from Amazon Web Services (AWS)
@@ -90,7 +124,7 @@ docker run -it khall/khallware
 ### Create MySQL Docker Image (One Time Only)
 ```shell
 mkdir -p /tmp/khallware-mysql && cd /tmp/khallware-mysql
-wget -q -c 'https://raw.githubusercontent.com/harkwell/khallware/github/src/scripts/Docker-mysql' -O - |docker build --no-cache -t docker-repo:5000/khallware-mysql:v1.0 -
+wget -q -c 'https://raw.githubusercontent.com/harkwell/khallware/github/src/scripts/Docker-mysql' -O - |docker build --no-cache -t khallware-mysql:v1.0 -
 ```
 
 ### Create Tomcat8 Docker Image (One Time Only)
@@ -98,7 +132,7 @@ wget -q -c 'https://raw.githubusercontent.com/harkwell/khallware/github/src/scri
 mkdir -p /tmp/khallware-tomcat8 && cd /tmp/khallware-tomcat8
 # chromium-browser https://tomcat.apache.org/download-80.cgi
 wget -q -c 'http://mirrors.gigenet.com/apache/tomcat/tomcat-8/v8.0.36/bin/apache-tomcat-8.0.36.tar.gz' -O apache-tomcat.tgz
-wget -q -c 'https://raw.githubusercontent.com/harkwell/khallware/github/src/scripts/Docker-tomcat8' -O - |docker build --no-cache -t docker-repo:5000/khallware-tomcat:v1.0 -
+wget -q -c 'https://raw.githubusercontent.com/harkwell/khallware/github/src/scripts/Docker-tomcat8' -O - |docker build --no-cache -t khallware-tomcat:v1.0 -
 ```
 
 ### Create khallware.com Build Docker Image (One Time Only)
@@ -109,20 +143,20 @@ for x in build.sh Dockerfile; do
    wget -q -c "https://raw.githubusercontent.com/harkwell/khallware/github/src/scripts/$x"
 done
 sed -i -e 's#^rm -rf.*mkdir#mkdir#' build.sh
-docker build --no-cache -t docker-repo:5000/khallware-build:v1.0 .
+docker build --no-cache -t khallware-build:v1.0 .
 ```
 
 ### Build Application Server (apis.war file)
 ```shell
 mkdir -p /tmp/artifacts
-docker run -h build --name khallware-build -v /tmp/artifacts:/root/tmp/build/khallware/target docker-repo:5000/khallware-build:v1.0
+docker run -h build --name khallware-build -v /tmp/artifacts:/root/tmp/build/khallware/target khallware-build:v1.0
 ls -ld /tmp/artifacts/apis.war
 ```
 
 ### Create MySQL Database Files (One Time Only)
 ```shell
 mkdir -p $HOME/tmp/khallware-mysql
-docker run -it -h mysql --name khallware-mysql -v $HOME/tmp/khallware-mysql:/var/lib/mysql docker-repo:5000/khallware-mysql:v1.0 bash
+docker run -it -h mysql --name khallware-mysql -v $HOME/tmp/khallware-mysql:/var/lib/mysql khallware-mysql:v1.0 bash
 mysql_install_db --user=mysql --ldata=/var/lib/mysql/
 /usr/bin/mysqld_safe &
 mysql -uroot mysql
@@ -140,7 +174,7 @@ docker rm $(docker ps -a |grep mysql |cut -d\  -f1)
 
 ### Deploy MySQL Server as Docker Container
 ```shell
-docker run -d -h mysql --name khallware-mysql -p 3306:3306 -v $HOME/tmp/khallware-mysql:/var/lib/mysql docker-repo:5000/khallware-mysql:v1.0
+docker run -d -h mysql --name khallware-mysql -p 3306:3306 -v $HOME/tmp/khallware-mysql:/var/lib/mysql khallware-mysql:v1.0
 echo 'SHOW TABLES;' |mysql -uapi -pkhallware -h 127.0.0.1 website
 ```
 
@@ -149,7 +183,7 @@ echo 'SHOW TABLES;' |mysql -uapi -pkhallware -h 127.0.0.1 website
 mkdir -p /tmp/khallware/media/{thumbs,photo,uploads}
 mkdir -p /tmp/khallware/share/ogg
 mkdir -p /tmp/khallware/webapps && cp /tmp/artifacts/apis.war /tmp/khallware/webapps
-docker run -d -h khallware --name khallware -p 8080:8080 -v /tmp/khallware/share:/usr/local/share -v /tmp/khallware/webapps:/var/lib/tomcat8/webapps --link khallware-mysql docker-repo:5000/khallware-tomcat:v1.0
+docker run -d -h khallware --name khallware -p 8080:8080 -v /tmp/khallware/share:/usr/local/share -v /tmp/khallware/webapps:/var/lib/tomcat8/webapps --link khallware-mysql khallware-tomcat:v1.0
 ```
 
 ### Prime Website with "guest" User

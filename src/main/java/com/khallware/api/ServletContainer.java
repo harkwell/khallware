@@ -10,6 +10,7 @@ import java.awt.Font;
 import java.io.File;
 import java.io.InputStream;
 import java.io.IOException;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import javax.servlet.ServletException;
 import nl.captcha.servlet.CaptchaServletUtil;
@@ -36,8 +37,10 @@ public class ServletContainer
 	public static final String PROP_CAPTCHA_REFRESH = "captcha_refresh";
 	public static final String PROP_CAPTCHA_WIDTH = "captcha_width";
 	public static final String PROP_CAPTCHA_HEIGHT = "captcha_height";
+	public static final String PROP_CFG = "main_cfg";
 	public static final String DEF_CAPTCHA_FILE = "/tmp/captcha.jpg";
-	public static final String PROPFILE = "apis.properties";
+	public static final String INTPROPFILE = "apis.properties";
+	public static final String EXTPROPFILE = "/tmp/apis.properties";
 	public static final long DEF_CAPTCHA_REFRESH = (5 * 60 * 1000);
 	public static final int DEF_WIDTH = 200;
 	public static final int DEF_HEIGHT = 50;
@@ -60,9 +63,11 @@ public class ServletContainer
 		try {
 			super.init();
 			cl = Thread.currentThread().getContextClassLoader();
-			InputStream is = cl.getResourceAsStream(PROPFILE);
+			InputStream is = cl.getResourceAsStream(INTPROPFILE);
 			Properties props = new Properties();
 			props.load(is);
+			String fname = props.getProperty(PROP_CFG, EXTPROPFILE);
+			props.load(new FileInputStream(fname));
 			logger.trace(""+props);
 			Datastore.DS().configure(props);
 			startCaptchaThread();
