@@ -57,7 +57,22 @@ curl -i -X POST -H "Accept:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3V
 
 QUICK START
 ---------------
-### Utilize Amazon Web Services (AWS) (Optional/Complete/Easy)
+### Run it locally
+
+### Or, build and run it locally
+```shell
+git clone https://github.com/harkwell/khallware.git /tmp/khallware
+export MAVEN_REPO=/tmp/delete-me-later
+rm -rf $MAVEN_REPO && cd /tmp/khallware
+mvn -Dmaven.repo.local=$MAVEN_REPO package assembly:single
+mv target/apis-jar-with-dependencies.jar /tmp/khallware.jar
+mvn -Dmaven.repo.local=$MAVEN_REPO clean
+rm -rf $MAVEN_REPO
+java -jar /tmp/khallware.jar
+chromium-browser http://localhost/apis/
+```
+
+### Or, run from Amazon Web Services (AWS)
 ```shell
 chromium-browser http://aws.amazon.com/  # create a "free-tier" account
 aws configure # use the AccessKey and Secret Access Key from above
@@ -65,10 +80,12 @@ wget -q -c 'https://raw.githubusercontent.com/harkwell/khallware/github/aws/AWS-
 chromium-browser http://<dns-name-of-aws-ec2-host>/
 ```
 
-### Run from http://hub.docker.com/  (Optional/No CI-CD/Easy)
+### Or, run with comprehensive hosted docker (http://hub.docker.com/)
 ```shell
 docker run -it khall/khallware
 ```
+
+### Or, run with docker components
 
 ### Create MySQL Docker Image (One Time Only)
 ```shell
@@ -188,12 +205,6 @@ cd khallware
 mvn package
 ```
 
-* One-Time : jvorbiscomment (https://code.google.com/p/jvorbiscomment/)
-```shell
-cd /tmp/ && wget -c 'https://jvorbiscomment.googlecode.com/files/jvorbiscomment-1.0.3.zip' -O jvorbiscomment-1.0.3.zip
-unzip -j ~/tmp/jvorbiscomment-1.0.3.zip jvorbiscomment-1.0.3/jvorbiscomment-1.0.3.jar
-mvn install:install-file -Dfile=/tmp/jvorbiscomment-1.0.3.jar -DgroupId=adamb.vorbis -DartifactId=jvorbis -Dversion=1.0.3 -Dpackaging=jar
-```
 * One-Time : replace Google Maps API key with your own
 ```shell
 chromium-browser https://code.google.com/apis/console

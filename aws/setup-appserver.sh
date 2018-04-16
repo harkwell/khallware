@@ -60,11 +60,7 @@ source /etc/profile.d/maven.sh
 echo "khallware: setup local maven repo"
 #-------------------------------------------------------------------------------
 mkdir -p /usr/share/maven-repo && cd /usr/share/maven-repo
-wget --quiet -c 'https://github.com/cruxic/jvorbiscomment/releases/download/v1.0.3/jvorbiscomment-1.0.3.zip' -O /tmp/jvorbiscomment-1.0.3.zip
-unzip -j /tmp/jvorbiscomment-1.0.3.zip -d /tmp jvorbiscomment-1.0.3/jvorbiscomment-1.0.3.jar
-mvn install:install-file -Dmaven.repo.local=/usr/share/maven-repo -Dfile=/tmp/jvorbiscomment-1.0.3.jar -DgroupId=adamb.vorbis -DartifactId=jvorbis -Dversion=1.0.3 -Dpackaging=jar
 chown -R jenkins:jenkins /usr/share/maven-repo/ /var/lib/tomcat8/webapps/
-rm /tmp/jvorbiscomment*
 
 
 echo "khallware: build webapp artifacts (apis.war, apis-dev.war, apis-qa.war)"

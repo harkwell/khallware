@@ -7,12 +7,15 @@ import com.khallware.api.enums.Genre;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import adamb.vorbis.VorbisCommentHeader;
-import adamb.vorbis.VorbisIO;
-import adamb.vorbis.CommentField;
+import org.gagravarr.ogg.OggFile;
+import org.gagravarr.ogg.OggPacketReader;
+import org.gagravarr.vorbis.VorbisPacketFactory;
+import org.gagravarr.vorbis.VorbisComments;
+import org.gagravarr.vorbis.VorbisPacket;
 import java.net.MalformedURLException;
-import java.net.URL;
+import java.io.FileInputStream;
 import java.io.File;
+import java.net.URL;
 import java.util.Date;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
@@ -42,41 +45,19 @@ public class Sound extends AtomEntity
 
 		public Builder file(File file) throws Exception
 		{
-			VorbisCommentHeader header = null;
-			header = VorbisIO.readComments(file);
+			OggFile oggfl = new OggFile(new FileInputStream(file));
+			OggPacketReader reader = oggfl.getPacketReader();
+			reader.getNextPacket();
+			VorbisPacket vpacket = VorbisPacketFactory.create(
+				reader.getNextPacket());
 			md5sum(Util.produceHashSum("MD5", file));
 			name(file.getName());
 			path(""+file);
-
-			for (CommentField field : header.fields) {
-				switch (field.name.toLowerCase()) {
-				case "title":
-					title(field.value);
-					break;
-				case "artist":
-					artist(field.value);
-					break;
-				case "genre":
-					genre(field.value);
-					break;
-				case "album":
-					album(field.value);
-					break;
-				case "date":
-					recording(field.value);
-					break;
-				case "organization":
-					publisher(field.value);
-					break;
-				case "version":
-					break;
-				default:
-					logger.warn("unhandled ogg vorbis file "
-						+"comment field \"{}\"",
-						field.name);
-					break;
-				}
-			}
+			/* title(""+vcomments.getTitle());
+			artist(""+vcomments.getArtist());
+			genre(""+vcomments.getGenre());
+			album(""+vcomments.getAlbum()); */
+			oggfl.close();
 			return(this);
 		}
 
