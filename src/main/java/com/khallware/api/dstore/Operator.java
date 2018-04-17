@@ -36,11 +36,11 @@ public class Operator
 			throw new DatastoreException(e);
 		}
 		finally {
-			if (cs != null && cs.isOpen()) {
+			if (cs != null) {
 				try {
 					cs.close();
 				}
-				catch (SQLException se) {
+				catch (Exception se) {
 					throw new DatastoreException(se);
 				}
 			}

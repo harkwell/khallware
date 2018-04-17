@@ -18,23 +18,24 @@
         <maven-war-version>2.1-alpha-2</maven-war-version>
 
         <!-- Webapp -->
-        <jackson-2-version>2.2.3</jackson-2-version>
+        <jackson-2-version>2.9.5</jackson-2-version>
+        <!-- <ormlite-version>5.1</ormlite-version> -->
         <ormlite-version>4.48</ormlite-version>
-        <ezvcard-version>0.9.6</ezvcard-version>
-        <freemarker-version>2.3.22</freemarker-version>
-        <jsoup-version>1.8.1</jsoup-version>
-        <biweekly-version>0.4.1</biweekly-version>
-        <jersey-version>2.17</jersey-version>
-        <javax-ws-rs-version>2.0.1</javax-ws-rs-version>
-        <javax-annotation-version>1.2</javax-annotation-version>
-        <javax-servlet-version>3.1.0</javax-servlet-version>
-        <javax-mail-version>1.5.2</javax-mail-version>
-        <slf4j-version>1.7.10</slf4j-version>
+        <ezvcard-version>0.10.4</ezvcard-version>
+        <freemarker-version>2.3.28</freemarker-version>
+        <jsoup-version>1.11.3</jsoup-version>
+        <biweekly-version>0.6.2</biweekly-version>
+        <jersey-version>2.27</jersey-version>
+        <javax-ws-rs-version>2.1</javax-ws-rs-version>
+        <javax-annotation-version>1.3.2</javax-annotation-version>
+        <javax-servlet-version>4.0.0</javax-servlet-version>
+        <javax-mail-version>1.6.1</javax-mail-version>
+        <slf4j-version>1.7.25</slf4j-version>
         <log4j-version>1.2.17</log4j-version>
-        <mysql-version>5.1.34</mysql-version>
+        <mysql-version>6.0.6</mysql-version>
         <vorbisj-version>0.8</vorbisj-version>
         <simplecaptcha-version>1.1.1</simplecaptcha-version>
-        <filters-version>2.0.235</filters-version>
+        <filters-version>2.0.235-1</filters-version>
         <imgscalr-version>4.2</imgscalr-version>
         <jak-version>2.2.1</jak-version>
         <junit-version>4.12</junit-version>
@@ -42,16 +43,16 @@
         <c3p0-version>0.9.1.2</c3p0-version>
 
         <!-- Browser Side -->
-        <jquery-version>2.1.3</jquery-version>
-        <jquery-ui-version>1.11.4</jquery-ui-version>
+        <jquery-version>3.3.1-1</jquery-version>
+        <jquery-ui-version>1.12.1</jquery-ui-version>
         <jquery-cookie-version>1.4.1-1</jquery-cookie-version>
         <jquery-dynatree-version>1.2.5</jquery-dynatree-version>
-        <mustache-version>0.7.0</mustache-version>
-        <fontawesome-version>4.3.0-1</fontawesome-version>
-        <bootstrap-version>3.3.4</bootstrap-version>
-        <videojs-version>4.6.3</videojs-version>
-        <spinjs-version>2.0.0-1</spinjs-version>
-        <tablesorter-version>2.17.8</tablesorter-version>
+        <mustache-version>2.2.1</mustache-version>
+        <fontawesome-version>5.0.10</fontawesome-version>
+        <bootstrap-version>4.0.0-2</bootstrap-version>
+        <videojs-version>5.10.7</videojs-version>
+        <spinjs-version>2.1.0</spinjs-version>
+        <tablesorter-version>2.25.4</tablesorter-version>
         <superslides-version>0.6.2-1</superslides-version>
     </properties>
     <dependencies>
@@ -127,6 +128,11 @@
         <dependency>
             <groupId>org.glassfish.jersey.core</groupId>
             <artifactId>jersey-common</artifactId>
+            <version>${jersey-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.inject</groupId>
+            <artifactId>jersey-hk2</artifactId>
             <version>${jersey-version}</version>
         </dependency>
         <dependency>

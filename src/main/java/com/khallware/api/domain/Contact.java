@@ -15,7 +15,6 @@ import java.util.Date;
 import java.util.UUID;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import org.xml.sax.SAXException;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 
@@ -167,7 +166,7 @@ public class Contact extends AtomEntity
 		try {
 			retval = Ezvcard.parseXml(xml).first();
 		}
-		catch (SAXException e) {
+		catch (Exception e) {
 			logger.trace(""+e, e);
 			logger.warn(""+e);
 			logger.trace("XML (part): \"{}\"",
