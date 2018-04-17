@@ -250,7 +250,7 @@ INSERT INTO credentials (username, password, email, _group) VALUES ('test', '9f8
 ### FitNesse testing ###
 ########################
 cd ~/tmp
-java -jar fitnesse.jar -p 8000 -d $HOME/tmp/fitnesse/ -l $HOME/tmp/fitnesse/
+java -jar /tmp/fitnesse.jar -p 8000 -d $HOME/tmp/fitnesse/ -l $HOME/tmp/fitnesse/
 echo foo >/tmp/video1.mp4
 echo foo >/tmp/photo1.jpg
 
@@ -258,14 +258,14 @@ echo foo >/tmp/photo1.jpg
 ### FitNesse testing setup ###
 ##############################
 # deploy FitNesse
-wget -c 'http://fitnesse.org/fitnesse-standalone.jar?responder=releaseDownload&release=20131110' -O fitnesse.jar
-java -jar fitnesse.jar -help
+wget -c 'http://fitnesse.org/fitnesse-standalone.jar?responder=releaseDownload&release=20131110' -O /tmp/fitnesse.jar
+java -jar /tmp/fitnesse.jar -help
 rm -rf $HOME/tmp/fitness/
-java -jar fitnesse.jar -p 8000 -d $HOME/tmp/fitness/ -l $HOME/tmp/fitness/
+java -jar /tmp/fitnesse.jar -p 8000 -d $HOME/tmp/fitness/ -l $HOME/tmp/fitness/
 
 ## download and include RestFixture
-# wget -c 'https://github.com/smartrics/RestFixture/archive/3.0.tar.gz'
-ls -ld 3.0.tar.gz && tar zxvf 3.0.tar.gz && cd RestFixture-3.0
+wget -c 'https://github.com/smartrics/RestFixture/archive/3.0.tar.gz' -O /tmp/restfixture.tgz
+ls -ld /tmp/restfixture.tgz && tar zxvf /tmp/restfixture.tgz -C $HOME/tmp && cd $HOME/tmp/RestFixture-3.0
 mvn clean package
 ls -ld target/smartrics-RestFixture-3.0.jar
 

@@ -1,4 +1,4 @@
-// Copyright Kevin D.Hall 2014-2015
+// Copyright Kevin D.Hall 2014-2018
 
 package com.khallware.api.ctrl;
 

@@ -79,6 +79,7 @@ mail.smtp.starttls.required=false
 jdbc_user=webapp
 jdbc_pass=webapp
 jdbc_url=jdbc:hsqldb:$HOME/tmp/apis/db
+registration_url=http://localhost:8080/apis/v1/security/register/
 EOF
 
 # start up the email server (optional)
