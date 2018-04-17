@@ -70,20 +70,26 @@ thumbs=$HOME/tmp/apis/thumbs
 audio=$HOME/tmp/apis/audio
 upload.dir=$HOME/tmp/apis/uploads
 captcha_file=$HOME/tmp/apis/captcha.png
+mail.debug=true
+mail.smtp.host=localhost
+mail.transport.protocol=smtp
+mail.smtp.port=8025
+mail.smtp.starttls.enable=false
+mail.smtp.starttls.required=false
 jdbc_user=webapp
 jdbc_pass=webapp
 jdbc_url=jdbc:hsqldb:$HOME/tmp/apis/db
 EOF
 
 # start up the email server (optional)
-chromium-browser https://github.com/harkwell/java-poc/3rdParty/
-java -jar 
+wget -c 'http://nilhcem.github.com/FakeSMTP/downloads/fakeSMTP-latest.zip' -qO - |bsdtar -xvf - -C /tmp
+java -jar /tmp/fakeSMTP*.jar
 
 # start up khallware
-java -jar /tmp/jetty-runner.jar /tmp/apis.war
+java -jar /tmp/jetty-runner.jar --path /apis /tmp/apis.war
 
 # begin to use it...
-chromium-browser http://localhost:8080/
+chromium-browser http://localhost:8080/apis/
 ```
 
 ### Or, build and run it locally

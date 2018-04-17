@@ -67,7 +67,10 @@ public class ServletContainer
 			Properties props = new Properties();
 			props.load(is);
 			String fname = props.getProperty(PROP_CFG, EXTPROPFILE);
-			props.load(new FileInputStream(fname));
+
+			if (new File(fname).exists()) {
+				props.load(new FileInputStream(fname));
+			}
 			logger.trace(""+props);
 			Datastore.DS().configure(props);
 			startCaptchaThread();
