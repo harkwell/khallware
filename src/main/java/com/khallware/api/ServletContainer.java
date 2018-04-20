@@ -75,6 +75,11 @@ public class ServletContainer
 			Datastore.DS().configure(props);
 			startCaptchaThread();
 			logger.info("configured servlet container");
+
+			if (!Datastore.DS().ping()) {
+				logger.error("Failed to connect to database!");
+				System.exit(1);
+			}
 		}
 		catch (SecurityException|IOException e) {
 			logger.error(""+e, e);

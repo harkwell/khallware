@@ -19,6 +19,24 @@ public abstract class APICrudChain<T extends Entity> extends CrudChain<T>
 	private static final Logger logger = LoggerFactory.getLogger(
 		APICrudChain.class);
 
+	private static String nativeBoolean = null;
+
+	public static String getNativeBoolean()
+	{
+		if (APICrudChain.nativeBoolean != null) {
+			return(nativeBoolean);
+		}
+		switch (Datastore.DS().getProperty(Datastore.PROP_DBDRIVER,"")){
+		case "org.sqlite.JDBC":
+			APICrudChain.nativeBoolean = "1";
+			break;
+		default:
+			APICrudChain.nativeBoolean = "true";
+			break;
+		}
+		return(nativeBoolean);
+	}
+
 	public static Where filterOnMode(Where retval, Credentials creds)
 	{
 		try {
@@ -26,7 +44,7 @@ public abstract class APICrudChain<T extends Entity> extends CrudChain<T>
 				filterOnModeUnwrapped(retval, creds);
 			}
 			else {
-				retval.raw("true");
+				retval.raw(getNativeBoolean());
 			}
 		}
 		catch (Exception e) {
@@ -50,7 +68,7 @@ public abstract class APICrudChain<T extends Entity> extends CrudChain<T>
 		}
 		if (amRoot) {
 			list.clear();
-			retval.raw("true");
+			retval.raw(getNativeBoolean());
 		}
 		for (Group group : list) {
 			retval.or(

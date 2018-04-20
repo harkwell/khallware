@@ -22,7 +22,7 @@ public class Credentials
 		Credentials.class);
 	public static final String TABLE = "credentials";
 	public static final String COL_REGIKEY = "regikey";
-	public static final String COL_GROUP = "_group";
+	public static final String COL_GROUP = "group_";
 	public static final String COL_USER = "username";
 	public static final String COL_ID = "id";
 	public static final int UNKNOWN = -1;
@@ -33,7 +33,7 @@ public class Credentials
 	@DatabaseField private String regikey = null;
 	@DatabaseField private boolean disabled = true;
 	@DatabaseField(foreign = true, foreignAutoRefresh = true,
-		columnName = "_group") private Group group = null;
+		columnName = "group_") private Group group = null;
 	@DatabaseField(generatedId = true, columnName = COL_ID)
 	private int id = UNKNOWN;
 	private long quota = UNKNOWN;

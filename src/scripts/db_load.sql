@@ -68,6 +68,6 @@ INSERT INTO tags (name, user, parent, mask, modified) VALUES ('mechanics',(SELEC
 INSERT INTO tags (name, user, parent, mask, modified) VALUES ('substance',(SELECT id FROM credentials WHERE username = 'khall'),7,755,NOW());
 INSERT INTO tags (name, user, parent, mask, modified) VALUES ('questions',(SELECT id FROM credentials WHERE username = 'khall'),7,755,NOW());
 INSERT INTO tags (name, user, parent, mask, modified) VALUES ('nanotech',(SELECT id FROM credentials WHERE username = 'khall'),7,755,NOW());
-UPDATE tags SET _group = 0;
+UPDATE tags SET group_ = 0;
 UPDATE tags SET mask = 775;
 SET foreign_key_checks = 1;

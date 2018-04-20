@@ -78,8 +78,9 @@ mail.smtp.starttls.enable=false
 mail.smtp.starttls.required=false
 jdbc_user=webapp
 jdbc_pass=webapp
-jdbc_url=jdbc:hsqldb:$HOME/tmp/apis/db
+jdbc_url=jdbc:sqlite:$HOME/tmp/apis/apis.db
 registration_url=http://localhost:8080/apis/v1/security/register/
+jdbc_driver=org.sqlite.JDBC
 EOF
 
 # start up the email server (optional)
@@ -99,7 +100,6 @@ git clone https://github.com/harkwell/khallware.git /tmp/khallware
 export MAVEN_REPO=/tmp/delete-me-later
 rm -rf $MAVEN_REPO && cd /tmp/khallware
 mvn -Dmaven.repo.local=$MAVEN_REPO package
-mv target/apis.war /tmp/
 
 mvn -Dmaven.repo.local=$MAVEN_REPO clean
 mvn org.apache.maven.plugins:maven-dependency-plugin:2.1:get \
@@ -107,7 +107,7 @@ mvn org.apache.maven.plugins:maven-dependency-plugin:2.1:get \
     -DrepoUrl=https://mvnrepository.com/ \
     -Dartifact=org.eclipse.jetty:jetty-runner:9.4.9.v20180320
 RUNNER_JAR=$(find $MAVEN_REPO -name \*runner\*jar)
-java -jar $RUNNER_JAR /tmp/apis.war
+java -jar $RUNNER_JAR target/apis.war
 chromium-browser http://localhost:8080/apis/
 
 rm -rf $MAVEN_REPO
@@ -201,13 +201,13 @@ INSERT INTO groups (name, description) VALUES ('root', 'root group');
 UPDATE groups SET id=0 WHERE name = 'root';
 INSERT INTO groups (name, description) VALUES ('guest', 'guest group');
 INSERT INTO groups (name, description) VALUES ('family', 'family group');
-INSERT INTO edges (_group, parent) VALUES ((SELECT id FROM groups WHERE name = 
+INSERT INTO edges (group_, parent) VALUES ((SELECT id FROM groups WHERE name = 
 'guest'), (SELECT id FROM groups WHERE name = 'root'));
-INSERT INTO edges (_group, parent) VALUES ((SELECT id FROM groups WHERE name = 
+INSERT INTO edges (group_, parent) VALUES ((SELECT id FROM groups WHERE name = 
 'guest'), (SELECT id FROM groups WHERE name = 'family'));
-INSERT INTO credentials (username, password, email, _group) VALUES ('guest', '84983c60f7daadc1cb8698621f802c0d9f9a3c3c295c810748fb048115c186ec','guest@mybox.com',(SELECT id FROM groups WHERE name = 'guest'));
-INSERT INTO landing (url, _group) VALUES ("/apis/v1/static/family.html",(SELECT id FROM groups WHERE name = 'family'));
-INSERT INTO landing (url, _group) VALUES ("/apis/v1/static/friends.html",(SELECT id FROM groups WHERE name = 'friends'));
+INSERT INTO credentials (username, password, email, group_) VALUES ('guest', '84983c60f7daadc1cb8698621f802c0d9f9a3c3c295c810748fb048115c186ec','guest@mybox.com',(SELECT id FROM groups WHERE name = 'guest'));
+INSERT INTO landing (url, group_) VALUES ("/apis/v1/static/family.html",(SELECT id FROM groups WHERE name = 'family'));
+INSERT INTO landing (url, group_) VALUES ("/apis/v1/static/friends.html",(SELECT id FROM groups WHERE name = 'friends'));
 INSERT INTO quota (user, available, used) SELECT id AS user, 102400000, 0 FROM credentials;
 EOF
 ```

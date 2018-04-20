@@ -1,0 +1,71 @@
+-- $Id: 068cdb967ec2f95278b3721177bcd95b8bbf19a5 $
+-- ============================================================================
+-- This script inserts khallware data into the database.
+--
+-- mysql -uwebsite -pwebsite website <db_load.sql
+-- ============================================================================
+DELETE FROM tags;
+UPDATE sqlite_sequence SET seq = 1;
+INSERT INTO tags (name, user, parent, mask, modified) VALUES ('website',(SELECT id FROM credentials WHERE username = 'khall'),0,755,datetime('now'));
+INSERT INTO tags (name, user, parent, mask, modified) VALUES ('religion',(SELECT id FROM credentials WHERE username = 'khall'),1,755,datetime('now'));
+INSERT INTO tags (name, user, parent, mask, modified) VALUES ('health',(SELECT id FROM credentials WHERE username = 'khall'),1,755,datetime('now'));
+INSERT INTO tags (name, user, parent, mask, modified) VALUES ('society',(SELECT id FROM credentials WHERE username = 'khall'),1,755,datetime('now'));
+INSERT INTO tags (name, user, parent, mask, modified) VALUES ('science',(SELECT id FROM credentials WHERE username = 'khall'),1,755,datetime('now'));
+INSERT INTO tags (name, user, parent, mask, modified) VALUES ('art',(SELECT id FROM credentials WHERE username = 'khall'),1,755,datetime('now'));
+INSERT INTO tags (name, user, parent, mask, modified) VALUES ('technology',(SELECT id FROM credentials WHERE username = 'khall'),1,755,datetime('now'));
+INSERT INTO tags (name, user, parent, mask, modified) VALUES ('gospel',(SELECT id FROM credentials WHERE username = 'khall'),2,755,datetime('now'));
+INSERT INTO tags (name, user, parent, mask, modified) VALUES ('christians',(SELECT id FROM credentials WHERE username = 'khall'),2,755,datetime('now'));
+INSERT INTO tags (name, user, parent, mask, modified) VALUES ('tools',(SELECT id FROM credentials WHERE username = 'khall'),2,755,datetime('now'));
+INSERT INTO tags (name, user, parent, mask, modified) VALUES ('evidences',(SELECT id FROM credentials WHERE username = 'khall'),2,755,datetime('now'));
+INSERT INTO tags (name, user, parent, mask, modified) VALUES ('quotes',(SELECT id FROM credentials WHERE username = 'khall'),2,755,datetime('now'));
+INSERT INTO tags (name, user, parent, mask, modified) VALUES ('timeline',(SELECT id FROM credentials WHERE username = 'khall'),2,755,datetime('now'));
+INSERT INTO tags (name, user, parent, mask, modified) VALUES ('characters',(SELECT id FROM credentials WHERE username = 'khall'),2,755,datetime('now'));
+INSERT INTO tags (name, user, parent, mask, modified) VALUES ('promises',(SELECT id FROM credentials WHERE username = 'khall'),2,755,datetime('now'));
+INSERT INTO tags (name, user, parent, mask, modified) VALUES ('ethics',(SELECT id FROM credentials WHERE username = 'khall'),2,755,datetime('now'));
+INSERT INTO tags (name, user, parent, mask, modified) VALUES ('education',(SELECT id FROM credentials WHERE username = 'khall'),3,755,datetime('now'));
+INSERT INTO tags (name, user, parent, mask, modified) VALUES ('technology',(SELECT id FROM credentials WHERE username = 'khall'),3,755,datetime('now'));
+INSERT INTO tags (name, user, parent, mask, modified) VALUES ('finance',(SELECT id FROM credentials WHERE username = 'khall'),3,755,datetime('now'));
+INSERT INTO tags (name, user, parent, mask, modified) VALUES ('sleep',(SELECT id FROM credentials WHERE username = 'khall'),3,755,datetime('now'));
+INSERT INTO tags (name, user, parent, mask, modified) VALUES ('diet',(SELECT id FROM credentials WHERE username = 'khall'),3,755,datetime('now'));
+INSERT INTO tags (name, user, parent, mask, modified) VALUES ('exercise',(SELECT id FROM credentials WHERE username = 'khall'),3,755,datetime('now'));
+INSERT INTO tags (name, user, parent, mask, modified) VALUES ('disease',(SELECT id FROM credentials WHERE username = 'khall'),3,755,datetime('now'));
+INSERT INTO tags (name, user, parent, mask, modified) VALUES ('medication',(SELECT id FROM credentials WHERE username = 'khall'),3,755,datetime('now'));
+INSERT INTO tags (name, user, parent, mask, modified) VALUES ('doctors',(SELECT id FROM credentials WHERE username = 'khall'),3,755,datetime('now'));
+INSERT INTO tags (name, user, parent, mask, modified) VALUES ('government',(SELECT id FROM credentials WHERE username = 'khall'),4,755,datetime('now'));
+INSERT INTO tags (name, user, parent, mask, modified) VALUES ('services',(SELECT id FROM credentials WHERE username = 'khall'),4,755,datetime('now'));
+INSERT INTO tags (name, user, parent, mask, modified) VALUES ('sports',(SELECT id FROM credentials WHERE username = 'khall'),4,755,datetime('now'));
+INSERT INTO tags (name, user, parent, mask, modified) VALUES ('travel',(SELECT id FROM credentials WHERE username = 'khall'),4,755,datetime('now'));
+INSERT INTO tags (name, user, parent, mask, modified) VALUES ('history',(SELECT id FROM credentials WHERE username = 'khall'),4,755,datetime('now'));
+INSERT INTO tags (name, user, parent, mask, modified) VALUES ('people',(SELECT id FROM credentials WHERE username = 'khall'),4,755,datetime('now'));
+INSERT INTO tags (name, user, parent, mask, modified) VALUES ('politics',(SELECT id FROM credentials WHERE username = 'khall'),4,755,datetime('now'));
+INSERT INTO tags (name, user, parent, mask, modified) VALUES ('news',(SELECT id FROM credentials WHERE username = 'khall'),4,755,datetime('now'));
+INSERT INTO tags (name, user, parent, mask, modified) VALUES ('internet',(SELECT id FROM credentials WHERE username = 'khall'),4,755,datetime('now'));
+INSERT INTO tags (name, user, parent, mask, modified) VALUES ('computers',(SELECT id FROM credentials WHERE username = 'khall'),5,755,datetime('now'));
+INSERT INTO tags (name, user, parent, mask, modified) VALUES ('biology',(SELECT id FROM credentials WHERE username = 'khall'),5,755,datetime('now'));
+INSERT INTO tags (name, user, parent, mask, modified) VALUES ('chemistry',(SELECT id FROM credentials WHERE username = 'khall'),5,755,datetime('now'));
+INSERT INTO tags (name, user, parent, mask, modified) VALUES ('physics',(SELECT id FROM credentials WHERE username = 'khall'),5,755,datetime('now'));
+INSERT INTO tags (name, user, parent, mask, modified) VALUES ('mathematics',(SELECT id FROM credentials WHERE username = 'khall'),5,755,datetime('now'));
+INSERT INTO tags (name, user, parent, mask, modified) VALUES ('astronomy',(SELECT id FROM credentials WHERE username = 'khall'),5,755,datetime('now'));
+INSERT INTO tags (name, user, parent, mask, modified) VALUES ('geography',(SELECT id FROM credentials WHERE username = 'khall'),5,755,datetime('now'));
+INSERT INTO tags (name, user, parent, mask, modified) VALUES ('psychology',(SELECT id FROM credentials WHERE username = 'khall'),5,755,datetime('now'));
+INSERT INTO tags (name, user, parent, mask, modified) VALUES ('sociology',(SELECT id FROM credentials WHERE username = 'khall'),5,755,datetime('now'));
+INSERT INTO tags (name, user, parent, mask, modified) VALUES ('television',(SELECT id FROM credentials WHERE username = 'khall'),6,755,datetime('now'));
+INSERT INTO tags (name, user, parent, mask, modified) VALUES ('movies',(SELECT id FROM credentials WHERE username = 'khall'),6,755,datetime('now'));
+INSERT INTO tags (name, user, parent, mask, modified) VALUES ('music',(SELECT id FROM credentials WHERE username = 'khall'),6,755,datetime('now'));
+INSERT INTO tags (name, user, parent, mask, modified) VALUES ('painting',(SELECT id FROM credentials WHERE username = 'khall'),6,755,datetime('now'));
+INSERT INTO tags (name, user, parent, mask, modified) VALUES ('animation',(SELECT id FROM credentials WHERE username = 'khall'),6,755,datetime('now'));
+INSERT INTO tags (name, user, parent, mask, modified) VALUES ('literature',(SELECT id FROM credentials WHERE username = 'khall'),6,755,datetime('now'));
+INSERT INTO tags (name, user, parent, mask, modified) VALUES ('architecture',(SELECT id FROM credentials WHERE username = 'khall'),6,755,datetime('now'));
+INSERT INTO tags (name, user, parent, mask, modified) VALUES ('plays',(SELECT id FROM credentials WHERE username = 'khall'),6,755,datetime('now'));
+INSERT INTO tags (name, user, parent, mask, modified) VALUES ('culinary',(SELECT id FROM credentials WHERE username = 'khall'),6,755,datetime('now'));
+INSERT INTO tags (name, user, parent, mask, modified) VALUES ('software',(SELECT id FROM credentials WHERE username = 'khall'),7,755,datetime('now'));
+INSERT INTO tags (name, user, parent, mask, modified) VALUES ('computers',(SELECT id FROM credentials WHERE username = 'khall'),7,755,datetime('now'));
+INSERT INTO tags (name, user, parent, mask, modified) VALUES ('products',(SELECT id FROM credentials WHERE username = 'khall'),7,755,datetime('now'));
+INSERT INTO tags (name, user, parent, mask, modified) VALUES ('energy',(SELECT id FROM credentials WHERE username = 'khall'),7,755,datetime('now'));
+INSERT INTO tags (name, user, parent, mask, modified) VALUES ('mobile',(SELECT id FROM credentials WHERE username = 'khall'),7,755,datetime('now'));
+INSERT INTO tags (name, user, parent, mask, modified) VALUES ('mechanics',(SELECT id FROM credentials WHERE username = 'khall'),7,755,datetime('now'));
+INSERT INTO tags (name, user, parent, mask, modified) VALUES ('substance',(SELECT id FROM credentials WHERE username = 'khall'),7,755,datetime('now'));
+INSERT INTO tags (name, user, parent, mask, modified) VALUES ('questions',(SELECT id FROM credentials WHERE username = 'khall'),7,755,datetime('now'));
+INSERT INTO tags (name, user, parent, mask, modified) VALUES ('nanotech',(SELECT id FROM credentials WHERE username = 'khall'),7,755,datetime('now'));
+UPDATE tags SET group_ = 0;
+UPDATE tags SET mask = 775;

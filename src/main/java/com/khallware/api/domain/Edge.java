@@ -14,7 +14,7 @@ import com.j256.ormlite.table.DatabaseTable;
 public class Edge
 {
 	public static final String TABLE = "edges";
-	public static final String COL_GROUP = "_group";
+	public static final String COL_GROUP = "group_";
 	public static final String COL_PARENT = "parent";
 	public static final int UNKNOWN = -1;
 

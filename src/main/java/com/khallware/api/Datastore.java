@@ -82,6 +82,7 @@ public final class Datastore
 	public static final String PROP_DBURL = "jdbc_url";
 	public static final String PROP_DBUSER = "jdbc_user";
 	public static final String PROP_DBPASS = "jdbc_pass";
+	public static final String PROP_DBDRIVER = "jdbc_driver";
 	public static final String DEF_DRIVER = "com.mysql.jdbc.Driver";
 	public static final String DEF_DBURL = "jdbc:mysql://localhost/website";
 	public static final String DEF_DBUSER = "api";
@@ -179,10 +180,12 @@ public final class Datastore
 
 	public static synchronized ComboPooledDataSource getDataSource()
 	{
+		String driverName = DS().getProperty(PROP_DBDRIVER, DEF_DRIVER);
+
 		if (Datastore.cpds == null) {
 			try {
 				Datastore.cpds = new ComboPooledDataSource();
-				Datastore.cpds.setDriverClass(DEF_DRIVER);
+				Datastore.cpds.setDriverClass(driverName);
 				Datastore.cpds.setMaxPoolSize(DEF_POOLSIZE);
 				Datastore.cpds.setJdbcUrl(url);
 				Datastore.cpds.setUser(username);
@@ -193,6 +196,19 @@ public final class Datastore
 			}
 		}
 		return(Datastore.cpds);
+	}
+
+	public boolean ping()
+	{
+		boolean retval = false;
+		try {
+			getGroups("");
+			retval = true;
+		}
+		catch (Exception e) {
+			logger.trace(""+e, e);
+		}
+		return(retval);
 	}
 
 	/**
@@ -1501,7 +1517,7 @@ public final class Datastore
 			:           "WHERE ")+"(");
 		sql.append(               "(user = "+creds.getId()+" "
 			+                 "AND "+maskColumn+" >= 400) ");
-		sql.append(            "OR (_group = "+group.getId()+" "
+		sql.append(            "OR (group_ = "+group.getId()+" "
 			+                 "AND ("+maskColumn+" % 100) >= 40) ");
 		sql.append(            "OR ("+maskColumn+" % 10) >= 4) ");
 		sql.append(         "LIMIT "+pg.getPageSize()+" ");
@@ -1586,7 +1602,7 @@ public final class Datastore
 			String[] rslt = dao.queryRaw(""
 				+"SELECT url "
 				+  "FROM landing "
-				+ "WHERE _group = ? ",
+				+ "WHERE group_ = ? ",
 				""+group.getId()).getFirstResult();
 			retval.item = (rslt != null)
 				? (rslt.length > 0) ? rslt[0] : null
@@ -1607,11 +1623,11 @@ public final class Datastore
 		Operator.<Blog>perform((dao) -> {
 			dao.updateRaw(""
 				+"DELETE FROM landing "
-				+      "WHERE _group = ?",
+				+      "WHERE group_ = ?",
 				""+group.getId());
 			dao.updateRaw(""
 				+"INSERT INTO landing ("
-				+                "url, _group"
+				+                "url, group_"
 				+             ") "
 				+     "VALUES ("
 				+                "?, ? "

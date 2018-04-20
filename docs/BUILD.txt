@@ -70,11 +70,11 @@ UPDATE groups SET id=0 WHERE name = 'root';
 INSERT INTO groups (name, description) VALUES ('guest', 'guest group');
 INSERT INTO groups (name, description) VALUES ('family', 'family group');
 INSERT INTO groups (name, description) VALUES ('friends', 'friends group');
-INSERT INTO edges (_group, parent) VALUES ((SELECT id FROM groups WHERE name = 'guest'), (SELECT id FROM groups WHERE name = 'root'));
-INSERT INTO edges (_group, parent) VALUES ((SELECT id FROM groups WHERE name = 'guest'), (SELECT id FROM groups WHERE name = 'family'));
-INSERT INTO credentials (username, password, email, _group) VALUES ('guest', '84983c60f7daadc1cb8698621f802c0d9f9a3c3c295c810748fb048115c186ec','guest@myhost.com',(SELECT id FROM groups WHERE name = 'guest'));
-INSERT INTO landing (url, _group) VALUES ("/apis/v1/static/family.html",(SELECT id FROM groups WHERE name = 'family'));
-INSERT INTO landing (url, _group) VALUES ("/apis/v1/static/friends.html",(SELECT id FROM groups WHERE name = 'friends'));
+INSERT INTO edges (group_, parent) VALUES ((SELECT id FROM groups WHERE name = 'guest'), (SELECT id FROM groups WHERE name = 'root'));
+INSERT INTO edges (group_, parent) VALUES ((SELECT id FROM groups WHERE name = 'guest'), (SELECT id FROM groups WHERE name = 'family'));
+INSERT INTO credentials (username, password, email, group_) VALUES ('guest', '84983c60f7daadc1cb8698621f802c0d9f9a3c3c295c810748fb048115c186ec','guest@myhost.com',(SELECT id FROM groups WHERE name = 'guest'));
+INSERT INTO landing (url, group_) VALUES ("/apis/v1/static/family.html",(SELECT id FROM groups WHERE name = 'family'));
+INSERT INTO landing (url, group_) VALUES ("/apis/v1/static/friends.html",(SELECT id FROM groups WHERE name = 'friends'));
 INSERT INTO quota (user, available, used) SELECT id AS user, 1024, 0 FROM credentials;
 
 # echo -n guest |sha256sum
@@ -242,7 +242,7 @@ TOP/search        (POST Accept:text/plain) - search the system
 #--------------- testing deps --------------------------
 ### test users
 INSERT INTO groups (name, description) VALUES ('test', 'test group');
-INSERT INTO credentials (username, password, email, _group) VALUES ('test', '9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08','test@myhost.com',(SELECT id FROM groups WHERE name = 'test'));
+INSERT INTO credentials (username, password, email, group_) VALUES ('test', '9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08','test@myhost.com',(SELECT id FROM groups WHERE name = 'test'));
 # echo -n test |sha256sum
 
 
@@ -672,15 +672,15 @@ vi pom.xml
 mysql -h tomcat-server -u api -pkhallware website <src/scripts/db_schema.sql
 mysql -h tomcat-server -u api -pkhallware website <src/scripts/db_load.sql
 mysql -h tomcat-server -u api -pkhallware website <<EOF
-INSERT INTO bookmarks (name, modified, url, _group, mask, rating) SELECT name, modified, url, (SELECT id FROM groups WHERE name = 'guest'), 770, rating FROM homepage.url WHERE url_type IN (SELECT id FROM homepage.url_type WHERE name = "http");
+INSERT INTO bookmarks (name, modified, url, group_, mask, rating) SELECT name, modified, url, (SELECT id FROM groups WHERE name = 'guest'), 770, rating FROM homepage.url WHERE url_type IN (SELECT id FROM homepage.url_type WHERE name = "http");
 UPDATE bookmarks SET rating = LOWER(rating);
 INSERT INTO groups (name, description) VALUES ('root', 'root group');
 UPDATE groups SET id=0 WHERE name = 'root';
 INSERT INTO groups (name, description) VALUES ('guest', 'guest group');
 INSERT INTO groups (name, description) VALUES ('family', 'family group');
-INSERT INTO edges (_group, parent) VALUES ((SELECT id FROM groups WHERE name = 'guest'), (SELECT id FROM groups WHERE name = 'root'));
-INSERT INTO edges (_group, parent) VALUES ((SELECT id FROM groups WHERE name = 'guest'), (SELECT id FROM groups WHERE name = 'family'));
-INSERT INTO credentials (username, password, email, _group) VALUES ('guest', '84983c60f7daadc1cb8698621f802c0d9f9a3c3c295c810748fb048115c186ec','guest@myhost.com',(SELECT id FROM groups WHERE name = 'guest'));
+INSERT INTO edges (group_, parent) VALUES ((SELECT id FROM groups WHERE name = 'guest'), (SELECT id FROM groups WHERE name = 'root'));
+INSERT INTO edges (group_, parent) VALUES ((SELECT id FROM groups WHERE name = 'guest'), (SELECT id FROM groups WHERE name = 'family'));
+INSERT INTO credentials (username, password, email, group_) VALUES ('guest', '84983c60f7daadc1cb8698621f802c0d9f9a3c3c295c810748fb048115c186ec','guest@myhost.com',(SELECT id FROM groups WHERE name = 'guest'));
 EOF
 INDIR=$HOME/tmp/incoming/
 ODIR=/usr/local/share/media/video

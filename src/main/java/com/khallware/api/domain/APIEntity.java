@@ -4,6 +4,7 @@ package com.khallware.api.domain;
 
 import com.khallware.api.enums.Mode;
 import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.field.DataType;
 import java.text.SimpleDateFormat;
 import java.text.ParseException;
 import java.util.Date;
@@ -22,7 +23,7 @@ public abstract class APIEntity implements Entity
 	private static final Logger logger = LoggerFactory.getLogger(
 		APIEntity.class);
 	public static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
-	public static final String COL_GROUP = "_group";
+	public static final String COL_GROUP = "group_";
 	public static final String COL_USER = "user";
 	public static final String COL_MASK = "mask";
 	public static final String COL_ID = "id";
@@ -121,7 +122,8 @@ public abstract class APIEntity implements Entity
 	@DatabaseField(generatedId=true, columnName=COL_ID) protected int id;
 	@DatabaseField(foreign = true, foreignAutoRefresh = true,
 		columnName = COL_GROUP) protected Group group = null;
-	@DatabaseField protected Date modified = null;
+	@DatabaseField(dataType = DataType.DATE_STRING, format = "y-M-d H:m:s")
+		protected Date modified = null;
 	@DatabaseField(columnName=COL_MASK) protected int mask = DEF_MASK;
 	@DatabaseField(columnName=COL_USER) protected int user = UNKNOWN;
 
