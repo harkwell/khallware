@@ -112,6 +112,12 @@ mvn org.apache.maven.plugins:maven-dependency-plugin:2.1:get \
     -Dartifact=org.eclipse.jetty:jetty-runner:9.4.9.v20180320
 RUNNER_JAR=$(find $MAVEN_REPO -name \*runner\*jar)
 java -jar $RUNNER_JAR target/apis.war
+bash src/scripts/convert-to-sqlite.sh src/scripts/db_schema.sql fixme
+bash src/scripts/convert-to-sqlite.sh src/scripts/db_load.sql
+sqlite3 apis.db <src/scripts/db_schema.sqlite
+sqlite3 apis.db <src/scripts/db_load.sqlite
+sqlite3 apis.db # prime with guest user and groups
+vi /tmp/main.properties # customize for your environment like above
 chromium-browser http://localhost:8080/apis/
 
 rm -rf $MAVEN_REPO
@@ -243,7 +249,7 @@ mysql -uroot -pmypasswd website < db_schema.sql
 mysql -uroot -pmypasswd website < db_load.sql
 
 # sqlite3
-bash convert-to-sqlite.sh db_schema.sql
+bash convert-to-sqlite.sh db_schema.sql fixme
 bash convert-to-sqlite.sh db_load.sql
 sqlite3 apis.db <db_schema.sqlite
 sqlite3 apis.db <db_load.sqlite
