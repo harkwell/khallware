@@ -118,7 +118,7 @@ public class Upload extends HttpServlet
 		}
 		catch (Exception e1) {
 			logger.trace(""+e1, e1);
-			logger.warn("{}",""+e1);
+			logger.warn("{}",e1);
 			try {
 				retval.setStatus(400);
 				retval.addHeader("Content-Type",
@@ -128,7 +128,7 @@ public class Upload extends HttpServlet
 			}
 			catch (Exception e2) {
 				logger.trace(""+e2, e2);
-				logger.warn("{}",""+e2);
+				logger.warn("{}",e2);
 			}
 		}
 	}
@@ -141,7 +141,7 @@ public class Upload extends HttpServlet
 		}
 		catch (Exception e) {
 			logger.trace(""+e, e);
-			logger.warn("{}",""+e);
+			logger.warn("{}",e);
 		}
 		return(retval);
 	}
@@ -196,7 +196,7 @@ public class Upload extends HttpServlet
 		}
 		catch (NumberFormatException e) {
 			logger.trace(""+e,e);
-			logger.warn("{}",""+e);
+			logger.warn("{}",e);
 		}
 	}
 

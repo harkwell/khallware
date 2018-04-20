@@ -27,7 +27,7 @@ public abstract class APIValidator<T> implements Validator<T>
 		}
 		catch (APIException e) {
 			logger.trace(""+e, e);
-			logger.warn("{}",""+e);
+			logger.warn("{}",e);
 			retval = false;
 		}
 		return(retval);

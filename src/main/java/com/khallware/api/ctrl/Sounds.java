@@ -111,7 +111,7 @@ public class Sounds extends CrudController<Sound>
 		catch (APIException|IOException|DatastoreException e) {
 			retval = Util.failRequest(e);
 			logger.trace(""+e, e);
-			logger.warn("{}",""+e);
+			logger.warn("{}",e);
 		}
 		return(retval);
 	}
@@ -178,7 +178,7 @@ public class Sounds extends CrudController<Sound>
 		catch (APIException|DatastoreException e) {
 			retval = Util.failRequest(e);
 			logger.trace(""+e, e);
-			logger.warn("{}",""+e);
+			logger.warn("{}",e);
 		}
 		return(retval);
 	}
@@ -208,7 +208,7 @@ public class Sounds extends CrudController<Sound>
 			Files.delete(new File(filespec).toPath());
 		}
 		catch (IOException e) {
-			logger.warn(""+e, e);
+			logger.warn(""+e,e);
 		}
 	}
 }

@@ -4,8 +4,6 @@ package com.khallware.api.validation;
 
 import com.khallware.api.APIException;
 import com.khallware.api.domain.Event;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * This validator enforces that specific fields exist for an Event and

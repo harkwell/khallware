@@ -4,7 +4,6 @@ package com.khallware.api.validation;
 
 import com.khallware.api.Datastore;
 import com.khallware.api.DatastoreException;
-import com.khallware.api.dstore.Pagination;
 import com.khallware.api.APIException;
 import com.khallware.api.domain.Group;
 import java.util.ArrayList;
@@ -24,6 +23,7 @@ public class UniqueGroup extends APIValidator<Group>
 
 	public void enforce(Group group) throws APIException
 	{
+		logger.trace("enforcing group: {}",group);
 		try {
 			enforceUnwrapped(group);
 		}
@@ -37,7 +37,7 @@ public class UniqueGroup extends APIValidator<Group>
 	{
 		Group pattern = new Group(group.getName(), (String)null);
 		String errorMsg1 = "group must not be root";
-		String errorMsg2 = "group must be unique";
+		String errorMsg2 = "groups must be unique";
 
 		if (group.getId() == Group.ROOT) {
 			throw new DuplicateException(errorMsg1);
@@ -48,9 +48,14 @@ public class UniqueGroup extends APIValidator<Group>
 			}
 		}
 		else {
+			List<String> list = new ArrayList<>();
+
 			for (Group found : Datastore.DS().getGroups(pattern)) {
-				throw new DuplicateException(errorMsg2
-					+" -looks like: \""+found+"\"");
+				list.add(""+found);
+			}
+			if (!list.isEmpty()) {
+				throw new DuplicateException(
+					errorMsg2+" : "+list);
 			}
 		}
 	}

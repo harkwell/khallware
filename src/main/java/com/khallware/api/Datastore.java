@@ -2,7 +2,6 @@
 
 package com.khallware.api;
 
-import com.khallware.api.dstore.Operator.Operation;
 import com.khallware.api.dstore.APICrudChain;
 import com.khallware.api.dstore.OrphanUtil;
 import com.khallware.api.dstore.DBookmarks;
@@ -1009,7 +1008,6 @@ public final class Datastore
 			for (Tag tag : getTags(pg, creds)) { // KDH
 				if (tag.getId() != Tag.ROOT) {
 					chain.deleteFromTags(entity, tag);
-					// flag = true;
 				}
 			}
 			pg.next();

@@ -152,7 +152,7 @@ public class Credentials
 		return(new StringBuilder()
 			.append((id != UNKNOWN) ? "id=\""+id+"\", " : "")
 			.append("username=\""+getUsername()+"\", ")
-			.append("password=\""+getPassword()+"\", ")
+			.append("password="+getPassword()+", ")
 			.append("quota=\""+getQuota()+"\", ")
 			.append("group={"+group+"}")
 			.append("]")

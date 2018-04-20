@@ -2,9 +2,8 @@
 
 package com.khallware.api.validation;
 
-import com.khallware.api.APIException;
-import com.khallware.api.DatastoreException;
 import com.khallware.api.domain.APIEntity;
+import com.khallware.api.APIException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,6 +47,7 @@ public class Completeness extends APIValidator<APIEntity>
 	public void enforce(APIEntity entity) throws APIException
 	{
 		List<String> missing = new ArrayList<>();
+		logger.trace("enforcing completeness of: {}", entity);
 		try {
 			for (Field field : onGetRequiredFields(entity)) {
 				if (field.get(entity) == null) {
@@ -58,7 +58,7 @@ public class Completeness extends APIValidator<APIEntity>
 		catch (Exception e) {
 			throw new IncompleteException(e);
 		}
-		if (missing.size() > 0) {
+		if (!missing.isEmpty()) {
 			throw new IncompleteException(ERROR_MSG+": "+missing);
 		}
 	}

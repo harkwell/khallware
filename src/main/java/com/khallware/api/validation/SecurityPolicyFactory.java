@@ -8,8 +8,6 @@ import com.khallware.api.DatastoreException;
 import com.khallware.api.ctrl.Security.Policy;
 import com.khallware.api.domain.Credentials;
 import nl.captcha.Captcha;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The SecurityPolicyFactory.  Create Policy instances given various items.
@@ -22,6 +20,11 @@ public class SecurityPolicyFactory
 	public static final String BAD_USERNAME = "invalid username: "
 		+"must not currently exist, contain spaces or use capitals";
 	public static final String PASS_MISMATCH = "passwords must match";
+
+	private SecurityPolicyFactory()
+	{
+		throw new IllegalStateException("static factory class");
+	}
 
 	public static Policy<String> captcha(final Captcha captcha)
 	{

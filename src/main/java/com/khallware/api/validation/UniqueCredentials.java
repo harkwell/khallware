@@ -22,6 +22,7 @@ public class UniqueCredentials extends APIValidator<Credentials>
 	public void enforce(Credentials creds) throws APIException
 	{
 		try {
+			logger.trace("enforcing creds: {}",creds);
 			enforceUnwrapped(creds);
 		}
 		catch (DatastoreException e) {
@@ -32,7 +33,7 @@ public class UniqueCredentials extends APIValidator<Credentials>
 	protected void enforceUnwrapped(Credentials creds) throws APIException,
 			DatastoreException
 	{
-		Credentials pattern = new Credentials();
+		// Credentials pattern = new Credentials();
 		Credentials found = null;
 		String errorMsg = "creds must be unique";
 

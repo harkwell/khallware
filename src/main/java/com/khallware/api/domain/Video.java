@@ -42,7 +42,7 @@ public class Video extends AtomEntity
 			}
 			catch (Exception e) {
 				logger.debug(""+e, e);
-				logger.warn("{}",""+e);
+				logger.warn("{}",e);
 			}
 			return(this);
 		}

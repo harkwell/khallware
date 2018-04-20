@@ -168,7 +168,7 @@ public class Contact extends AtomEntity
 		}
 		catch (Exception e) {
 			logger.trace(""+e, e);
-			logger.warn("{}",""+e);
+			logger.warn("{}",e);
 			logger.trace("XML (part): \"{}\"",
 				xml.substring(0, Math.min(xml.length(), 25)));
 		}
@@ -303,7 +303,7 @@ public class Contact extends AtomEntity
 				}
 				catch (Exception e2) {
 					logger.warn("uid convention not right: "
-						+e1+", "+e2);
+						+"{}, {}",e1,e2);
 					logger.trace(""+e1, e1);
 					logger.trace(""+e2, e2);
 					this.uid = uid;

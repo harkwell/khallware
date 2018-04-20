@@ -38,16 +38,21 @@ public class FileUniqueness extends Uniqueness
 	@Override
 	public void enforce(APIEntity criteria) throws APIException
 	{
+		logger.trace("enforcing {}",criteria);
 		try {
 			File posted = onRequestPostedFile(criteria);
 			String md5sum = Util.produceHashSum("MD5", posted);
+			boolean flag = false;
 
 			for (APIEntity entity : readAPIEntities(md5sum)) {
 				if (hasDuplicateHandler()) {
 					handler.handle(entity);
 				}
+				flag = true;
+			}
+			if (flag) {
 				throw new DuplicateException(
-					ERROR_MSG+": "+posted);
+				 	ERROR_MSG+": "+posted);
 			}
 		}
 		catch (Exception e) {

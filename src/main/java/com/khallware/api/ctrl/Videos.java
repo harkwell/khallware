@@ -209,7 +209,7 @@ public class Videos extends CrudController<Video>
 		catch (APIException|IOException e) {
 			retval = Util.failRequest(e);
 			logger.trace(""+e, e);
-			logger.warn("{}",""+e);
+			logger.warn("{}",e);
 		}
 		return(retval);
 	}
@@ -221,7 +221,7 @@ public class Videos extends CrudController<Video>
 			Files.delete(new File(filespec).toPath());
 		}
 		catch (IOException e) {
-			logger.warn(""+e, e);
+			logger.warn(""+e,e);
 		}
 	}
 }

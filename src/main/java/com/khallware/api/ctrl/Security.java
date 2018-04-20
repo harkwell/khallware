@@ -232,7 +232,7 @@ public class Security
 		catch (DatastoreException e) {
 			retval = Util.failRequest(e);
 			logger.trace(""+e, e);
-			logger.warn("{}",""+e);
+			logger.warn("{}",e);
 		}
 		return(retval);
 	}
@@ -308,7 +308,7 @@ public class Security
 		catch (APIException|IOException|DatastoreException e) {
 			retval = Util.failRequest(e);
 			logger.trace(""+e, e);
-			logger.warn("{}",""+e);
+			logger.warn("{}",e);
 		}
 		return(retval);
 	}
@@ -333,7 +333,7 @@ public class Security
 		catch (Exception e) {
 			retval = Util.failRequest(e);
 			logger.trace(""+e, e);
-			logger.warn("{}",""+e);
+			logger.warn("{}",e);
 		}
 		return(retval);
 	}
@@ -375,7 +375,7 @@ public class Security
 				.header("Location", "/apis/login.html")
 				.build();
 			logger.trace(""+e, e);
-			logger.warn("{}",""+e);
+			logger.warn("{}",e);
 		}
 		return(retval);
 	}
@@ -400,7 +400,7 @@ public class Security
 		}
 		catch (Exception e) {
 			logger.trace(""+e, e);
-			logger.warn("{}",""+e);
+			logger.warn("{}",e);
 		}
 		return(retval);
 	}
@@ -475,7 +475,7 @@ public class Security
 		}
 		catch (Exception e) {
 			logger.trace(""+e, e);
-			logger.warn("{}",""+e);
+			logger.warn("{}",e);
 		}
 		return(retval);
 	}
@@ -501,7 +501,7 @@ public class Security
 		catch (Exception e) {
 			retval = Util.failRequest(e);
 			logger.trace(""+e, e);
-			logger.warn("{}",""+e);
+			logger.warn("{}",e);
 		}
 		return(retval);
 	}

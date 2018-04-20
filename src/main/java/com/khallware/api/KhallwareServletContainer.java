@@ -71,7 +71,7 @@ public class KhallwareServletContainer
 			if (new File(fname).exists()) {
 				props.load(new FileInputStream(fname));
 			}
-			logger.trace("{}",""+props);
+			logger.trace("{}",props);
 			Datastore.DS().configure(props);
 			startCaptchaThread();
 			logger.info("made servlet container from {}", fname);
@@ -122,20 +122,24 @@ public class KhallwareServletContainer
 
 	protected void writeCaptchaImageThenSleep(File file, long sleeptime)
 	{
+		FileOutputStream fos = null;
 		try {
 			file.getParentFile().mkdirs();
+			fos = new FileOutputStream(file);
 			CaptchaServletUtil.writeImage(
-				new FileOutputStream(file),
-				getCaptcha().getImage());
+				fos, getCaptcha().getImage());
 		}
 		catch (IOException e1) {
 			logger.error(""+e1, e1);
 		}
 		finally {
 			try {
+				if (fos != null) {
+					fos.close();
+				}
 				Thread.currentThread().sleep(sleeptime);
 			}
-			catch (InterruptedException e2) {
+			catch (IOException | InterruptedException e2) {
 				logger.error(""+e2, e2);
 			}
 		}

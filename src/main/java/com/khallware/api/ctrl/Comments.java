@@ -108,7 +108,7 @@ public class Comments extends CrudController<Comment>
 		catch (APIException|IOException|DatastoreException e) {
 			retval = Util.failRequest(e);
 			logger.trace(""+e, e);
-			logger.warn("{}",""+e);
+			logger.warn("{}",e);
 		}
 		return(retval);
 	}
@@ -147,7 +147,7 @@ public class Comments extends CrudController<Comment>
 		catch (APIException|IOException|DatastoreException e) {
 			retval = Util.failRequest(e);
 			logger.trace(""+e, e);
-			logger.warn("{}",""+e);
+			logger.warn("{}",e);
 		}
 		return(retval);
 	}

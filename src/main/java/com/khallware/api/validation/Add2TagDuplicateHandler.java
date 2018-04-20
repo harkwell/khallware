@@ -3,7 +3,6 @@
 package com.khallware.api.validation;
 
 import com.khallware.api.validation.Uniqueness.DuplicateHandler;
-import com.khallware.api.ctrl.CrudController;
 import com.khallware.api.DatastoreException;
 import com.khallware.api.Datastore;
 import com.khallware.api.domain.APIEntity;
@@ -35,7 +34,7 @@ public class Add2TagDuplicateHandler implements DuplicateHandler
 		}
 		catch (DatastoreException e) {
 			logger.trace(""+e, e);
-			logger.warn("{}",""+e);
+			logger.warn("{}",e);
 		}
 	}
 }

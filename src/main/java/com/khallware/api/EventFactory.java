@@ -41,7 +41,7 @@ public class EventFactory
 		}
 		catch (RuntimeException e) {
 			logger.trace(""+e, e);
-			logger.warn("{}",""+e);
+			logger.warn("{}",e);
 			throw new APIException(e);
 		}
 		return(retval);
@@ -115,7 +115,7 @@ public class EventFactory
 		}
 		catch (Exception e) {
 			logger.trace(""+e, e);
-			logger.warn("{}",""+e);
+			logger.warn("{}",e);
 			throw new APIException(e);
 		}
 		return(retval);
