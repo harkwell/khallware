@@ -71,6 +71,7 @@ public class DTags extends APICrudChain<Tag>
 			if (pg.returnCount()) {
 				pg.setCount(qb.countOf());
 			}
+			// logger.trace("SQL: {}", qb.prepare().getStatement());
 			retval.item.addAll(qb.query());
 		}, Tag.class);
 		pg.setCount(retval.count);

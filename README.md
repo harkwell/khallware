@@ -60,16 +60,19 @@ QUICK START
 ### Run it locally
 ```shell
 # download the software
-wget -c 'http://central.maven.org/maven2/org/eclipse/jetty/jetty-runner/9.4.9.v20180320/jetty-runner-9.4.9.v20180320.jar' -O /tmp/jetty-runner.jar
-wget -c 'https://github.com/harkwell/khallware/releases/download/v0.9.0/khallware-0.9.0.war' -O /tmp/apis.war
+DESTDIR=$HOME/tmp/apis/
+mkdir -p $DESTDIR
+wget -c 'http://central.maven.org/maven2/org/eclipse/jetty/jetty-runner/9.4.9.v20180320/jetty-runner-9.4.9.v20180320.jar' -O $DESTDIR/jetty-runner.jar
+wget -c 'https://github.com/harkwell/khallware/releases/download/v0.9.0/khallware-0.9.0.war' -O $DESTDIR/apis.war
+wget -c 'https://github.com/harkwell/khallware/releases/download/v0.9.0/apis-0.9.0.db' -O $DESTDIR/apis.db
 
 # configure it to your liking:
 cat <<EOF >/tmp/main.properties
-images=$HOME/tmp/apis/images
-thumbs=$HOME/tmp/apis/thumbs
-audio=$HOME/tmp/apis/audio
-upload.dir=$HOME/tmp/apis/uploads
-captcha_file=$HOME/tmp/apis/captcha.png
+images=$DESTDIR/images
+thumbs=$DESTDIR/thumbs
+audio=$DESTDIR/audio
+upload.dir=$DESTDIR/uploads
+captcha_file=$DESTDIR/captcha.png
 mail.debug=true
 mail.smtp.host=localhost
 mail.transport.protocol=smtp
@@ -78,20 +81,21 @@ mail.smtp.starttls.enable=false
 mail.smtp.starttls.required=false
 jdbc_user=webapp
 jdbc_pass=webapp
-jdbc_url=jdbc:sqlite:$HOME/tmp/apis/apis.db
+jdbc_url=jdbc:sqlite:$DESTDIR/apis.db
+#jdbc_url=jdbc:mysql://127.0.0.1/website?autoReconnect=true
 registration_url=http://localhost:8080/apis/v1/security/register/
 jdbc_driver=org.sqlite.JDBC
 EOF
 
-# start up the email server (optional)
+# download and start up the email server (optional)
 wget -c 'http://nilhcem.github.com/FakeSMTP/downloads/fakeSMTP-latest.zip' -qO - |bsdtar -xvf - -C /tmp
 java -jar /tmp/fakeSMTP*.jar
 
 # start up khallware
-java -jar /tmp/jetty-runner.jar --path /apis /tmp/apis.war
+java -jar $DESTDIR/jetty-runner.jar --path /apis $DESTDIR/apis.war
 
 # begin to use it...
-chromium-browser http://localhost:8080/apis/
+chromium-browser http://localhost:8080/apis/  # use guest/guest to login
 ```
 
 ### Or, build and run it locally
@@ -234,8 +238,15 @@ docker run -it khall/khallware
 * copy apis.war to the tomcat8 webapps directory, restart
 * database (from scratch)
 ```shell
+# mysql
 mysql -uroot -pmypasswd website < db_schema.sql
 mysql -uroot -pmypasswd website < db_load.sql
+
+# sqlite3
+bash convert-to-sqlite.sh db_schema.sql
+bash convert-to-sqlite.sh db_load.sql
+sqlite3 apis.db <db_schema.sqlite
+sqlite3 apis.db <db_load.sqlite
 ```
 
 ### Build
