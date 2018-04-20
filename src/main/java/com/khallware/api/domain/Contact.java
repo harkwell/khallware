@@ -4,7 +4,6 @@ package com.khallware.api.domain;
 
 import com.khallware.api.ContactFactory;
 import com.khallware.api.APIException;
-import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;

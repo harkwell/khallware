@@ -4,13 +4,11 @@ package com.khallware.api.ctrl;
 
 import com.khallware.api.enums.Mode;
 import com.khallware.api.domain.Group;
-import com.khallware.api.domain.Entity;
 import com.khallware.api.domain.Session;
 import com.khallware.api.domain.APIEntity;
 import com.khallware.api.domain.AtomEntity;
 import com.khallware.api.domain.Credentials;
 import com.khallware.api.DatastoreException;
-import com.khallware.api.dstore.Pagination;
 import com.khallware.api.Datastore;
 import com.khallware.api.Unauthorized;
 import com.khallware.api.APIException;
@@ -75,6 +73,11 @@ public final class Util
 	public static final long DEF_EXPIRATION = (5 * 24 * 60 * 60 * 1000);
 	public static final int DEF_MAX_WID = 200;
 	public static final int DEF_MAX_HGT = 200;
+
+	private Util()
+	{
+		throw new IllegalStateException("Utility");
+	}
 
 	public static Response failRequest(Throwable throwable)
 	{

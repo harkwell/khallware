@@ -3,7 +3,6 @@
 package com.khallware.api;
 
 import com.khallware.api.validation.CompleteContact;
-import com.khallware.api.domain.Credentials;
 import com.khallware.api.domain.Contact;
 import ezvcard.property.SimpleProperty;
 import ezvcard.property.VCardProperty;
@@ -13,7 +12,6 @@ import ezvcard.property.Address;
 import ezvcard.VCardVersion;
 import ezvcard.Ezvcard;
 import ezvcard.VCard;
-import java.util.Date;
 import java.util.List;
 import java.util.ArrayList;
 import org.slf4j.LoggerFactory;
@@ -27,6 +25,11 @@ public class ContactFactory
 {
 	private static final Logger logger = LoggerFactory.getLogger(
 		ContactFactory.class);
+
+	private ContactFactory()
+	{
+		throw new IllegalStateException("static factory");
+	}
 
 	/**
 	 * Given a VCard, make a corresponding Contact.
@@ -55,7 +58,7 @@ public class ContactFactory
 			list.clear();
 			list.addAll(vcard.getOrganizations());
 			retval.org(resolve("", list));
-			logger.trace("created contact ("+retval+")");
+			logger.trace("created contact ({})", retval);
 		}
 		catch (Exception e) {
 			logger.trace(""+e, e);

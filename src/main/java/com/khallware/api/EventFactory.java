@@ -24,6 +24,11 @@ public class EventFactory
 	private static final Logger logger = LoggerFactory.getLogger(
 		EventFactory.class);
 
+	private EventFactory()
+	{
+		throw new IllegalStateException("static factory");
+	}
+
 	/**
 	 * Create a list of events given a textual representation of an
 	 * ICalendar list.
@@ -111,7 +116,7 @@ public class EventFactory
 				.description(summary)
 				.uid(uid)
 				.build();
-			logger.info("created event ("+retval+")");
+			logger.info("created event ({})", retval);
 		}
 		catch (Exception e) {
 			logger.trace(""+e, e);

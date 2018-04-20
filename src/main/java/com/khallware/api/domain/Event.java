@@ -124,7 +124,7 @@ public class Event extends AtomEntity
 			}
 			catch (ParseException e) {
 				logger.trace(""+e, e);
-				logger.warn("unconventional date: "+e);
+				logger.warn("unconventional date: {}", e);
 			}
 			return(retval);
 		}
@@ -216,7 +216,7 @@ public class Event extends AtomEntity
 		return(duration);
 	}
 
-	public void setDuration(Date start)
+	public void setDuration(long duration)
 	{
 		this.duration = duration;
 	}

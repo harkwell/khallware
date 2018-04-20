@@ -67,6 +67,7 @@ public class Comment extends AtomEntity
 	public void preSave()
 	{
 		super.preSave();
+		logger.trace("presaving comment");
 		content = Util.sanitizePostedHTML(getContent());
 	}
 

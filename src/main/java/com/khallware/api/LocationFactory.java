@@ -39,6 +39,11 @@ public class LocationFactory
 		LocationFactory.class);
 	public static final int MAX_IS_READLIMIT = (1024 * 1024); // 1Mb
 
+	private LocationFactory()
+	{
+		throw new IllegalStateException("static factory");
+	}
+
 	/**
 	 * Create a list of Location instances given a serialized kml doc.
 	 *
@@ -261,6 +266,11 @@ public class LocationFactory
 					location.setLongitude(latlon[1]);
 				}
 				retval.add(location);
+				break;
+			default:
+				logger.warn("unknown node type: {}",
+					node.getNodeType());
+				break;
 			}
 		}
 		return(retval);

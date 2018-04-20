@@ -21,6 +21,11 @@ public final class Util
 	private static final Logger logger = LoggerFactory.getLogger(
 		Util.class);
 
+	private Util()
+	{
+		throw new IllegalStateException("static utility class");
+	}
+
 	public static String hash(String plain) throws NoSuchAlgorithmException
 	{
 		StringBuffer retval = new StringBuffer();
@@ -36,13 +41,18 @@ public final class Util
 	}
 
 	public static String produceHashSum(String type, File src)
-			throws Exception
 	{
 		String retval = null;
-		MessageDigest md = MessageDigest.getInstance(type);
-		byte[] hash = md.digest(Files.readAllBytes(src.toPath()));
-		retval = String.format("%032x", new BigInteger(1, hash));
-		logger.trace("file \"{}\" has md5sum \"{}\"", ""+src, retval);
+		try {
+			MessageDigest md = MessageDigest.getInstance(type);
+			byte[] hash = md.digest(
+				Files.readAllBytes(src.toPath()));
+			retval = String.format("%032x", new BigInteger(1,hash));
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+		logger.trace("file \"{}\" has md5sum \"{}\"", src, retval);
 		return(retval);
 	}
 }
