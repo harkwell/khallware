@@ -59,7 +59,7 @@ public class ContactFactory
 		}
 		catch (Exception e) {
 			logger.trace(""+e, e);
-			logger.warn(""+e);
+			logger.warn("{}",""+e);
 			throw new APIException(e);
 		}
 		return(retval.build());
@@ -90,7 +90,7 @@ public class ContactFactory
 		}
 		catch (RuntimeException e) {
 			logger.trace(""+e, e);
-			logger.warn(""+e);
+			logger.warn("{}",""+e);
 			throw new APIException(e);
 		}
 		return(retval);

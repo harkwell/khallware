@@ -136,7 +136,7 @@ public class Atoms
 		catch (DatastoreException|APIException e) {
 			retval = Util.failRequest(e);
 			logger.trace(""+e, e);
-			logger.warn(""+e);
+			logger.warn("{}",""+e);
 		}
 		return(retval);
 	}

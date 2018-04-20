@@ -35,7 +35,7 @@ public class Add2TagDuplicateHandler implements DuplicateHandler
 		}
 		catch (DatastoreException e) {
 			logger.trace(""+e, e);
-			logger.warn(""+e);
+			logger.warn("{}",""+e);
 		}
 	}
 }

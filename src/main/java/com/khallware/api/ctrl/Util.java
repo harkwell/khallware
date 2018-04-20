@@ -182,7 +182,7 @@ public final class Util
 		}
 		catch (Exception e) {
 			logger.trace(""+e, e);
-			logger.warn(""+e);
+			logger.warn("{}",""+e);
 		}
 		return(retval);
 	}

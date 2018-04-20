@@ -51,7 +51,7 @@ public class Bookmark extends AtomEntity
 			}
 			catch (IllegalArgumentException e) {
 				logger.trace(""+e, e);
-				logger.warn(""+e);
+				logger.warn("{}",""+e);
 			}
 			return(this);
 		}
@@ -70,7 +70,7 @@ public class Bookmark extends AtomEntity
 			}
 			catch (MalformedURLException e) {
 				logger.trace(""+e, e);
-				logger.warn(""+e);
+				logger.warn("{}",""+e);
 			}
 			return(url(retval));
 		}

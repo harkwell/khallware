@@ -168,7 +168,7 @@ public class Contact extends AtomEntity
 		}
 		catch (Exception e) {
 			logger.trace(""+e, e);
-			logger.warn(""+e);
+			logger.warn("{}",""+e);
 			logger.trace("XML (part): \"{}\"",
 				xml.substring(0, Math.min(xml.length(), 25)));
 		}

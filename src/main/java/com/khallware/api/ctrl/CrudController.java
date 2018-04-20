@@ -73,7 +73,7 @@ public abstract class CrudController<T>
 		catch (APIException|IOException|DatastoreException e) {
 			retval = Util.failRequest(e);
 			logger.trace(""+e, e);
-			logger.warn(""+e);
+			logger.warn("{}",""+e);
 		}
 		logger.info("(id={}) "+this.getClass().getSimpleName()+" POST",
 			creds.getId());
@@ -147,7 +147,7 @@ public abstract class CrudController<T>
 		catch (APIException|IOException|DatastoreException e) {
 			retval = Util.failRequest(e);
 			logger.trace(""+e, e);
-			logger.warn(""+e);
+			logger.warn("{}",""+e);
 		}
 		return(retval);
 	}
@@ -170,7 +170,7 @@ public abstract class CrudController<T>
 		catch (APIException|IOException|DatastoreException e) {
 			retval = Util.failRequest(e);
 			logger.trace(""+e, e);
-			logger.warn(""+e);
+			logger.warn("{}",""+e);
 		}
 		logger.info("(id={}) GET "+this.getClass().getSimpleName()
 			+" ({})", creds.getId(), id);
@@ -218,7 +218,7 @@ public abstract class CrudController<T>
 		catch (APIException|IOException|DatastoreException e) {
 			retval = Util.failRequest(e);
 			logger.trace(""+e, e);
-			logger.warn(""+e);
+			logger.warn("{}",""+e);
 		}
 		logger.info("(id={}) PUT "+this.getClass().getSimpleName()
 			+" ({})", creds.getId(), id);
@@ -243,7 +243,7 @@ public abstract class CrudController<T>
 			}
 			catch (Unauthorized e) {
 				logger.trace(""+e, e);
-				logger.warn(""+e);
+				logger.warn("{}",""+e);
 			}
 			if ((entity = Datastore.DS().get(clazz, id)) != null) {
 				Util.enforceRead(entity, creds);
@@ -273,7 +273,7 @@ public abstract class CrudController<T>
 		catch (APIException|IOException|DatastoreException e) {
 			retval = Util.failRequest(e);
 			logger.trace(""+e, e);
-			logger.warn(""+e);
+			logger.warn("{}",""+e);
 		}
 		logger.info("(id={}) DELETE "+this.getClass().getSimpleName()
 			+" ({})", creds.getId(), id);
@@ -318,7 +318,7 @@ public abstract class CrudController<T>
 		catch (APIException|IOException|DatastoreException e) {
 			retval = Util.failRequest(e);
 			logger.trace(""+e, e);
-			logger.warn(""+e);
+			logger.warn("{}",""+e);
 		}
 		logger.info("(id={}) GET "+this.getClass().getSimpleName(),
 			creds.getId());

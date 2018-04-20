@@ -5,21 +5,16 @@ package com.khallware.api.domain;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.slf4j.LoggerFactory;
-import org.slf4j.Logger;
-
-// SELECT *, CAST(disabled AS UNSIGNED) AS disabled FROM credentials;
 
 /**
  * Credentials.  A Credentials represents a system user.
+ *       SELECT *, CAST(disabled AS UNSIGNED) AS disabled FROM credentials;
  *
  * @author khall
  */
 @DatabaseTable(tableName = Credentials.TABLE)
 public class Credentials
 {
-	private static final Logger logger = LoggerFactory.getLogger(
-		Credentials.class);
 	public static final String TABLE = "credentials";
 	public static final String COL_REGIKEY = "regikey";
 	public static final String COL_GROUP = "group_";

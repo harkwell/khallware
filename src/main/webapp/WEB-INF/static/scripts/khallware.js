@@ -14,7 +14,7 @@ function postTag(name, parent)
          }
       },
       error: function (xhr) {
-         alert(xhr.responseText);
+         // alert(xhr.responseText);
       }
    });
 };
@@ -40,7 +40,7 @@ function postContact(contact)
          retval = data;
       },
       error: function (xhr) {
-         alert(xhr.responseText);
+         // alert(xhr.responseText);
       }
    });
    return retval;
@@ -68,7 +68,7 @@ function postBookmark(name, url, rating)
          retval = data;
       },
       error: function (xhr) {
-         alert(xhr.responseText);
+         // alert(xhr.responseText);
       }
    });
    return retval;
@@ -99,7 +99,7 @@ function postBlog(blog, tagId)
          retval = data;
       },
       error: function (xhr) {
-         alert(xhr.responseText);
+         // alert(xhr.responseText);
       }
    });
    return retval;
@@ -125,7 +125,7 @@ function postComment(comment)
          retval = data;
       },
       error: function (xhr) {
-         alert(xhr.responseText);
+         // alert(xhr.responseText);
       }
    });
    return retval;
@@ -145,7 +145,7 @@ function deleteTag(tagId)
          }
       },
       error: function (xhr) {
-         alert(xhr.responseText);
+         // alert(xhr.responseText);
       }
    });
 };
@@ -164,7 +164,7 @@ function deletePhoto(photoId)
          }
       },
       error: function (xhr) {
-         alert(xhr.responseText);
+         // alert(xhr.responseText);
       }
    });
 };
@@ -183,7 +183,7 @@ function deleteSound(soundId)
          }
       },
       error: function (xhr) {
-         alert(xhr.responseText);
+         // alert(xhr.responseText);
       }
    });
 };
@@ -210,7 +210,7 @@ function updateItem(item_type, item, tagId)
          }
       },
       error: function (xhr) {
-         alert(xhr.responseText);
+         // alert(xhr.responseText);
       }
    });
 }
@@ -275,7 +275,7 @@ function deleteItem(item_type, itemId)
          }
       },
       error: function (xhr) {
-         alert(xhr.responseText);
+         // alert(xhr.responseText);
       }
    });
 };
@@ -339,7 +339,7 @@ function deleteComment(commentId)
          }
       },
       error: function (xhr) {
-         alert(xhr.responseText);
+         // alert(xhr.responseText);
       }
    });
 };
@@ -379,7 +379,7 @@ function getItem(item_type, id)
          retval = data;
       },
       error: function (xhr) {
-         alert(xhr.responseText);
+         // alert(xhr.responseText);
       }
    });
    return retval;
@@ -456,7 +456,7 @@ function search(pattern, page, pageSize)
          retval = data;
       },
       error: function (xhr) {
-         alert(xhr.responseText);
+         // alert(xhr.responseText);
       }
    });
    return retval;
@@ -487,7 +487,7 @@ function getItems(item_type, page, pageSize, tagId)
          retval = data;
       },
       error: function (xhr) {
-         alert(xhr.responseText);
+         // alert(xhr.responseText);
       }
    });
    return retval;
@@ -576,7 +576,7 @@ function getComments(page, pageSize, blogId)
          retval = data;
       },
       error: function (xhr) {
-         alert(xhr.responseText);
+         // alert(xhr.responseText);
       }
    });
    return retval;
@@ -628,7 +628,7 @@ function getTagsByName(tagName)
             retval = data;
          },
          error: function (xhr) {
-            alert(xhr.responseText);
+            // alert(xhr.responseText);
          }
       });
    }
@@ -660,7 +660,7 @@ function getTags(parentId)
             retval = data;
          },
          error: function (xhr) {
-            alert(xhr.responseText);
+            // alert(xhr.responseText);
          }
       });
    }
@@ -700,7 +700,7 @@ function getSession()
          retval = data;
       },
       error: function (xhr) {
-         alert(xhr.responseText);
+         // alert(xhr.responseText);
       }
    });
    return retval;

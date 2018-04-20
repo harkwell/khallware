@@ -42,7 +42,7 @@ public class Photo extends AtomEntity
 			}
 			catch (Exception e) {
 				logger.trace(""+e, e);
-				logger.warn(""+e);
+				logger.warn("{}",""+e);
 			}
 			return(this);
 		}

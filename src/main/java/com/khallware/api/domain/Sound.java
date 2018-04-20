@@ -12,10 +12,8 @@ import org.gagravarr.ogg.OggPacketReader;
 import org.gagravarr.vorbis.VorbisPacketFactory;
 import org.gagravarr.vorbis.VorbisComments;
 import org.gagravarr.vorbis.VorbisPacket;
-import java.net.MalformedURLException;
 import java.io.FileInputStream;
 import java.io.File;
-import java.net.URL;
 import java.util.Date;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
@@ -45,19 +43,26 @@ public class Sound extends AtomEntity
 
 		public Builder file(File file) throws Exception
 		{
-			OggFile oggfl = new OggFile(new FileInputStream(file));
-			OggPacketReader reader = oggfl.getPacketReader();
-			reader.getNextPacket();
-			VorbisPacket vpacket = VorbisPacketFactory.create(
-				reader.getNextPacket());
-			md5sum(Util.produceHashSum("MD5", file));
-			name(file.getName());
-			path(""+file);
-			/* title(""+vcomments.getTitle());
-			artist(""+vcomments.getArtist());
-			genre(""+vcomments.getGenre());
-			album(""+vcomments.getAlbum()); */
-			oggfl.close();
+			VorbisPacket vpacket = null;
+			VorbisComments vcomments = null;
+
+			try (OggFile oggfl = new OggFile(
+					new FileInputStream(file))){
+				OggPacketReader reader =oggfl.getPacketReader();
+				logger.trace("building Sound from file: {}",
+					""+file);
+				reader.getNextPacket();
+				vpacket = VorbisPacketFactory.create(
+					reader.getNextPacket());
+				vcomments = (VorbisComments)vpacket;
+				md5sum(Util.produceHashSum("MD5", file));
+				name(file.getName());
+				path(""+file);
+				title(""+vcomments.getTitle());
+				artist(""+vcomments.getArtist());
+				genre(""+vcomments.getGenre());
+				album(""+vcomments.getAlbum());
+			}
 			return(this);
 		}
 

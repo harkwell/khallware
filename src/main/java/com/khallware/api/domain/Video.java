@@ -6,8 +6,6 @@ import com.khallware.api.Util;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.io.File;
 import java.util.Date;
 import org.slf4j.LoggerFactory;
@@ -44,7 +42,7 @@ public class Video extends AtomEntity
 			}
 			catch (Exception e) {
 				logger.debug(""+e, e);
-				logger.warn(""+e);
+				logger.warn("{}",""+e);
 			}
 			return(this);
 		}

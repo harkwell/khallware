@@ -17,7 +17,6 @@ import com.khallware.api.domain.FileItem;
 import com.khallware.api.domain.Location;
 import com.khallware.api.domain.APIEntity;
 import com.khallware.api.domain.Credentials;
-import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServlet;
@@ -57,6 +56,7 @@ public class Upload extends HttpServlet
 		Upload.class);
 	private static final Object semaphore = new Object();
 
+	@Override
 	public void doPost(HttpServletRequest request,
 			HttpServletResponse retval)
 			throws ServletException, IOException
@@ -104,7 +104,7 @@ public class Upload extends HttpServlet
 					errors.add(""+rsp.getEntity());
 				}
 			}
-			if (errors.size() == 0) {
+			if (errors.isEmpty()) {
 				retval.setStatus(200);
 				retval.getWriter().printf("%s", (rsp != null)
 					? ""+rsp.getEntity()
@@ -118,7 +118,7 @@ public class Upload extends HttpServlet
 		}
 		catch (Exception e1) {
 			logger.trace(""+e1, e1);
-			logger.warn(""+e1);
+			logger.warn("{}",""+e1);
 			try {
 				retval.setStatus(400);
 				retval.addHeader("Content-Type",
@@ -128,7 +128,7 @@ public class Upload extends HttpServlet
 			}
 			catch (Exception e2) {
 				logger.trace(""+e2, e2);
-				logger.warn(""+e2);
+				logger.warn("{}",""+e2);
 			}
 		}
 	}
@@ -141,7 +141,7 @@ public class Upload extends HttpServlet
 		}
 		catch (Exception e) {
 			logger.trace(""+e, e);
-			logger.warn(""+e);
+			logger.warn("{}",""+e);
 		}
 		return(retval);
 	}
@@ -183,7 +183,7 @@ public class Upload extends HttpServlet
 		File file = save(part, dir);
 		retval[0] = ""+file;
 		retval[1] = new String(Files.readAllBytes(file.toPath()));
-		file.delete();
+		Files.delete(file.toPath());
 		return(retval);
 	}
 
@@ -196,7 +196,7 @@ public class Upload extends HttpServlet
 		}
 		catch (NumberFormatException e) {
 			logger.trace(""+e,e);
-			logger.warn(""+e);
+			logger.warn("{}",""+e);
 		}
 	}
 
@@ -265,7 +265,7 @@ public class Upload extends HttpServlet
 				logger.trace("post location ({})", location);
 				retval = handlePost(ctrl,location,creds,tagId);
 			}
-			file.delete();
+			Files.delete(file.toPath());
 			break;
 		case "image/jpeg":
 			file = save(part, dir, creds);
@@ -332,11 +332,11 @@ public class Upload extends HttpServlet
 		String name = (part == null) ? "" : part.getName();
 
 		retval |= (part != null && part.getContentType() == null);
-		retval |= ("name".toLowerCase().equals(name));
-		retval |= ("path".toLowerCase().equals(name));
+		retval |= ("name".equalsIgnoreCase(name));
+		retval |= ("path".equalsIgnoreCase(name));
 		// do not include "image", it's the main part!
-		retval |= ("filename".toLowerCase().equals(name));
-		retval |= ("filecomment".toLowerCase().equals(name));
+		retval |= ("filename".equalsIgnoreCase(name));
+		retval |= ("filecomment".equalsIgnoreCase(name));
 		return(retval);
 	}
 
@@ -345,13 +345,13 @@ public class Upload extends HttpServlet
 		File retval = dir;
 		Date now = new Date();
 		retval = new File(retval,
-			new SimpleDateFormat("yyyy").format(now).toString());
+			new SimpleDateFormat("yyyy").format(now));
 		retval = new File(retval,
-			new SimpleDateFormat("DDD").format(now).toString());
+			new SimpleDateFormat("DDD").format(now));
 		retval = new File(retval,
-			new SimpleDateFormat("HH").format(now).toString());
+			new SimpleDateFormat("HH").format(now));
 		retval = new File(retval,
-			new SimpleDateFormat("mm").format(now).toString());
+			new SimpleDateFormat("mm").format(now));
 		return(retval);
 	}
 
@@ -376,6 +376,10 @@ public class Upload extends HttpServlet
 			break;
 		case "video/mp4":
 			ext = ".mp4";
+			break;
+		default:
+			logger.warn("unknown content type: \"{}\"",
+				part.getContentType());
 			break;
 		}
 		retval.append(fname).append(".").append(ext);

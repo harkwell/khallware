@@ -80,7 +80,7 @@ public class Contacts extends CrudController<Contact>
 		}
 		catch (Exception e) {
 			logger.trace(""+e, e);
-			logger.warn(""+e);
+			logger.warn("{}",""+e);
 		}
 		retval = Response.status(200).entity(sb.toString()).build();
 		return(retval);
@@ -153,7 +153,7 @@ public class Contacts extends CrudController<Contact>
 		catch (APIException|DatastoreException e) {
 			retval = Util.failRequest(e);
 			logger.trace(""+e, e);
-			logger.warn(""+e);
+			logger.warn("{}",""+e);
 		}
 		return(retval);
 	}
@@ -249,7 +249,7 @@ public class Contacts extends CrudController<Contact>
 		catch (APIException|IOException|DatastoreException e) {
 			retval = Util.failRequest(e);
 			logger.trace(""+e, e);
-			logger.warn(""+e);
+			logger.warn("{}",""+e);
 		}
 		return(retval);
 	}
@@ -273,7 +273,7 @@ public class Contacts extends CrudController<Contact>
 		}
 		catch (Exception e) {
 			logger.trace(""+e, e);
-			logger.warn(""+e);
+			logger.warn("{}",""+e);
 		}
 	}
 

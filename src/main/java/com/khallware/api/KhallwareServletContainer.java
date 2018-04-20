@@ -23,16 +23,16 @@ import org.slf4j.LoggerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
 
 /**
- * ServletContainer.  The "Main" entry point for the web application.
+ * KhallwareServletContainer.  The "Main" entry point for the web application.
  * This is where the captcha thread is started.
  *
  * @author khall
  */
-public class ServletContainer
+public class KhallwareServletContainer
 		extends org.glassfish.jersey.servlet.ServletContainer
 {
 	private static final Logger logger = LoggerFactory.getLogger(
-		ServletContainer.class);
+		KhallwareServletContainer.class);
 	public static final String PROP_CAPTCHA_FILE = "captcha_file";
 	public static final String PROP_CAPTCHA_REFRESH = "captcha_refresh";
 	public static final String PROP_CAPTCHA_WIDTH = "captcha_width";
@@ -46,12 +46,12 @@ public class ServletContainer
 	public static final int DEF_HEIGHT = 50;
 	private static Captcha captcha = null;
 
-	public ServletContainer()
+	public KhallwareServletContainer()
 	{
 		super();
 	}
 
-	public ServletContainer(ResourceConfig resourceConfig)
+	public KhallwareServletContainer(ResourceConfig resourceConfig)
 	{
 		super(resourceConfig);
 	}
@@ -71,10 +71,10 @@ public class ServletContainer
 			if (new File(fname).exists()) {
 				props.load(new FileInputStream(fname));
 			}
-			logger.trace(""+props);
+			logger.trace("{}",""+props);
 			Datastore.DS().configure(props);
 			startCaptchaThread();
-			logger.info("configured servlet container");
+			logger.info("made servlet container from {}", fname);
 
 			if (!Datastore.DS().ping()) {
 				logger.error("Failed to connect to database!");

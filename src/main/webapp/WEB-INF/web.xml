@@ -5,7 +5,7 @@
       http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
 <servlet>
    <servlet-name>khallware</servlet-name>
-   <servlet-class>com.khallware.api.ServletContainer</servlet-class>
+   <servlet-class>com.khallware.api.KhallwareServletContainer</servlet-class>
    <init-param>
       <param-name>jersey.config.server.provider.packages</param-name>
       <param-value>com.khallware.api.ctrl</param-value>

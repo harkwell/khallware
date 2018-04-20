@@ -64,7 +64,7 @@ public abstract class APIEntity implements Entity
 			}
 			catch (NumberFormatException e) {
 				logger.trace(""+e, e);
-				logger.warn(""+e);
+				logger.warn("{}",""+e);
 			}
 			return(id(val));
 		}
@@ -89,7 +89,7 @@ public abstract class APIEntity implements Entity
 			}
 			catch (ParseException e) {
 				logger.trace(""+e, e);
-				logger.warn(""+e);
+				logger.warn("{}",""+e);
 			}
 			return(date);
 		}

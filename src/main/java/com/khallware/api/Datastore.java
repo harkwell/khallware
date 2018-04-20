@@ -60,7 +60,6 @@ import java.text.SimpleDateFormat;
 import java.sql.SQLException;
 import java.util.UUID;
 import java.util.Date;
-import java.util.Map;
 import java.util.List;
 import java.util.Arrays;
 import java.util.ArrayList;
@@ -137,7 +136,7 @@ public final class Datastore
 	 *
 	 * @param props - The Properties to set.
 	 */
-	public void configure(Properties props)
+	public static void configure(Properties props)
 	{
 		Datastore.props = props;
 		url = props.getProperty(PROP_DBURL, url);
@@ -322,7 +321,7 @@ public final class Datastore
 		Operator.<Credentials>perform((dao) -> {
 			for (Credentials creds : dao.queryForEq(column,value)) {
 				retval.item = creds;
-				break;
+				break; // get first cred found or don't set
 			}
 		}, Credentials.class);
 		return(retval.item);
@@ -839,7 +838,7 @@ public final class Datastore
 	{
 		List<Tag> retval = chain.getTags(entity, pg);
 
-		if (retval.size() == 0) {
+		if (retval.isEmpty()) {
 			retval.add(new Tag());
 		}
 		return(retval);
@@ -908,7 +907,7 @@ public final class Datastore
 			List<Session> rslt = null;
 			rslt = dao.queryForEq(Session.COL_NAME, name);
 
-			if (rslt.size() > 0) {
+			if (!rslt.isEmpty()) {
 				retval.item = rslt.get(0);
 			}
 		}, Session.class);
@@ -1010,7 +1009,7 @@ public final class Datastore
 			for (Tag tag : getTags(pg, creds)) { // KDH
 				if (tag.getId() != Tag.ROOT) {
 					chain.deleteFromTags(entity, tag);
-					flag = true;
+					// flag = true;
 				}
 			}
 			pg.next();
@@ -1031,7 +1030,7 @@ public final class Datastore
 		List<Bookmark> list = null;
 		Pagination pg = new Pagination();
 
-		LOOP: while ((list = getBookmarks(tag, pg, creds)).size() > 0) {
+		LOOP: while (!(list = getBookmarks(tag, pg, creds)).isEmpty()) {
 			for (Bookmark b : list) {
 				if (b == bookmark) {
 					retval = true;
@@ -1670,53 +1669,48 @@ public final class Datastore
 		}, Blog.class);
 	}
 
-	protected RawRowMapper<APIEntity> rawRowMapper =
-			new RawRowMapper<APIEntity>() {
-		public APIEntity mapRow(String[] cols, String[] rslts)
-		{
-			APIEntity retval = null;
-			String clazz = null;
-			int id = -1;
-			logger.trace("RawRowMapper results: {}",
-				Arrays.toString(rslts));
-			try {
-				id = Integer.parseInt(rslts[1]);
+	protected RawRowMapper<APIEntity> rawRowMapper = (cols, rslts) -> {
+		APIEntity retval = null;
+		String clazz = null;
+		int id = -1;
+		logger.trace("RawRowMapper results: {}",Arrays.toString(rslts));
+		try {
+			id = Integer.parseInt(rslts[1]);
 
-				switch ((clazz = rslts[0])) {
-				case "blog":
-					retval = getBlog(id);
-					break;
-				case "bookmark":
-					retval = getBookmark(id);
-					break;
-				case "contact":
-					retval = getContact(id);
-					break;
-				case "event":
-					retval = getEvent(id);
-					break;
-				case "fileitem":
-					retval = getFileItem(id);
-					break;
-				case "location":
-					retval = getLocation(id);
-					break;
-				case "photo":
-					retval = getPhoto(id);
-					break;
-				case "sound":
-					retval = getSound(id);
-					break;
-				default:
-					throw new RuntimeException("unhandled "
-						+"search class \""+clazz+"\"");
-				}
+			switch ((clazz = rslts[0])) {
+			case "blog":
+				retval = getBlog(id);
+				break;
+			case "bookmark":
+				retval = getBookmark(id);
+				break;
+			case "contact":
+				retval = getContact(id);
+				break;
+			case "event":
+				retval = getEvent(id);
+				break;
+			case "fileitem":
+				retval = getFileItem(id);
+				break;
+			case "location":
+				retval = getLocation(id);
+				break;
+			case "photo":
+				retval = getPhoto(id);
+				break;
+			case "sound":
+				retval = getSound(id);
+				break;
+			default:
+				throw new RuntimeException("unhandled "
+					+"search class \""+clazz+"\"");
 			}
-			catch (Exception e) {
-				logger.error(""+e, e);
-			}
-			return(retval);
 		}
+		catch (Exception e) {
+			logger.error(""+e, e);
+		}
+		return(retval);
 	};
 
 	/**

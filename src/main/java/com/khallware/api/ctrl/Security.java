@@ -11,7 +11,7 @@ import com.khallware.api.domain.Session;
 import com.khallware.api.domain.Group;
 import com.khallware.api.Datastore;
 import com.khallware.api.APIException;
-import com.khallware.api.ServletContainer;
+import com.khallware.api.KhallwareServletContainer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.NewCookie;
@@ -232,7 +232,7 @@ public class Security
 		catch (DatastoreException e) {
 			retval = Util.failRequest(e);
 			logger.trace(""+e, e);
-			logger.warn(""+e);
+			logger.warn("{}",""+e);
 		}
 		return(retval);
 	}
@@ -308,7 +308,7 @@ public class Security
 		catch (APIException|IOException|DatastoreException e) {
 			retval = Util.failRequest(e);
 			logger.trace(""+e, e);
-			logger.warn(""+e);
+			logger.warn("{}",""+e);
 		}
 		return(retval);
 	}
@@ -333,7 +333,7 @@ public class Security
 		catch (Exception e) {
 			retval = Util.failRequest(e);
 			logger.trace(""+e, e);
-			logger.warn(""+e);
+			logger.warn("{}",""+e);
 		}
 		return(retval);
 	}
@@ -375,7 +375,7 @@ public class Security
 				.header("Location", "/apis/login.html")
 				.build();
 			logger.trace(""+e, e);
-			logger.warn(""+e);
+			logger.warn("{}",""+e);
 		}
 		return(retval);
 	}
@@ -400,7 +400,7 @@ public class Security
 		}
 		catch (Exception e) {
 			logger.trace(""+e, e);
-			logger.warn(""+e);
+			logger.warn("{}",""+e);
 		}
 		return(retval);
 	}
@@ -436,7 +436,8 @@ public class Security
 			String captcha) throws PolicyViolation
 	{
 		SecurityPolicyFactory.captcha(
-			ServletContainer.getCaptcha()).enforce(captcha);
+				KhallwareServletContainer.getCaptcha()
+			).enforce(captcha);
 		SecurityPolicyFactory.username().enforce(creds);
 		SecurityPolicyFactory.password(verify).enforce(creds);
 	}
@@ -474,7 +475,7 @@ public class Security
 		}
 		catch (Exception e) {
 			logger.trace(""+e, e);
-			logger.warn(""+e);
+			logger.warn("{}",""+e);
 		}
 		return(retval);
 	}
@@ -500,7 +501,7 @@ public class Security
 		catch (Exception e) {
 			retval = Util.failRequest(e);
 			logger.trace(""+e, e);
-			logger.warn(""+e);
+			logger.warn("{}",""+e);
 		}
 		return(retval);
 	}

@@ -80,7 +80,7 @@ public class Locations extends CrudController<Location>
 		catch (Exception e) {
 			retval = Util.failRequest(e);
 			logger.trace(""+e, e);
-			logger.warn(""+e);
+			logger.warn("{}",""+e);
 		}
 		return(retval);
 	}
@@ -128,7 +128,7 @@ public class Locations extends CrudController<Location>
 		catch (APIException|DatastoreException e) {
 			retval = Util.failRequest(e);
 			logger.trace(""+e, e);
-			logger.warn(""+e);
+			logger.warn("{}",""+e);
 		}
 		return(retval);
 	}
@@ -207,7 +207,7 @@ public class Locations extends CrudController<Location>
 		catch (APIException|DatastoreException e) {
 			retval = Util.failRequest(e);
 			logger.trace(""+e, e);
-			logger.warn(""+e);
+			logger.warn("{}",""+e);
 		}
 		return(retval);
 	}

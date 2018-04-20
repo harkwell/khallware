@@ -5,7 +5,7 @@ package com.khallware.api.ctrl;
 import com.khallware.api.Datastore;
 import com.khallware.api.Unauthorized;
 import com.khallware.api.APIException;
-import com.khallware.api.ServletContainer;
+import com.khallware.api.KhallwareServletContainer;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
@@ -23,7 +23,7 @@ import org.slf4j.Logger;
 public class StaticContent
 {
 	public static final String PROP_CAPTCHA_FILE =
-		ServletContainer.PROP_CAPTCHA_FILE;
+		KhallwareServletContainer.PROP_CAPTCHA_FILE;
 	private static final Logger logger = LoggerFactory.getLogger(
 		StaticContent.class);
 
@@ -53,7 +53,7 @@ public class StaticContent
 		}
 		catch (Unauthorized e) {
 			retval = Util.failRequest(e);
-			logger.warn(""+e);
+			logger.warn("{}",""+e);
 		}
 		return(retval);
 	}
@@ -95,7 +95,7 @@ public class StaticContent
 		catch (IOException e) {
 			retval = Util.failRequest(e);
 			logger.trace(""+e, e);
-			logger.warn(""+e);
+			logger.warn("{}",""+e);
 		}
 		return(retval);
 	}
@@ -119,7 +119,7 @@ public class StaticContent
 		catch (APIException|IOException e) {
 			retval = Util.failRequest(e);
 			logger.trace(""+e, e);
-			logger.warn(""+e);
+			logger.warn("{}",""+e);
 		}
 		return(retval);
 	}
