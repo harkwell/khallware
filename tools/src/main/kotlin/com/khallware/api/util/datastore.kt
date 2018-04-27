@@ -2,52 +2,22 @@
 
 package com.khallware.api.util
 
-import org.jetbrains.exposed.sql.transactions.TransactionManager
-import org.jetbrains.exposed.sql.transactions.transaction
-import org.jetbrains.exposed.sql.selectAll
-import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.Table
-import java.math.BigDecimal
 import java.sql.Connection
-import java.nio.file.Files
-import java.io.File
+import java.sql.DriverManager
+import java.util.Properties
 
-object Tags : Table("tags")
-{
-	val id = integer("id").autoIncrement().primaryKey()
-	val name = varchar("name", 1024)
-}
-
-object Bookmarks : Table("bookmarks")
-{
-	val id = integer("id").autoIncrement().primaryKey()
-	val name = varchar("name", 50)
-	val url = varchar("url", 1024)
-}
-
-object BookmarkTags : Table("bookmark_tags")
-{
-	val id = integer("id").autoIncrement().primaryKey()
-	val bookmark = integer("bookmark") references Bookmarks.id
-	val tag = integer("tag") references Tags.id
-}
-
-class Datastore(val jdbcurl: String = "jdbc:sqlite:apis.db",
-		val driver: String = "org.sqlite.JDBC")
+class Datastore(props: Properties)
 {
 	var initialized = false
+	var connection : Connection? = null
+	val jdbcurl = props.getProperty("jdbc_url","jdbc:sqlite:apis.db")
+	val driver = props.getProperty("jdbc_driver", "org.sqlite.JDBC")
 
 	fun initialize()
 	{
 		if (!initialized) {
-			Database.connect(jdbcurl, driver)
-
-			if (driver.contains("sqlite")) {
-			   TransactionManager.manager.defaultIsolationLevel =
-				Connection.TRANSACTION_SERIALIZABLE
-			}
+			Class.forName(driver).newInstance()
+			connection = DriverManager.getConnection(jdbcurl)
 		}
 		initialized = true
 	}
@@ -56,12 +26,16 @@ class Datastore(val jdbcurl: String = "jdbc:sqlite:apis.db",
 	{
 		val retval = ArrayList<Tag>()
 		initialize()
+		val statement = connection!!.createStatement()
+		val sql = "SELECT id,name FROM tags"
+		var rsltSet = statement.executeQuery(sql)
 
-		transaction {
-			for (rslt in Tags.selectAll()) {
-				retval.add(Tag(rslt[Tags.id], rslt[Tags.name]))
+		while(rsltSet.next()) {
+			with (rsltSet) {
+				retval.add(Tag(getInt("id"), getString("name")))
 			}
 		}
+		statement.close()
 		return(retval)
 	}
 
@@ -69,16 +43,25 @@ class Datastore(val jdbcurl: String = "jdbc:sqlite:apis.db",
 	{
 		val retval = ArrayList<Bookmark>()
 		initialize()
+		val statement = connection!!.createStatement()
+		val sql = """
+			   SELECT b.id,name,url
+			     FROM bookmarks b
+			LEFT JOIN bookmark_tags bt
+			       ON b.id = bt.bookmark
+			    WHERE bt.tag = { tag.id }
+		"""
+		var rsltSet = statement.executeQuery(sql)
 
-		transaction {
-			for (rslt in BookmarkTags.innerJoin(Bookmarks).select {
-					BookmarkTags.tag eq tag.id }){
-				retval.add(
-					Bookmark(rslt[Bookmarks.id],
-						rslt[Bookmarks.name],
-						rslt[Bookmarks.url]))
+		while(rsltSet.next()) {
+			with (rsltSet) {
+				retval.add(Bookmark(
+					getInt("id"),
+					getString("name"),
+					getString("url")))
 			}
 		}
+		statement.close()
 		return(retval)
 	}
 }

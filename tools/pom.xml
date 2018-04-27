@@ -13,17 +13,8 @@
         <kotlin.version>1.2.21</kotlin.version>
         <slf4j.version>1.7.25</slf4j.version>
         <sqlite-version>3.21.0.1</sqlite-version>
-        <exposed.version>0.10.2</exposed.version>
         <kotlin.compiler.incremental>true</kotlin.compiler.incremental>
     </properties>
-
-    <repositories>
-        <repository>
-            <id>exposed</id>
-            <name>exposed</name>
-            <url>https://dl.bintray.com/kotlin/exposed</url>
-        </repository>
-    </repositories>
 
     <dependencies>
         <!--
@@ -47,11 +38,6 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
             <version>${slf4j.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jetbrains.exposed</groupId>
-            <artifactId>exposed</artifactId>
-            <version>${exposed.version}</version>
         </dependency>
         <dependency>
             <groupId>org.xerial</groupId>

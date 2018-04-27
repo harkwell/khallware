@@ -96,7 +96,7 @@ fun sanitycheck()
 	}
 	else {
 		val jdbcURL = props.getProperty("jdbc_url")
-		Datastore().initialize()
+		Datastore(props).initialize()
 
 		if (!DriverManager.getConnection(jdbcURL).isValid(5000)) {
 			logger.error("failed to connect to: {}", jdbcURL)
@@ -115,10 +115,10 @@ fun main(args: Array<String>)
 	logger.debug("props: {}", props)
 	sanitycheck()
 
-	for (tag in Datastore().listTags()) {
+	for (tag in Datastore(props).listTags()) {
 		logger.debug("tag: {}", tag)
 
-		for (bookmark in Datastore().listBookmarks(tag)) {
+		for (bookmark in Datastore(props).listBookmarks(tag)) {
 			logger.debug("bookmark: {}", bookmark)
 		}
 	}
