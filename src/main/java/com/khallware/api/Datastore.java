@@ -68,7 +68,7 @@ import org.slf4j.Logger;
 
 /**
  * The Datastore singleton. All database access is accomplished via this
- * class.  It is accessed as a singleton pattern.
+ * class.
  *
  * @author khall
  */

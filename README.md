@@ -66,6 +66,10 @@ wget -c 'http://central.maven.org/maven2/org/eclipse/jetty/jetty-runner/9.4.9.v2
 wget -c 'https://github.com/harkwell/khallware/releases/download/v0.9.0/khallware-0.9.0.war' -O $DESTDIR/apis.war
 wget -c 'https://github.com/harkwell/khallware/releases/download/v0.9.0/apis-0.9.0.db' -O $DESTDIR/apis.db
 
+# download optional software
+wget -c 'https://github.com/harkwell/khallware/releases/download/v0.9.0/validate-n-sync.jar' -O $DESTDIR/validate-n-sync.jar
+wget -c 'http://nilhcem.github.com/FakeSMTP/downloads/fakeSMTP-latest.zip' -qO - |bsdtar -xvf - -C /tmp
+
 # configure it to your liking:
 cat <<EOF >/tmp/main.properties
 images=$DESTDIR/images
@@ -87,9 +91,11 @@ registration_url=http://localhost:8080/apis/v1/security/register/
 jdbc_driver=org.sqlite.JDBC
 EOF
 
-# download and start up the email server (optional)
-wget -c 'http://nilhcem.github.com/FakeSMTP/downloads/fakeSMTP-latest.zip' -qO - |bsdtar -xvf - -C /tmp
+# start up the fake email server (optional)
 java -jar /tmp/fakeSMTP*.jar
+
+# load data into the database (optional)
+java -jar $DESTDIR/validate-n-sync.jar -a /tmp/main.properties
 
 # start up khallware
 java -jar $DESTDIR/jetty-runner.jar --path /apis $DESTDIR/apis.war
@@ -105,21 +111,21 @@ export MAVEN_REPO=/tmp/delete-me-later
 rm -rf $MAVEN_REPO && cd /tmp/khallware
 mvn -Dmaven.repo.local=$MAVEN_REPO package
 
-mvn -Dmaven.repo.local=$MAVEN_REPO clean
 mvn org.apache.maven.plugins:maven-dependency-plugin:2.1:get \
     -Dmaven.repo.local=$MAVEN_REPO \
     -DrepoUrl=https://mvnrepository.com/ \
     -Dartifact=org.eclipse.jetty:jetty-runner:9.4.9.v20180320
 RUNNER_JAR=$(find $MAVEN_REPO -name \*runner\*jar)
-java -jar $RUNNER_JAR target/apis.war
+java -jar $RUNNER_JAR --path /apis target/apis.war
 bash src/scripts/convert-to-sqlite.sh src/scripts/db_schema.sql fixme
 bash src/scripts/convert-to-sqlite.sh src/scripts/db_load.sql
-sqlite3 apis.db <src/scripts/db_schema.sqlite
-sqlite3 apis.db <src/scripts/db_load.sqlite
-sqlite3 apis.db # prime with guest user and groups
+sqlite3 $DESTDIR/apis.db <src/scripts/db_schema.sqlite
+sqlite3 $DESTDIR/apis.db <src/scripts/db_load.sqlite
+sqlite3 $DESTDIR/apis.db # prime with guest user and groups
 vi /tmp/main.properties # customize for your environment like above
 chromium-browser http://localhost:8080/apis/
 
+mvn -Dmaven.repo.local=$MAVEN_REPO clean
 rm -rf $MAVEN_REPO
 ```
 
@@ -136,15 +142,15 @@ chromium-browser http://<dns-name-of-aws-ec2-host>/
 docker run -it khall/khallware
 ```
 
-### Or, run with docker components
+### Or, run with individual docker containers
 
-### Create MySQL Docker Image (One Time Only)
+### Create A MySQL Docker Image (One Time Only)
 ```shell
 mkdir -p /tmp/khallware-mysql && cd /tmp/khallware-mysql
 wget -q -c 'https://raw.githubusercontent.com/harkwell/khallware/github/src/scripts/Docker-mysql' -O - |docker build --no-cache -t khallware-mysql:v1.0 -
 ```
 
-### Create Tomcat8 Docker Image (One Time Only)
+### Create A Tomcat8 Docker Image (One Time Only)
 ```shell
 mkdir -p /tmp/khallware-tomcat8 && cd /tmp/khallware-tomcat8
 # chromium-browser https://tomcat.apache.org/download-80.cgi
@@ -152,7 +158,7 @@ wget -q -c 'http://mirrors.gigenet.com/apache/tomcat/tomcat-8/v8.0.36/bin/apache
 wget -q -c 'https://raw.githubusercontent.com/harkwell/khallware/github/src/scripts/Docker-tomcat8' -O - |docker build --no-cache -t khallware-tomcat:v1.0 -
 ```
 
-### Create khallware.com Build Docker Image (One Time Only)
+### Create A khallware.com Build Docker Image (One Time Only)
 ```shell
 mkdir -p /tmp/khallware-build && cd /tmp/khallware-build
 
@@ -163,7 +169,7 @@ sed -i -e 's#^rm -rf.*mkdir#mkdir#' build.sh
 docker build --no-cache -t khallware-build:v1.0 .
 ```
 
-### Build Application Server (apis.war file)
+### Build the khallware artifact utilizing the docker build image
 ```shell
 mkdir -p /tmp/artifacts
 docker run -h build --name khallware-build -v /tmp/artifacts:/root/tmp/build/khallware/target khallware-build:v1.0
@@ -189,7 +195,7 @@ exit
 docker rm $(docker ps -a |grep mysql |cut -d\  -f1)
 ```
 
-### Deploy MySQL Server as Docker Container
+### Deploy a MySQL Server as Docker Container
 ```shell
 docker run -d -h mysql --name khallware-mysql -p 3306:3306 -v $HOME/tmp/khallware-mysql:/var/lib/mysql khallware-mysql:v1.0
 echo 'SHOW TABLES;' |mysql -uapi -pkhallware -h 127.0.0.1 website
