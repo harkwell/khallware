@@ -5,13 +5,17 @@
 package com.khallware.api.util
 
 import org.slf4j.LoggerFactory
-// import kotlin.text.Regex
+import java.net.InetSocketAddress
+import java.net.Socket
 import java.net.URL
 import java.io.File
+import java.io.FileReader
+import java.io.BufferedReader
 import java.io.FileInputStream
 import java.sql.DriverManager
 import java.util.Properties
 import java.nio.file.Files
+import kotlin.text.Regex
 
 /**
  * This utility scans and validates webservice entities.  For each bookmark,
@@ -61,7 +65,7 @@ var url = ""
 fun parseArgs(args: Array<String>)
 {
 	for (arg in args) {
-		when (arg.substring(0,1)) {
+		when (arg.substring(0,2)) {
 			"-w" -> useWeb = !useWeb
 			"-a" -> doAdd = !doAdd
 			"-f" -> doForce = !doForce
@@ -72,15 +76,77 @@ fun parseArgs(args: Array<String>)
 	}
 }
 
+fun getFilespecs() : Array<String>
+{
+	return(arrayOf(
+		props.getProperty("images","/dev/null"),
+		props.getProperty("thumbs","/dev/null"),
+		props.getProperty("audio","/dev/null"),
+		props.getProperty("upload.dir","/dev/null")))
+}
+
+fun findUrls(filespecs: Array<String>) : List<String>
+{
+	val retval = ArrayList<String>()
+
+	for (filespec in filespecs) {
+		for (src in File(filespec).walkTopDown()) {
+			for (url in parseFiles4Urls(src.toString())) {
+				logger.debug("found url: {}", url)
+				retval.add(url)
+			}
+		}
+	}
+	return(retval)
+}
+
+fun parseFiles4Urls(fname: String) : List<String>
+{
+	val retval = ArrayList<String>()
+	val regex = Regex("(http[s]*://[A-z0-9.]+[/]*)")
+	var line = ""
+
+	if (File(fname).isFile()) {
+		BufferedReader(FileReader(fname)).use {
+			while ({ line = it.readLine(); line }() != null) {
+				if (regex.matches(line)) {
+					val found = regex.find(line)
+					retval.add(found!!.value)
+				}
+			}
+		}
+	}
+	return(retval)
+}
+
+fun validUrl(u: String) : Boolean
+{
+	var retval = false
+	logger.debug("testing url: '{}'", u)
+	try {
+		val url = URL(u)
+		var port = url.getPort()
+
+		if (port == -1) {
+			port = 80;
+		}
+		Socket().use {
+			it.connect(InetSocketAddress(url.getHost(), port))
+			retval = it.isConnected()
+		}
+	}
+	catch (e: Exception) {
+		logger.trace("${ e }", e)
+		logger.warn("${ e } ${ u }")
+	}
+	return(retval)
+}
+
 fun sanitycheck()
 {
 	var healthy = true
-	val imagesDir = props.getProperty("images")
-	val thumbsDir = props.getProperty("thumbs")
-	val audioDir = props.getProperty("audio")
-	val uploadDir = props.getProperty("upload.dir")
 
-	for (dir in arrayOf(imagesDir, thumbsDir, audioDir, uploadDir)) {
+	for (dir in getFilespecs()) {
 		if (!Files.exists(File(dir).toPath())) {
 			logger.error("directory ({}) does not exist!", dir)
 			healthy = false
@@ -117,9 +183,20 @@ fun main(args: Array<String>)
 
 	for (tag in Datastore(props).listTags()) {
 		logger.debug("tag: {}", tag)
+	}
+	for (bookmark in Datastore(props).listBookmarks()) {
+		logger.debug("bookmark: {}", bookmark)
 
-		for (bookmark in Datastore(props).listBookmarks(tag)) {
-			logger.debug("bookmark: {}", bookmark)
+		if (!validUrl(bookmark.url)) {
+			logger.warn("Failed to connect: {}", bookmark)
 		}
+		else if (bookmark.numtags < 1) {
+			logger.warn("Orphaned item: {}", bookmark)
+		}
+		for (url in findUrls(getFilespecs())) {
+		}
+	}
+	for (location in Datastore(props).listLocations()) {
+		logger.debug("location: {}", location)
 	}
 }

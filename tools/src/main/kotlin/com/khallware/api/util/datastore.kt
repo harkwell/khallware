@@ -5,6 +5,7 @@ package com.khallware.api.util
 import java.sql.Connection
 import java.sql.DriverManager
 import java.util.Properties
+import java.math.BigDecimal
 
 class Datastore(props: Properties)
 {
@@ -25,43 +26,79 @@ class Datastore(props: Properties)
 	fun listTags() : ArrayList<Tag>
 	{
 		val retval = ArrayList<Tag>()
-		initialize()
-		val statement = connection!!.createStatement()
 		val sql = "SELECT id,name FROM tags"
-		var rsltSet = statement.executeQuery(sql)
+		initialize()
+		connection!!.createStatement().use {
+			var rsltSet = it.executeQuery(sql)
 
-		while(rsltSet.next()) {
-			with (rsltSet) {
-				retval.add(Tag(getInt("id"), getString("name")))
+			while (rsltSet.next()) {
+				with (rsltSet) {
+					retval.add(Tag(
+						getInt("id"),
+						getString("name")))
+				}
 			}
 		}
-		statement.close()
 		return(retval)
 	}
 
-	fun listBookmarks(tag : Tag) : ArrayList<Bookmark>
+	fun listBookmarks() : ArrayList<Bookmark>
 	{
 		val retval = ArrayList<Bookmark>()
-		initialize()
-		val statement = connection!!.createStatement()
 		val sql = """
-			   SELECT b.id,name,url
+			   SELECT id,name,url, (
+					SELECT count(*)
+					  FROM bookmark_tags
+					 WHERE bookmark = b.id
+				) AS numtags
 			     FROM bookmarks b
-			LEFT JOIN bookmark_tags bt
-			       ON b.id = bt.bookmark
-			    WHERE bt.tag = { tag.id }
 		"""
-		var rsltSet = statement.executeQuery(sql)
+		initialize()
+		connection!!.createStatement().use {
+			var rsltSet = it.executeQuery(sql)
 
-		while(rsltSet.next()) {
-			with (rsltSet) {
-				retval.add(Bookmark(
-					getInt("id"),
-					getString("name"),
-					getString("url")))
+			while (rsltSet.next()) {
+				with (rsltSet) {
+					retval.add(Bookmark(
+						getInt("id"),
+						getString("name"),
+						getString("url"),
+						getInt("numtags")))
+				}
 			}
 		}
-		statement.close()
+		return(retval)
+	}
+
+	fun listLocations() : ArrayList<Location>
+	{
+		val retval = ArrayList<Location>()
+		val sql = """
+			   SELECT id,name,latitude,longitude,address,
+			          description, (
+					SELECT count(*)
+					  FROM location_tags
+					 WHERE location = l.id
+				) AS numtags
+			     FROM locations l
+		"""
+		initialize()
+		connection!!.createStatement().use {
+			var rsltSet = it.executeQuery(sql)
+
+			while (rsltSet.next()) {
+				with (rsltSet) {
+					retval.add(Location(
+						getInt("id"),
+						getString("name"),
+						BigDecimal(getDouble("lat")),
+						BigDecimal(getDouble("lon")),
+						getString("address"),
+						getString("desc"),
+						getInt("numtags")))
+				}
+			}
+		}
 		return(retval)
 	}
 }
