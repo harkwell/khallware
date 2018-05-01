@@ -33,7 +33,7 @@ data class Event(val id: Int, val name: String, val uid: String,
 }
 
 data class Photo(val id: Int, val name: String, val path: String,
-		val md5sum: Int, val desc: Int, val numtags: Int)
+		val md5sum: String, val desc: String, val numtags: Int)
 {
 }
 
@@ -46,7 +46,7 @@ data class FileItem(val id: Int, val name: String, val ext: String,
 data class Sound(val id: Int, val name: String, val path: String,
 		val md5sum: String, val desc: String, val title: String,
 		val artist: String, val genre: String, val album: String,
-		val numtags: Int)
+		val publisher: String, val numtags: Int)
 {
 }
 

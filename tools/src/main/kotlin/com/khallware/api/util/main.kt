@@ -5,6 +5,7 @@
 package com.khallware.api.util
 
 import org.slf4j.LoggerFactory
+import java.security.MessageDigest
 import java.net.InetSocketAddress
 import java.net.Socket
 import java.net.URL
@@ -14,7 +15,12 @@ import java.io.BufferedReader
 import java.io.FileInputStream
 import java.sql.DriverManager
 import java.util.Properties
+import java.util.Hashtable
 import java.nio.file.Files
+import java.math.BigInteger
+import javax.naming.NamingEnumeration
+import javax.naming.directory.InitialDirContext
+import javax.naming.directory.Attributes
 import kotlin.text.Regex
 
 /**
@@ -142,6 +148,85 @@ fun validUrl(u: String) : Boolean
 	return(retval)
 }
 
+fun listMXRecords(domain: String) : List<String>
+{
+	val retval = ArrayList<String>()
+	val ht = Hashtable<String,String>()
+	ht.put("java.naming.factory.initial",
+		"com.sun.jndi.dns.DnsContextFactory")
+	try {
+		val attrs = InitialDirContext(ht).getAttributes(
+			domain, arrayOf("MX"))
+
+		if (attrs.get("MX") != null) {
+			val ne = attrs.get("MX").getAll()
+
+			while (ne.hasMore()) {
+				val dat = "${ ne.next() }".split(" ")
+
+				if (dat[1].endsWith(".")) {
+					retval.add(dat[1].substring(
+						0,(dat[1].length - 1)))
+				}
+				else {
+					retval.add(dat[1])
+				}
+			}
+		}
+	}
+	catch (e: Exception) {
+		logger.debug("{}", e)
+	}
+	return(retval)
+}
+
+fun validEmail(email: String) : Boolean
+{
+	var retval = false
+	logger.debug("testing email: '{}'", email)
+	try {
+		val domain = email.split("@")[1]
+
+		for (host in listMXRecords(domain)) {
+			Socket().use {
+				it.connect(InetSocketAddress(host, 25))
+
+				if (it.isConnected()) {
+					retval = true
+				}
+			}
+			if (retval) {
+				break
+			}
+		}
+	}
+	catch (e: Exception) {
+		logger.trace("${ e }", e)
+		logger.warn("${ e } ${ email }")
+	}
+	return(retval)
+}
+
+fun validMd5sum(filespec: String, md5sum: String) : Boolean
+{
+	var retval = false
+	logger.debug("testing file: '{}'", filespec)
+	try {
+		val md = MessageDigest.getInstance("MD5")
+		val hash = md.digest(Files.readAllBytes(
+			File(filespec).toPath()));
+		val rslt = String.format("%032x", BigInteger(1,hash));
+		logger.debug("md5sum comparison (found={} given={})",
+			rslt, md5sum)
+		retval = rslt.equals(md5sum)
+	}
+	catch (e: Exception) {
+		logger.trace("${ e }", e)
+		logger.warn("${ e } ${ filespec }")
+	}
+	return(retval)
+}
+
 fun sanitycheck()
 {
 	var healthy = true
@@ -174,6 +259,90 @@ fun sanitycheck()
 	}
 }
 
+fun validateExistingBookmarks()
+{
+	for (bookmark in Datastore(props).listBookmarks()) {
+		logger.debug("bookmark: {}", bookmark)
+
+		if (!validUrl(bookmark.url)) {
+			logger.warn("Failed to connect: {}", bookmark)
+		}
+		else if (bookmark.numtags < 1) {
+			logger.warn("Orphaned item: {}", bookmark)
+		}
+	}
+}
+
+fun validateExistingContactEmail()
+{
+	for (contact in Datastore(props).listContacts()) {
+		logger.debug("contact: {}", contact)
+
+		if (!validEmail(contact.email)) {
+			logger.warn("Failed to resolve: {}", contact.email)
+		}
+		else if (contact.numtags < 1) {
+			logger.warn("Orphaned item: {}", contact)
+		}
+	}
+}
+
+fun validateExistingPhotos()
+{
+	for (photo in Datastore(props).listPhotos()) {
+		logger.debug("photo: {}", photo)
+
+		if (!validMd5sum(photo.path, photo.md5sum)) {
+			logger.warn("File content mismatches: {}", photo.path)
+		}
+		else if (photo.numtags < 1) {
+			logger.warn("Orphaned item: {}", photo)
+		}
+	}
+}
+
+fun validateExistingFileItems()
+{
+	for (fileitem in Datastore(props).listFileItems()) {
+		logger.debug("fileitem: {}", fileitem)
+
+		if (!validMd5sum(fileitem.path, fileitem.md5sum)) {
+			logger.warn("File content mismatches: {}",fileitem.path)
+		}
+		else if (fileitem.numtags < 1) {
+			logger.warn("Orphaned item: {}", fileitem)
+		}
+	}
+}
+
+fun validateExistingSounds()
+{
+	for (sound in Datastore(props).listSounds()) {
+		logger.debug("sound: {}", sound)
+
+		if (!validMd5sum(sound.path, sound.md5sum)) {
+			logger.warn("File content mismatches: {}", sound.path)
+		}
+		else if (sound.numtags < 1) {
+			logger.warn("Orphaned item: {}", sound)
+		}
+	}
+}
+
+fun validateExistingVideos()
+{
+	for (video in Datastore(props).listVideos()) {
+		logger.debug("video: {}", video)
+
+		if (!validMd5sum(video.path, video.md5sum)) {
+			logger.warn("File content mismatches: {}", video.path)
+		}
+		else if (video.numtags < 1) {
+			logger.warn("Orphaned item: {}", video)
+		}
+	}
+}
+
 fun main(args: Array<String>)
 {
 	parseArgs(args.sliceArray(0 until (args.size - 1)))
@@ -184,17 +353,14 @@ fun main(args: Array<String>)
 	for (tag in Datastore(props).listTags()) {
 		logger.debug("tag: {}", tag)
 	}
-	for (bookmark in Datastore(props).listBookmarks()) {
-		logger.debug("bookmark: {}", bookmark)
+	validateExistingBookmarks()
+	validateExistingContactEmail()
+	validateExistingPhotos()
+	validateExistingFileItems()
+	validateExistingSounds()
+	validateExistingVideos()
 
-		if (!validUrl(bookmark.url)) {
-			logger.warn("Failed to connect: {}", bookmark)
-		}
-		else if (bookmark.numtags < 1) {
-			logger.warn("Orphaned item: {}", bookmark)
-		}
-		for (url in findUrls(getFilespecs())) {
-		}
+	for (url in findUrls(getFilespecs())) {
 	}
 	for (location in Datastore(props).listLocations()) {
 		logger.debug("location: {}", location)

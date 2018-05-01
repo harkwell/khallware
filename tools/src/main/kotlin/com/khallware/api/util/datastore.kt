@@ -94,7 +94,171 @@ class Datastore(props: Properties)
 						BigDecimal(getDouble("lat")),
 						BigDecimal(getDouble("lon")),
 						getString("address"),
-						getString("desc"),
+						getString("description"),
+						getInt("numtags")))
+				}
+			}
+		}
+		return(retval)
+	}
+
+	fun listContacts() : ArrayList<Contact>
+	{
+		val retval = ArrayList<Contact>()
+		val sql = """
+			   SELECT id,name,uid,email,phone,title,address,
+			          organization,vcard,description, (
+					SELECT count(*)
+					  FROM contact_tags
+					 WHERE contact = c.id
+				) AS numtags
+			     FROM contacts c
+		"""
+		initialize()
+		connection!!.createStatement().use {
+			var rsltSet = it.executeQuery(sql)
+
+			while (rsltSet.next()) {
+				with (rsltSet) {
+					retval.add(Contact(
+						getInt("id"),
+						getString("name"),
+						getString("uid"),
+						getString("email"),
+						getString("phone"),
+						getString("title"),
+						getString("address"),
+						getString("organization"),
+						getString("vcard"),
+						getString("description"),
+						getInt("numtags")))
+				}
+			}
+		}
+		return(retval)
+	}
+
+	fun listPhotos() : ArrayList<Photo>
+	{
+		val retval = ArrayList<Photo>()
+		val sql = """
+			   SELECT id,name,path,md5sum,description, (
+					SELECT count(*)
+					  FROM photo_tags
+					 WHERE photo = p.id
+				) AS numtags
+			     FROM photos p
+		"""
+		initialize()
+		connection!!.createStatement().use {
+			var rsltSet = it.executeQuery(sql)
+
+			while (rsltSet.next()) {
+				with (rsltSet) {
+					retval.add(Photo(
+						getInt("id"),
+						getString("name"),
+						getString("path"),
+						getString("md5sum"),
+						getString("description"),
+						getInt("numtags")))
+				}
+			}
+		}
+		return(retval)
+	}
+
+	fun listFileItems() : ArrayList<FileItem>
+	{
+		val retval = ArrayList<FileItem>()
+		val sql = """
+			   SELECT id,name,ext,mime,path,md5sum,description, (
+					SELECT count(*)
+					  FROM fileitem_tags
+					 WHERE fileitem = f.id
+				) AS numtags
+			     FROM fileitems f
+		"""
+		initialize()
+		connection!!.createStatement().use {
+			var rsltSet = it.executeQuery(sql)
+
+			while (rsltSet.next()) {
+				with (rsltSet) {
+					retval.add(FileItem(
+						getInt("id"),
+						getString("name"),
+						getString("ext"),
+						getString("md5sum"),
+						getString("description"),
+						getString("mime"),
+						getString("path"),
+						getInt("numtags")))
+				}
+			}
+		}
+		return(retval)
+	}
+
+	fun listSounds() : ArrayList<Sound>
+	{
+		val retval = ArrayList<Sound>()
+		val sql = """
+			   SELECT id,name,path,md5sum,title,artist,genre,
+			          album,publisher,description, (
+					SELECT count(*)
+					  FROM sound_tags
+					 WHERE sound = s.id
+				) AS numtags
+			     FROM sounds s
+		"""
+		initialize()
+		connection!!.createStatement().use {
+			var rsltSet = it.executeQuery(sql)
+
+			while (rsltSet.next()) {
+				with (rsltSet) {
+					retval.add(Sound(
+						getInt("id"),
+						getString("name"),
+						getString("path"),
+						getString("md5sum"),
+						getString("description"),
+						getString("title"),
+						getString("artist"),
+						getString("genre"),
+						getString("album"),
+						getString("publisher"),
+						getInt("numtags")))
+				}
+			}
+		}
+		return(retval)
+	}
+
+	fun listVideos() : ArrayList<Video>
+	{
+		val retval = ArrayList<Video>()
+		val sql = """
+			   SELECT id,name,path,md5sum,description, (
+					SELECT count(*)
+					  FROM video_tags
+					 WHERE video = v.id
+				) AS numtags
+			     FROM videos v
+		"""
+		initialize()
+		connection!!.createStatement().use {
+			var rsltSet = it.executeQuery(sql)
+
+			while (rsltSet.next()) {
+				with (rsltSet) {
+					retval.add(Video(
+						getInt("id"),
+						getString("name"),
+						getString("path"),
+						getString("md5sum"),
+						getString("description"),
 						getInt("numtags")))
 				}
 			}
