@@ -58,17 +58,20 @@ curl -i -X POST -H "Accept:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3V
 QUICK START
 ---------------
 ### Run it locally
+(NOTE: recommend using the sqlite database for evaluation purposes only!)
+
 ```shell
-# download the software
+# download the khallware webapp and phone app
 DESTDIR=$HOME/tmp/apis/
-mkdir -p $DESTDIR
-wget -c 'http://central.maven.org/maven2/org/eclipse/jetty/jetty-runner/9.4.9.v20180320/jetty-runner-9.4.9.v20180320.jar' -O $DESTDIR/jetty-runner.jar
+mkdir -p $DESTDIR/{images,thumbs,audio,uploads}
 wget -c 'https://github.com/harkwell/khallware/releases/download/v0.9.0/khallware-0.9.0.war' -O $DESTDIR/apis.war
-wget -c 'https://github.com/harkwell/khallware/releases/download/v0.9.0/apis-0.9.0.db' -O $DESTDIR/apis.db
+wget -c 'https://github.com/harkwell/khallware/releases/download/v0.9.0/Khallware-0.9.0.apk' -O $DESTDIR/Khallware.apk
 
 # download optional software
+wget -c 'https://github.com/harkwell/khallware/releases/download/v0.9.0/apis-0.9.0.db' -O $DESTDIR/apis.db
 wget -c 'https://github.com/harkwell/khallware/releases/download/v0.9.0/validate-n-sync.jar' -O $DESTDIR/validate-n-sync.jar
-wget -c 'http://nilhcem.github.com/FakeSMTP/downloads/fakeSMTP-latest.zip' -qO - |bsdtar -xvf - -C /tmp
+wget -c 'http://central.maven.org/maven2/org/eclipse/jetty/jetty-runner/9.4.9.v20180320/jetty-runner-9.4.9.v20180320.jar' -O $DESTDIR/jetty-runner.jar
+wget -c 'http://nilhcem.github.com/FakeSMTP/downloads/fakeSMTP-latest.zip' -qO - |bsdtar -xvf - -C $DESTDIR/
 
 # configure it to your liking:
 cat <<EOF >/tmp/main.properties
@@ -77,6 +80,7 @@ thumbs=$DESTDIR/thumbs
 audio=$DESTDIR/audio
 upload.dir=$DESTDIR/uploads
 captcha_file=$DESTDIR/captcha.png
+apk_file=$DESTDIR/Khallware.apk
 mail.debug=true
 mail.smtp.host=localhost
 mail.transport.protocol=smtp
@@ -92,23 +96,29 @@ jdbc_driver=org.sqlite.JDBC
 EOF
 
 # start up the fake email server (optional)
-java -jar /tmp/fakeSMTP*.jar
+java -jar $DESTDIR/fakeSMTP*.jar  # use port 8025 and click "Start server"
 
 # load data into the database (optional)
-java -jar $DESTDIR/validate-n-sync.jar -a /tmp/main.properties
+JVM_OPTS="-Dlog4j.configuration=file:$DESTDIR/log4j.properties"
+java $JVM_OPTS -jar $DESTDIR/validate-n-sync.jar -a -twebsite /tmp/main.properties
 
 # start up khallware
 java -jar $DESTDIR/jetty-runner.jar --path /apis $DESTDIR/apis.war
 
 # begin to use it...
 chromium-browser http://localhost:8080/apis/  # use guest/guest to login
+
+# evaluate and clean-up
+rm -rf $DESTDIR
 ```
 
 ### Or, build and run it locally
 ```shell
-git clone https://github.com/harkwell/khallware.git /tmp/khallware
+DESTDIR=$HOME/tmp/apis/
+mkdir -p $DESTDIR/{images,thumbs,audio,uploads}
+git clone https://github.com/harkwell/khallware.git $DESTDIR/khallware
 export MAVEN_REPO=/tmp/delete-me-later
-rm -rf $MAVEN_REPO && cd /tmp/khallware
+rm -rf $MAVEN_REPO && cd $DESTDIR/khallware
 mvn -Dmaven.repo.local=$MAVEN_REPO package
 
 mvn org.apache.maven.plugins:maven-dependency-plugin:2.1:get \
@@ -116,13 +126,17 @@ mvn org.apache.maven.plugins:maven-dependency-plugin:2.1:get \
     -DrepoUrl=https://mvnrepository.com/ \
     -Dartifact=org.eclipse.jetty:jetty-runner:9.4.9.v20180320
 RUNNER_JAR=$(find $MAVEN_REPO -name \*runner\*jar)
-java -jar $RUNNER_JAR --path /apis target/apis.war
 bash src/scripts/convert-to-sqlite.sh src/scripts/db_schema.sql fixme
 bash src/scripts/convert-to-sqlite.sh src/scripts/db_load.sql
 sqlite3 $DESTDIR/apis.db <src/scripts/db_schema.sqlite
 sqlite3 $DESTDIR/apis.db <src/scripts/db_load.sqlite
 sqlite3 $DESTDIR/apis.db # prime with guest user and groups
 vi /tmp/main.properties # customize for your environment like above
+# build and copy Khallware.apk (optional -for phone app)
+# build and copy validate-n-sync.jar (optional -for content)
+# import data (optional -for content)
+# run the fake smtp server (optional -for registration)
+java -jar $RUNNER_JAR --path /apis target/apis.war
 chromium-browser http://localhost:8080/apis/
 
 mvn -Dmaven.repo.local=$MAVEN_REPO clean
@@ -289,36 +303,46 @@ chromium-browser http://tomcat-server:8080/apis/
 ### Build
 * use maven
 ```shell
-export ANDROID_HOME=/usr/local/adt-bundle-linux-x86_64-20140702/sdk/
-svn export https://github.com/harkwell/khallware/trunk/android && cd android
-grep $ANDROID_HOME local.properties || echo edit local.properties
-grep $ANDROID_HOME ~/.m2/settings.xml || echo add maven android.sdk.path
-mvn package && ls -ld target/Khallware.apk
+export ANDROID_HOME=/usr/local/android
+export MAVEN_ANDROID_REPO=/tmp/khallware-android
+git clone https://github.com/harkwell/khallware && cd khallware/android
+sed -i -e 's#^sdk.dir=.*$#sdk.dir='$ANDROID_HOME'#g' local.properties
+mvn -Dmaven.repo.local=$MAVEN_ANDROID_REPO -Dandroid.sdk.path=$ANDROID_HOME \
+    package && ls -ld target/Khallware.apk
 ```
 
 * One-Time : install android studio
 ```shell
 # install android sdk and set ANDROID_HOME
-export ANDROID_HOME=/usr/local/adt-bundle-linux-x86_64-20140702/sdk/
-$ANDROID_HOME/tools/android # install v22 items
-# Android SDK build-tools v22.0.1
-# Android 5.1.1 - SDK Platform v2
-# Android 5.1.1 - Google APIs v1
-# Android 5.1.1 - Google APIs Intel x86 Atom_64 System Image
-# Android 5.1.1 - Intel x86 Atom_64 System Image
-# Extras - Android Support Library
-mvn install:install-file -Dfile=$ANDROID_HOME/add-ons/addon-google_apis-google-22/libs/maps.jar -DgroupId=google.apis -DartifactId=google.maps -Dversion=2.2 -Dpackaging=jar
+chromium-browser https://developer.android.com/studio/
+ZIPFILE=$(echo ~/Downloads/android-studio*linux.zip)
+[ -r $ZIPFILE ] && unzip -d /usr/local/android/ $ZIPFILE
+# rm $ZIPFILE
+$ANDROID_HOME/android-studio/bin/studio.sh
+# do not import -> next -> standard -> darkula -> next -> finish -> OK
+# $ANDROID_HOME/tools/bin/sdkmanager --list
+$ANDROID_HOME/tools/bin/sdkmanager \
+   'build-tools;22.0.1' \
+   'platforms;android-22' \
+   'system-images;android-P;google_apis;x86' \
+   'system-images;android-24;google_apis;x86_64' \
+   'extras;android;m2repository' \
+   'add-ons;addon-google_apis-google-22'
+
+mvn -Dmaven.repo.local=$MAVEN_ANDROID_REPO install:install-file -Dfile=$ANDROID_HOME/add-ons/addon-google_apis-google-22/libs/maps.jar -DgroupId=google.apis -DartifactId=google.maps -Dversion=2.2 -Dpackaging=jar
 ```
 
 * via the IDE
 ```shell
-export ANDROID_HOME=/usr/local/adt-bundle-linux-x86_64-20140702/sdk/
+export ANDROID_HOME=/usr/local/android
 export PATH=$PATH:$ANDROID_HOME/tools
 android list targets
-android create avd -n khallware --force -t "Google Inc.:Google APIs:22" --abi google_apis/x86_64
+android create avd -n khallware --force -k "system-images;android-24;google_apis;x86_64" --abi google_apis/x86_64
 mksdcard 256M ~/tmp/sdcard1.iso
-emulator -sdcard ~/tmp/sdcard1.iso -avd khallware
-svn export https://github.com/harkwell/khallware/trunk/android 
+emulator -list-avds
+cd $ANDROID_HOME/tools && emulator -sdcard ~/tmp/sdcard1.iso -avd khallware
+git clone https://github.com/harkwell/khallware
+cd khallware
 L='com/google/android/support-v4/r6/support-v4-r6.jar
    org/slf4j/slf4j-android/1.6.1-RC1/slf4j-android-1.6.1-RC1.jar
    google/apis/google.maps/2.2/google.maps-2.2.jar
@@ -326,11 +350,10 @@ L='com/google/android/support-v4/r6/support-v4-r6.jar
 mkdir android/libs
 
 for f in $L; do
-    cp ~/.m2/repository/$f android/libs
+    cp $MAVEN_ANDROID_REPO/$f android/libs
 done
-bash ~/3rdParty/android-studio/bin/studio.sh
 
-Import the project:
+Import the project (from android studio):
 select File, Import project
 select android/pom.xml
 ```

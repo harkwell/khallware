@@ -2,8 +2,8 @@
 
 package com.khallware.api.util
 
-import java.sql.Connection
 import java.sql.DriverManager
+import java.sql.Connection
 import java.util.Properties
 import java.math.BigDecimal
 
@@ -46,7 +46,7 @@ class Datastore(props: Properties)
 	{
 		val retval = ArrayList<Bookmark>()
 		val sql = """
-			   SELECT id,name,url, (
+			   SELECT id,name,url,rating, (
 					SELECT count(*)
 					  FROM bookmark_tags
 					 WHERE bookmark = b.id
@@ -63,11 +63,40 @@ class Datastore(props: Properties)
 						getInt("id"),
 						getString("name"),
 						getString("url"),
+						getString("rating"),
 						getInt("numtags")))
 				}
 			}
 		}
 		return(retval)
+	}
+
+	fun addBookmark(bookmark: Bookmark, tag: Int = 1)
+	{
+		val sql1 = """
+			INSERT INTO bookmarks (name,user,url,group_,rating)
+			     VALUES (?,?,?,?,?)
+		"""
+		val sql2 = """
+			INSERT INTO bookmark_tags (bookmark,tag)
+			     VALUES (?,?)
+		"""
+		var id = -1
+		initialize()
+		connection!!.prepareStatement(sql1).use {
+			it.setString(1, bookmark.name)
+			it.setInt(2, bookmark.user)
+			it.setString(3, bookmark.url)
+			it.setInt(4, bookmark.group)
+			it.setString(5, bookmark.rating)
+			it.execute()
+			id = it.getGeneratedKeys().getInt(1)
+		}
+		connection!!.prepareStatement(sql2).use {
+			it.setInt(1, id)
+			it.setInt(2, tag)
+			it.execute()
+		}
 	}
 
 	fun listLocations() : ArrayList<Location>
@@ -166,6 +195,36 @@ class Datastore(props: Properties)
 			}
 		}
 		return(retval)
+	}
+
+	fun addPhoto(photo: Photo, tag: Int = 1)
+	{
+		val sql1 = """
+			INSERT INTO photos (name,path,md5sum,user,group_,
+			            description)
+			     VALUES (?,?,?,?,?,?)
+		"""
+		val sql2 = """
+			INSERT INTO photo_tags (photo,tag)
+			     VALUES (?,?)
+		"""
+		var id = -1
+		initialize()
+		connection!!.prepareStatement(sql1).use {
+			it.setString(1, photo.name)
+			it.setString(2, photo.path)
+			it.setString(3, photo.md5sum)
+			it.setInt(4, photo.user)
+			it.setInt(5, photo.group)
+			it.setString(6, photo.desc)
+			it.execute()
+			id = it.getGeneratedKeys().getInt(1)
+		}
+		connection!!.prepareStatement(sql2).use {
+			it.setInt(1, id)
+			it.setInt(2, tag)
+			it.execute()
+		}
 	}
 
 	fun listFileItems() : ArrayList<FileItem>

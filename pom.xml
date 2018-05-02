@@ -45,6 +45,7 @@
         <c3p0-version>0.9.1.2</c3p0-version>
 
         <!-- Browser Side -->
+        <!-- NOTE: when upgrading here, don't forget to mod **/*.html -->
         <jquery-version>3.3.1-1</jquery-version>
         <jquery-ui-version>1.12.1</jquery-ui-version>
         <jquery-cookie-version>1.4.1-1</jquery-cookie-version>

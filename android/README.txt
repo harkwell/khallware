@@ -1,30 +1,54 @@
-export ANDROID_HOME=/usr/local/adt-bundle-linux-x86_64-20140702/sdk/
-svn export https://github.com/harkwell/khallware/android && cd android
-grep $ANDROID_HOME local.properties || echo edit local.properties
-grep $ANDROID_HOME ~/.m2/settings.xml || echo add maven android.sdk.path
-# or add <android.sdk.path>...</android.sdk.path> property to ~/.m2/settings.xml
-mvn package && ls -ld target/Khallware.apk
+Android (front-end)
+---------------
+### Web Browser
+* Google Chrome
+```shell
+http://tomcat-server:8080/apis/v1/static/mobile/Khallware.apk
+```
 
-# one-time
+### Build
+* use maven
+```shell
+export ANDROID_HOME=/usr/local/android
+export MAVEN_ANDROID_REPO=/tmp/khallware-android
+git clone https://github.com/harkwell/khallware && cd khallware/android
+sed -i -e 's#^sdk.dir=.*$#sdk.dir='$ANDROID_HOME'#g' local.properties
+mvn -Dmaven.repo.local=$MAVEN_ANDROID_REPO -Dandroid.sdk.path=$ANDROID_HOME \
+    package && ls -ld target/Khallware.apk
+```
+
+* One-Time : install android studio
+```shell
 # install android sdk and set ANDROID_HOME
-$ANDROID_HOME/tools/android # install v22 items
-# Android SDK build-tools v22.0.1
-# Android 5.1.1 - SDK Platform v2
-# Android 5.1.1 - Google APIs v1
-# Android 5.1.1 - Intel x86 Atom_64 System Image
-# Extras - Android Support Library
-mvn install:install-file -Dfile=$ANDROID_HOME/add-ons/addon-google_apis-google-22/libs/maps.jar -DgroupId=google.apis -DartifactId=google.maps -Dversion=2.2 -Dpackaging=jar
+chromium-browser https://developer.android.com/studio/
+ZIPFILE=$(echo ~/Downloads/android-studio*linux.zip)
+[ -r $ZIPFILE ] && unzip -d /usr/local/android/ $ZIPFILE
+# rm $ZIPFILE
+$ANDROID_HOME/android-studio/bin/studio.sh
+# do not import -> next -> standard -> darkula -> next -> finish -> OK
+# $ANDROID_HOME/tools/bin/sdkmanager --list
+$ANDROID_HOME/tools/bin/sdkmanager \
+   'build-tools;22.0.1' \
+   'platforms;android-22' \
+   'system-images;android-P;google_apis;x86' \
+   'system-images;android-24;google_apis;x86_64' \
+   'extras;android;m2repository' \
+   'add-ons;addon-google_apis-google-22'
 
-######################
-### ANDROID STUDIO ###
-######################
-export ANDROID_HOME=/usr/local/adt-bundle-linux-x86_64-20140702/sdk/
+mvn -Dmaven.repo.local=$MAVEN_ANDROID_REPO install:install-file -Dfile=$ANDROID_HOME/add-ons/addon-google_apis-google-22/libs/maps.jar -DgroupId=google.apis -DartifactId=google.maps -Dversion=2.2 -Dpackaging=jar
+```
+
+* via the IDE
+```shell
+export ANDROID_HOME=/usr/local/android
 export PATH=$PATH:$ANDROID_HOME/tools
 android list targets
-android create avd -n khallware --force -t "Google Inc.:Google APIs:22" --abi google_apis/x86_64
+android create avd -n khallware --force -k "system-images;android-24;google_apis;x86_64" --abi google_apis/x86_64
 mksdcard 256M ~/tmp/sdcard1.iso
-emulator -sdcard ~/tmp/sdcard1.iso -avd fovea
-svn export https://github.com/harkwell/khallware/android
+emulator -list-avds
+cd $ANDROID_HOME/tools && emulator -sdcard ~/tmp/sdcard1.iso -avd khallware
+git clone https://github.com/harkwell/khallware
+cd khallware
 L='com/google/android/support-v4/r6/support-v4-r6.jar
    org/slf4j/slf4j-android/1.6.1-RC1/slf4j-android-1.6.1-RC1.jar
    google/apis/google.maps/2.2/google.maps-2.2.jar
@@ -32,12 +56,10 @@ L='com/google/android/support-v4/r6/support-v4-r6.jar
 mkdir android/libs
 
 for f in $L; do
-    cp ~/.m2/repository/$f android/libs
+    cp $MAVEN_ANDROID_REPO/$f android/libs
 done
-bash ~/3rdParty/android-studio/bin/studio.sh
 
-Import the project:
-* File -> Import project
-* Select android/pom.xml
-
-# MAY BE NEEDED cd android1 && sed -ni -e '1,18p' -e '18a packagingOptions { exclude "META-INF/DEPENDENCIES"\nexclude "META-INF/NOTICE"\nexclude "META-INF/LICENSE" }' -e '19,28p' app/build.gradle
+Import the project (from android studio):
+select File, Import project
+select android/pom.xml
+```

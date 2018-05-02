@@ -24,6 +24,7 @@ public class StaticContent
 {
 	public static final String PROP_CAPTCHA_FILE =
 		KhallwareServletContainer.PROP_CAPTCHA_FILE;
+	public static final String PROP_APK_FILE = "apk_file";
 	private static final Logger logger = LoggerFactory.getLogger(
 		StaticContent.class);
 
@@ -85,6 +86,30 @@ public class StaticContent
 		String fname = Datastore.DS().getProperty(PROP_CAPTCHA_FILE);
 		try {
 			logger.info("requesting captcha file: {}", fname);
+			retval = Response.status(200)
+				.entity(Util.fileContentAsBytes(
+					new FileInputStream(fname)))
+				.header("Cache-Control",
+					"no-transform, private, max-age=0")
+				.build();
+		}
+		catch (IOException e) {
+			retval = Util.failRequest(e);
+			logger.trace(""+e, e);
+			logger.warn("{}",e);
+		}
+		return(retval);
+	}
+
+	@GET
+	@Path("mobile/Khallware.apk")
+	@Produces("application/vnd.android.package-archive")
+	public Response handleGetApk(@Context HttpServletRequest request)
+	{
+		Response retval = null;
+		String fname = Datastore.DS().getProperty(PROP_APK_FILE);
+		try {
+			logger.info("requesting apk file: {}", fname);
 			retval = Response.status(200)
 				.entity(Util.fileContentAsBytes(
 					new FileInputStream(fname)))

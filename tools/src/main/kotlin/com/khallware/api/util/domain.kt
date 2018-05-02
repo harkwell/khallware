@@ -9,7 +9,8 @@ data class Tag(val id: Int, val name: String)
 }
 
 data class Bookmark(val id: Int, val name: String, val url: String,
-		val numtags: Int)
+		val rating: String = "good", val numtags: Int = -1,
+		val user: Int = 1, val group: Int = 2)
 {
 }
 
@@ -33,7 +34,8 @@ data class Event(val id: Int, val name: String, val uid: String,
 }
 
 data class Photo(val id: Int, val name: String, val path: String,
-		val md5sum: String, val desc: String, val numtags: Int)
+		val md5sum: String, val desc: String, val numtags: Int = -1,
+		val user: Int = 1, val group: Int = 2)
 {
 }
 
