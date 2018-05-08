@@ -69,12 +69,12 @@ wget -c 'https://github.com/harkwell/khallware/releases/download/v0.9.0/Khallwar
 
 # download optional software
 wget -c 'https://github.com/harkwell/khallware/releases/download/v0.9.0/apis-0.9.0.db' -O $DESTDIR/apis.db
-wget -c 'https://github.com/harkwell/khallware/releases/download/v0.9.0/validate-n-sync.jar' -O $DESTDIR/validate-n-sync.jar
+wget -c 'https://github.com/harkwell/khallware/releases/download/v0.9.0/import-tool.jar' -O $DESTDIR/import-tool.jar
 wget -c 'http://central.maven.org/maven2/org/eclipse/jetty/jetty-runner/9.4.9.v20180320/jetty-runner-9.4.9.v20180320.jar' -O $DESTDIR/jetty-runner.jar
 wget -c 'http://nilhcem.github.com/FakeSMTP/downloads/fakeSMTP-latest.zip' -qO - |bsdtar -xvf - -C $DESTDIR/
 
 # configure it to your liking:
-cat <<EOF >/tmp/main.properties
+cat <<EOF >$DESTDIR/main.properties
 images=$DESTDIR/images
 thumbs=$DESTDIR/thumbs
 audio=$DESTDIR/audio
@@ -90,6 +90,7 @@ mail.smtp.starttls.required=false
 jdbc_user=webapp
 jdbc_pass=webapp
 jdbc_url=jdbc:sqlite:$DESTDIR/apis.db
+jdbc_maxpoolsize=3
 #jdbc_url=jdbc:mysql://127.0.0.1/website?autoReconnect=true
 registration_url=http://localhost:8080/apis/v1/security/register/
 jdbc_driver=org.sqlite.JDBC
@@ -100,9 +101,10 @@ java -jar $DESTDIR/fakeSMTP*.jar  # use port 8025 and click "Start server"
 
 # load data into the database (optional)
 JVM_OPTS="-Dlog4j.configuration=file:$DESTDIR/log4j.properties"
-java $JVM_OPTS -jar $DESTDIR/validate-n-sync.jar -a -twebsite /tmp/main.properties
+java $JVM_OPTS -jar $DESTDIR/import-tool.jar -a -twebsite -p$DESTDIR/main.properties
 
 # start up khallware
+cd $DESTDIR
 java -jar $DESTDIR/jetty-runner.jar --path /apis $DESTDIR/apis.war
 
 # begin to use it...
@@ -131,9 +133,9 @@ bash src/scripts/convert-to-sqlite.sh src/scripts/db_load.sql
 sqlite3 $DESTDIR/apis.db <src/scripts/db_schema.sqlite
 sqlite3 $DESTDIR/apis.db <src/scripts/db_load.sqlite
 sqlite3 $DESTDIR/apis.db # prime with guest user and groups
-vi /tmp/main.properties # customize for your environment like above
+vi main.properties # customize for your environment like above
 # build and copy Khallware.apk (optional -for phone app)
-# build and copy validate-n-sync.jar (optional -for content)
+# build and copy import-tool.jar (optional -for content)
 # import data (optional -for content)
 # run the fake smtp server (optional -for registration)
 java -jar $RUNNER_JAR --path /apis target/apis.war

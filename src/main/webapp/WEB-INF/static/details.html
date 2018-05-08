@@ -8,8 +8,12 @@
    <link rel="icon" href="../../media/khallware.png" type="image/png">
    <link rel="stylesheet" type="text/css"
       href="/apis/webjars/bootstrap/4.0.0-2/css/bootstrap.min.css" />
+   <!-- https://stackoverflow.com/questions/48876518/font-awesome-5-free-css-webfonts-pseudo-character-not-showing
    <link rel="stylesheet" type="text/css"
       href="/apis/webjars/font-awesome/5.0.10/web-fonts-with-css/css/fontawesome.min.css" />
+   -->
+   <link rel="stylesheet" type="text/css"
+      href="https://use.fontawesome.com/releases/v5.0.10/css/all.css" />
    <script type="text/javascript"
       src="/apis/webjars/jquery/3.3.1-1/jquery.min.js">
    </script>
@@ -79,7 +83,8 @@
             <div class="box">
                <div class="icon">
                   <div class="image">
-                     <span class="glyphicon glyphicon-tag btn-lg white"></span>
+                     <!-- see: https://fontawesome.com/icons?d=gallery -->
+                     <i class="fas fa-tags"></i>
                   </div>
                   <div class="info">
                      <h3 class="title"><a href="index.html">Related Tags</a>
@@ -97,7 +102,7 @@
          <div class="box">
             <div class="icon">
                <div class="image">
-                  <span class="glyphicon glyphicon-user btn-lg white"></span>
+                  <i class="fas fa-users"></i>
                </div>
                <div class="info">
                   <h3 class="title"><a href="contacts.html">Contacts</a>
@@ -105,8 +110,8 @@
                   <div class="container">
                      <div id="contact_content"></div>
                      <a href="/apis/v1/contacts/cards.vcf">
-                        <span class="glyphicon glyphicon-download btn-lg black">
-                        </span>
+                        <i class="fas fa-download">
+                        </i>
                      </a>
                      <div id="new_contact_form"></div>
                   </div>
@@ -123,13 +128,13 @@
          <div class="box">
             <div class="icon">
                <div class="image">
-                  <span class="glyphicon glyphicon-camera btn-lg white"></span>
+                  <i class="fas fa-camera"></i>
                </div>
                <div class="info">
                   <h3 class="title"><a href="photos.html">Photos</a>
                   <a href="slideshow.html">
-                     <span class="glyphicon glyphicon-play btn-lg green">
-                     </span>
+                     <i class="fas fa-play-circle">
+                     </i>
                   </a>
                   </h3>
                   <div id="photo_content"></div>
@@ -146,8 +151,8 @@
          <div class="box">
             <div class="icon">
                <div class="image">
-                  <span class="glyphicon glyphicon-bookmark btn-lg white">
-                  </span>
+                  <i class="fas fa-bookmark">
+                  </i>
                </div>
                <div class="info">
                   <h3 class="title"><a href="bookmarks.html">Bookmarks</a></h3>
@@ -166,14 +171,14 @@
          <div class="box">
             <div class="icon">
                <div class="image">
-                  <span class="glyphicon glyphicon-headphones btn-lg white">
-                  </span>
+                  <i class="fas fa-headphones">
+                  </i>
                </div>
                <div class="info">
                   <h3 class="title"><a href="audio.html">Audio</a>
                      <a href="/apis/v1/sounds/playlist.m3u">
-                        <span class="glyphicon glyphicon-play btn-lg green">
-                        </span>
+                        <i class="fas fa-play-circle">
+                        </i>
                      </a>
                   </h3>
                   <div id="audio_content"></div>
@@ -190,8 +195,8 @@
          <div class="box">
             <div class="icon">
                <div class="image">
-                  <span class="glyphicon glyphicon-film btn-lg white">
-                  </span>
+                  <i class="fas fa-film">
+                  </i>
                </div>
                <div class="info">
                   <h3 class="title"><a href="videos.html">Videos</a></h3>
@@ -209,8 +214,8 @@
          <div class="box">
             <div class="icon">
                <div class="image">
-                  <span class="glyphicon glyphicon-file btn-lg white">
-                  </span>
+                  <i class="fas fa-file">
+                  </i>
                </div>
                <div class="info">
                   <h3 class="title"><a href="fileitems.html">Files</a></h3>
@@ -228,16 +233,16 @@
          <div class="box">
             <div class="icon">
                <div class="image">
-                  <span class="glyphicon glyphicon-calendar btn-lg white">
-                  </span>
+                  <i class="fas fa-calendar-alt">
+                  </i>
                </div>
                <div class="info">
                   <h3 class="title"><a href="events.html">Events</a></h3>
                   <div class="container">
                      <div id="event_content"></div>
                      <a href="/apis/v1/events/calendar.ics">
-                        <span class="glyphicon glyphicon-download btn-lg black">
-                        </span>
+                        <i class="fas fa-download">
+                        </i>
                      </a>
                   </div>
                   <ul class="pager">
@@ -253,16 +258,16 @@
          <div class="box">
             <div class="icon">
                <div class="image">
-                  <span class="glyphicon glyphicon-globe btn-lg white">
-                  </span>
+                  <i class="fas fa-map-marker">
+                  </i>
                </div>
                <div class="info">
                   <h3 class="title"><a href="locations.html">Locations</a></h3>
                   <div class="container">
                      <div id="location_content"></div>
                      <a href="/apis/v1/locations/locations.kml">
-                        <span class="glyphicon glyphicon-download btn-lg black">
-                        </span>
+                        <i class="fas fa-download">
+                        </i>
                      </a>
                   </div>
                   <ul class="pager">
@@ -278,8 +283,8 @@
          <div class="box">
             <div class="icon">
                <div class="image">
-                  <span class="glyphicon glyphicon-comment btn-lg white">
-                  </span>
+                  <i class="fas fa-comments">
+                  </i>
                </div>
                <div class="info">
                   <h3 class="title"><a href="blogs.html">Blog</a></h3>

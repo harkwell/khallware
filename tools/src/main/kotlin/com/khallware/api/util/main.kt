@@ -4,15 +4,23 @@
 
 package com.khallware.api.util
 
+import com.xenomachina.argparser.mainBody
+import com.xenomachina.argparser.ArgParser
+import org.gagravarr.vorbis.VorbisPacketFactory;
+import org.gagravarr.vorbis.VorbisComments;
+import org.gagravarr.ogg.OggPacketReader;
+import org.gagravarr.ogg.OggFile;
 import org.slf4j.LoggerFactory
-import java.security.MessageDigest
-import java.net.InetSocketAddress
-import java.net.Socket
+import kotlin.text.Regex
 import java.net.URL
+import java.net.Socket
+import java.net.InetSocketAddress
+import java.security.MessageDigest
+import java.io.FileInputStream
+import java.io.InputStream
 import java.io.File
 import java.io.FileReader
 import java.io.BufferedReader
-import java.io.FileInputStream
 import java.sql.DriverManager
 import java.util.Properties
 import java.util.Hashtable
@@ -21,7 +29,6 @@ import java.math.BigInteger
 import javax.naming.NamingEnumeration
 import javax.naming.directory.InitialDirContext
 import javax.naming.directory.Attributes
-import kotlin.text.Regex
 
 /**
  * This utility scans and validates webservice entities.  For each bookmark,
@@ -59,29 +66,32 @@ class LogAnchor
 	val logger = LoggerFactory.getLogger(LogAnchor::class.java)
 }
 
+class ToolArgs(parser: ArgParser)
+{
+	val add by parser.flagging(
+		"-a", "--add", help = "add any found items")
+
+	val force by parser.flagging(
+		"-f", "--force", help = "force operation due to caution")
+
+	val tagname by parser.storing(
+		"-t", "--tag-name", help = "import under specified tagname"
+	) //.default("website")
+
+	val propfile by parser.storing(
+			"-p", "--propfile", help = "khallware properties file")
+		/* .default("/tmp/main.properties")
+		.addValidator {
+			if (!File("${ propfile) }".exists()) {
+				throw RuntimeException(
+					"File not found: ${ propfile }")
+			}
+		} */
+}
+
 val logger = LogAnchor().logger
 val props = Properties()
-
-var doForce = false
-var doAdd = false
-var useWeb = true
-var tagname = ""
 var tagid = -1
-var url = ""
-
-fun parseArgs(args: Array<String>)
-{
-	for (arg in args) {
-		when (arg.substring(0,2)) {
-			"-w" -> useWeb = !useWeb
-			"-a" -> doAdd = !doAdd
-			"-f" -> doForce = !doForce
-			"-u" -> url = arg.substring(2)
-			"-t" -> tagname = arg.substring(2)
-			else -> logger.error("unknown arg: {}", arg)
-		}
-	}
-}
 
 fun getFilespecs() : Array<String>
 {
@@ -107,15 +117,56 @@ fun findUrls(filespecs: Array<String>) : List<String>
 	return(retval)
 }
 
-fun findPhotos(filespec: String) : List<String>
+fun findFilesWithSuffix(dir: String, vararg exts: String) : List<String>
 {
 	val retval = ArrayList<String>()
 
-	for (src in File(filespec).walkTopDown()) {
-		if ((""+src).endsWith("jpg") || (""+src).endsWith("jpeg")) {
+	for (src in File(dir).walkTopDown()) {
+		var found = false
+
+		for (ext in exts) {
+			if ((""+src).toLowerCase().endsWith(ext)) {
+				found = true
+				break
+			}
+		}
+		if (found) {
 			logger.debug("found file: {}", src)
 			retval.add(""+src)
 		}
+	}
+	return(retval)
+}
+
+fun findPhotos(dir: String) : List<String>
+{
+	return(findFilesWithSuffix(dir,"jpg","jpeg"))
+}
+
+fun findSounds(dir: String) : List<String>
+{
+	return(findFilesWithSuffix(dir,"ogg"))
+}
+
+fun findVideos(dir: String) : List<String>
+{
+	return(findFilesWithSuffix(dir,"mg4","mpg","mpeg"))
+}
+
+fun findFileItems(dir: String) : List<String>
+{
+	val retval = ArrayList<String>()
+	val antiexts = arrayOf("jpg", "jpeg", "ogg", "ics", "vcf", "html",
+		"htm", "kml", "kmz", "mp4", "mpeg")
+
+	for (src in File(dir).walkTopDown()) {
+		for (ext in antiexts) {
+			if ((""+src).toLowerCase().endsWith(ext)) {
+				continue
+			}
+		}
+		logger.debug("found file: {}", src)
+		retval.add(""+src)
 	}
 	return(retval)
 }
@@ -131,7 +182,9 @@ fun parseFiles4Urls(fname: String) : List<String>
 		BufferedReader(FileReader(fname)).use {
 			while ({ line = it.readLine() ?: "_" ;line }() != "_") {
 				if (regex.matches(line)) {
-					val found = regex.matchEntire(line)!!.groups.get("url")!!.value
+					val found = regex.matchEntire(
+						line)!!.groups.get(
+						"url")!!.value
 
 					if (validUrl(found)) {
 						retval.add(found)
@@ -256,6 +309,7 @@ fun md5sumMatches(filespec: String, md5sum: String) : Boolean
 fun sanitycheck()
 {
 	var healthy = true
+	val jdbcURL = props.getProperty("jdbc_url")
 
 	for (dir in getFilespecs()) {
 		if (!Files.exists(File(dir).toPath())) {
@@ -263,22 +317,11 @@ fun sanitycheck()
 			healthy = false
 		}
 	}
-	if (useWeb) {
-		/*
-		if (!URL(url).openStream().) {
-			logger.error("failed to connect to: {}", url)
-			healthy = false
-		}
-		*/
-	}
-	else {
-		val jdbcURL = props.getProperty("jdbc_url")
-		Datastore(props).initialize()
+	Datastore(props).initialize()
 
-		if (!DriverManager.getConnection(jdbcURL).isValid(5000)) {
-			logger.error("failed to connect to: {}", jdbcURL)
-			healthy = false
-		}
+	if (!DriverManager.getConnection(jdbcURL).isValid(5000)) {
+		logger.error("failed to connect to: {}", jdbcURL)
+		healthy = false
 	}
 	if (!healthy) {
 		throw IllegalStateException("sanitycheck failed")
@@ -395,8 +438,33 @@ fun searchAndAddBookmarks()
 		}
 		if (!found) {
 			val b = Bookmark(-1, url, url)
-			Datastore(props).addBookmark(b, Math.max(1,tagid))
+			Datastore(props).addBookmark(b, Math.max(1, tagid))
 			bookmarks.add(b)
+		}
+	}
+}
+
+fun searchAndAddFileItems()
+{
+	val fileitems = Datastore(props).listFileItems()
+
+	for (filespec in findFileItems(
+			props.getProperty("upload.dir","/dev/null"))) {
+		var found = false
+
+		for (fileitem in fileitems) {
+			if (fileitem.path.equals(fileitem)) {
+				logger.warn("duplicate fileitem: {}", fileitem)
+				found = true
+				break
+			}
+		}
+		if (!found && File(filespec).isFile()) {
+			val f = FileItem(-1, File(filespec).getName(), filespec,
+				md5sumGenerate(filespec), filespec, "*/*",
+				filespec, -1)
+			Datastore(props).addFileItem(f, Math.max(1, tagid))
+			fileitems.add(f)
 		}
 	}
 }
@@ -425,33 +493,98 @@ fun searchAndAddPhotos()
 	}
 }
 
+fun getVorbisComments(oggfile: String) : VorbisComments
+{
+	var retval: VorbisComments = VorbisComments()
+	OggFile(FileInputStream(oggfile)).use {
+		val reader =OggPacketReader(it.getPacketReader() as InputStream)
+		reader.getNextPacket()
+		val vpacket = VorbisPacketFactory.create(reader.getNextPacket())
+		retval = vpacket as VorbisComments
+	}
+	return(retval)
+}
+
+fun searchAndAddSounds()
+{
+	val sounds = Datastore(props).listSounds()
+
+	for (oggfile in findSounds(props.getProperty("images","/dev/null"))) {
+		var found = false
+
+		for (sound in sounds) {
+			if (md5sumMatches(oggfile, sound.md5sum)) {
+				logger.warn("duplicate sound: {}", sound)
+				found = true
+				break
+			}
+		}
+		if (!found) {
+			val md5sum = md5sumGenerate(oggfile)
+			val vc = getVorbisComments(oggfile)
+			val s = Sound(-1, oggfile, oggfile, md5sum, oggfile,
+				vc.getTitle(), vc.getArtist(), vc.getGenre(),
+				vc.getAlbum(), "", -1)
+			logger.debug("sound: {}", s)
+			Datastore(props).addSound(s, Math.max(1,tagid))
+			sounds.add(s)
+		}
+	}
+}
+
+fun searchAndAddVideos()
+{
+	val videos = Datastore(props).listVideos()
+
+	for (vidfile in findVideos(props.getProperty("images","/dev/null"))) {
+		var found = false
+
+		for (video in videos) {
+			if (md5sumMatches(vidfile, video.md5sum)) {
+				logger.warn("duplicate video: {}", video)
+				found = true
+				break
+			}
+		}
+		if (!found) {
+			val md5sum = md5sumGenerate(vidfile)
+			val vc = getVorbisComments(vidfile)
+			val v = Video(-1, File(vidfile).getName(), vidfile,
+				md5sum, vidfile, -1)
+			logger.debug("video: {}", v)
+			Datastore(props).addVideo(v, Math.max(1,tagid))
+			videos.add(v)
+		}
+	}
+}
+
 fun searchAndAdd()
 {
 	searchAndAddBookmarks()
 	searchAndAddPhotos()
+	searchAndAddFileItems()
+	searchAndAddSounds()
+	searchAndAddVideos()
 }
 
-fun main(args: Array<String>)
-{
-	parseArgs(args.sliceArray(0 until (args.size - 1)))
-	props.load(FileInputStream(args[args.size - 1]))
-	logger.debug("props: {}", props)
-	sanitycheck()
+fun main(args: Array<String>) = mainBody {
+	ArgParser(args).parseInto(::ToolArgs).run {
+		props.load(FileInputStream(propfile))
+		logger.debug("props: {}", props)
+		sanitycheck()
 
-	for (tag in Datastore(props).listTags()) {
-		logger.debug("tag: {}", tag)
+		for (tag in Datastore(props).listTags()) {
+			logger.debug("tag: {}", tag)
 
-		if (tagname.equals(tag.name)) {
-			tagid = tag.id
+			if (tagname.equals(tag.name)) {
+				tagid = tag.id
+			}
 		}
-	}
-	validateExisting()
+		validateExisting()
 
-	if (doAdd) {
-		logger.info("adding files found in {}", getFilespecs())
-		searchAndAdd()
-	}
-	for (location in Datastore(props).listLocations()) {
-		logger.debug("location: {}", location)
+		if (add) {
+			logger.info("adding files found in {}", getFilespecs())
+			searchAndAdd()
+		}
 	}
 }

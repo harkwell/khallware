@@ -4,7 +4,8 @@ package com.khallware.api.util
 
 import java.math.BigDecimal
 
-data class Tag(val id: Int, val name: String)
+data class Tag(val id: Int, val name: String, val user: Int = 1,
+		val group: Int = 2)
 {
 }
 
@@ -41,18 +42,21 @@ data class Photo(val id: Int, val name: String, val path: String,
 
 data class FileItem(val id: Int, val name: String, val ext: String,
 		val md5sum: String, val desc: String, val mime: String,
-		val path: String, val numtags: Int)
+		val path: String, val numtags: Int,
+		val user: Int = 1, val group: Int = 2)
 {
 }
 
 data class Sound(val id: Int, val name: String, val path: String,
 		val md5sum: String, val desc: String, val title: String,
 		val artist: String, val genre: String, val album: String,
-		val publisher: String, val numtags: Int)
+		val publisher: String, val numtags: Int,
+		val user: Int = 1, val group: Int = 2)
 {
 }
 
 data class Video(val id: Int, val name: String, val path: String,
-		val md5sum: String, val desc: String, val numtags: Int)
+		val md5sum: String, val desc: String, val numtags: Int,
+		val user: Int = 1, val group: Int = 2)
 {
 }

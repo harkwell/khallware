@@ -42,6 +42,25 @@ class Datastore(props: Properties)
 		return(retval)
 	}
 
+	fun addTag(tag: Tag, parent: Int = 1) : Int
+	{
+		var retval = -1
+		val sql = """
+			INSERT INTO tags (name,user,group_,parent)
+			     VALUES (?,?,?,?)
+		"""
+		initialize()
+		connection!!.prepareStatement(sql).use {
+			it.setString(1, tag.name)
+			it.setInt(2, tag.user)
+			it.setInt(3, tag.group)
+			it.setInt(4, parent)
+			it.execute()
+			retval = it.getGeneratedKeys().getInt(1)
+		}
+		return(retval)
+	}
+
 	fun listBookmarks() : ArrayList<Bookmark>
 	{
 		val retval = ArrayList<Bookmark>()
@@ -259,6 +278,74 @@ class Datastore(props: Properties)
 		return(retval)
 	}
 
+	fun addFileItem(fileitem: FileItem, tag: Int = 1)
+	{
+		val sql1 = """
+			INSERT INTO fileitems (name,ext,mime,path,md5sum,
+			            user,group_, description)
+			     VALUES (?,?,?,?,?,?,?,?)
+		"""
+		val sql2 = """
+			INSERT INTO fileitem_tags (fileitem,tag)
+			     VALUES (?,?)
+		"""
+		var id = -1
+		initialize()
+		connection!!.prepareStatement(sql1).use {
+			it.setString(1, fileitem.name)
+			it.setString(2, fileitem.ext)
+			it.setString(3, fileitem.mime)
+			it.setString(4, fileitem.path)
+			it.setString(5, fileitem.md5sum)
+			it.setInt(6, fileitem.user)
+			it.setInt(7, fileitem.group)
+			it.setString(8, fileitem.desc)
+			it.execute()
+			id = it.getGeneratedKeys().getInt(1)
+		}
+		connection!!.prepareStatement(sql2).use {
+			it.setInt(1, id)
+			it.setInt(2, tag)
+			it.execute()
+		}
+	}
+
+	fun addSound(sound: Sound, tag: Int = 1)
+	{
+		val sql1 = """
+			INSERT INTO sounds (name,path,md5sum,
+			            user,group_,description,title,artist,genre,
+				    album,publisher)
+			     VALUES (?,?,?,?,?,?,?,?,?,?,?)
+		"""
+		val sql2 = """
+			INSERT INTO sound_tags (sound,tag)
+			     VALUES (?,?)
+		"""
+		var id = -1
+		initialize()
+		connection!!.prepareStatement(sql1).use {
+			it.setString(1, sound.name)
+			it.setString(2, sound.path)
+			it.setString(3, sound.md5sum)
+			it.setInt(4, sound.user)
+			it.setInt(5, sound.group)
+			it.setString(6, sound.desc)
+			it.setString(7, sound.title)
+			it.setString(8, sound.artist)
+			it.setString(9, sound.genre)
+			it.setString(10, sound.album)
+			it.setString(11, sound.publisher)
+			it.execute()
+			id = it.getGeneratedKeys().getInt(1)
+		}
+		connection!!.prepareStatement(sql2).use {
+			it.setInt(1, id)
+			it.setInt(2, tag)
+			it.execute()
+		}
+	}
+
 	fun listSounds() : ArrayList<Sound>
 	{
 		val retval = ArrayList<Sound>()
@@ -323,5 +410,35 @@ class Datastore(props: Properties)
 			}
 		}
 		return(retval)
+	}
+
+	fun addVideo(video: Video, tag: Int = 1)
+	{
+		val sql1 = """
+			INSERT INTO videos (name,path,md5sum,user,group_,
+			            description)
+			     VALUES (?,?,?,?,?,?)
+		"""
+		val sql2 = """
+			INSERT INTO video_tags (video,tag)
+			     VALUES (?,?)
+		"""
+		var id = -1
+		initialize()
+		connection!!.prepareStatement(sql1).use {
+			it.setString(1, video.name)
+			it.setString(2, video.path)
+			it.setString(3, video.md5sum)
+			it.setInt(4, video.user)
+			it.setInt(5, video.group)
+			it.setString(6, video.desc)
+			it.execute()
+			id = it.getGeneratedKeys().getInt(1)
+		}
+		connection!!.prepareStatement(sql2).use {
+			it.setInt(1, id)
+			it.setInt(2, tag)
+			it.execute()
+		}
 	}
 }

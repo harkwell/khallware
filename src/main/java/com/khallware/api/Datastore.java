@@ -81,6 +81,7 @@ public final class Datastore
 	public static final String PROP_DBUSER = "jdbc_user";
 	public static final String PROP_DBPASS = "jdbc_pass";
 	public static final String PROP_DBDRIVER = "jdbc_driver";
+	public static final String PROP_POOLSIZE = "jdbc_maxpoolsize";
 	public static final String DEF_DRIVER = "com.mysql.jdbc.Driver";
 	public static final String DEF_DBURL = "jdbc:mysql://localhost/website";
 	public static final String DEF_DBUSER = "api";
@@ -184,10 +185,14 @@ public final class Datastore
 			try {
 				Datastore.cpds = new ComboPooledDataSource();
 				Datastore.cpds.setDriverClass(driverName);
-				Datastore.cpds.setMaxPoolSize(DEF_POOLSIZE);
 				Datastore.cpds.setJdbcUrl(url);
 				Datastore.cpds.setUser(username);
 				Datastore.cpds.setPassword(password);
+				int poolsize = Integer.parseInt(
+					DS().getProperty(
+						PROP_POOLSIZE,""+DEF_POOLSIZE));
+				Datastore.cpds.setMaxPoolSize(
+					Math.max(3, poolsize));
 			}
 			catch (Exception e) {
 				logger.error(""+e, e);

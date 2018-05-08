@@ -40,7 +40,7 @@ public class KhallwareServletContainer
 	public static final String PROP_CFG = "main_cfg";
 	public static final String DEF_CAPTCHA_FILE = "/tmp/captcha.jpg";
 	public static final String INTPROPFILE = "apis.properties";
-	public static final String EXTPROPFILE = "/tmp/apis.properties";
+	public static final String EXTPROPFILE = "/etc/conf.d/apis.properties";
 	public static final long DEF_CAPTCHA_REFRESH = (5 * 60 * 1000);
 	public static final int DEF_WIDTH = 200;
 	public static final int DEF_HEIGHT = 50;
@@ -70,6 +70,9 @@ public class KhallwareServletContainer
 
 			if (new File(fname).exists()) {
 				props.load(new FileInputStream(fname));
+			}
+			else {
+				logger.error("prop file missing! {}", fname);
 			}
 			logger.trace("{}",props);
 			Datastore.DS().configure(props);
