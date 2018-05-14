@@ -70,7 +70,7 @@ function attach_tag_form()
 {
    $("#new_tag_form").html(""
       +"<span id=\"new_tag_icon\" "
-      +   "class=\"glyphicon glyphicon-plus-sign btn-lg black\">"
+      +   "class=\"fas fa-plus\">"
       +"</span>"
       +"<div id=\"tag_form\">"
       +   "<form>name: <input type=\"text\" id=\"new_tag_name\">"
@@ -94,7 +94,7 @@ function attach_contact_form()
 {
    $("#new_contact_form").html(""
       +"<span id=\"new_contact_icon\" "
-      +   "class=\"glyphicon glyphicon-plus-sign btn-lg black\">"
+      +   "class=\"fas fa-plus\">"
       +"</span>"
       +"<div id=\"contact_form\">"
       +   "<form>name: <input type=\"text\" id=\"new_contact_name\">"
@@ -143,7 +143,7 @@ function attach_bookmark_form()
 {
    $("#new_bookmark_form").html(""
       +"<span id=\"new_bookmark_icon\" "
-      +   "class=\"glyphicon glyphicon-plus-sign btn-lg black\">"
+      +   "class=\"fas fa-plus\">"
       +"</span>"
       +"<div id=\"bookmark_form\">"
       +   "<form>new url: <input type=\"text\" id=\"new_bookmark_url\">"
@@ -278,7 +278,7 @@ function update_tags(parentId, tag_list)
    tag_list.maxlen = string_squeeze;
    $("#tagpath_content").html(get_tagpath_html(parent));
    $("#parent_tag").html("<div class=\"tag_item\">"
-      +"<i class=\"glyphicon glyphicon-arrow-left bigicon\"></i>"
+      +"<i class=\"fas fa-arrow-left\"></i>"
       +"<a href=\"details.html?tagId="+parent.id+"\">"
       +parent.title+"</a></div>");
    $.get('templates/tag.tmpl', function (downloaded)

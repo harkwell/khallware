@@ -170,7 +170,7 @@ public abstract class CrudController<T>
 		catch (APIException|IOException|DatastoreException e) {
 			retval = Util.failRequest(e);
 			logger.trace(""+e, e);
-			logger.warn("{}",e);
+			logger.warn("{}",""+e);
 		}
 		logger.info("(id={}) GET "+this.getClass().getSimpleName()
 			+" ({})", creds.getId(), id);

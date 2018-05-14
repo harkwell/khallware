@@ -62,7 +62,7 @@ QUICK START
 
 ```shell
 # download the khallware webapp and phone app
-DESTDIR=$HOME/tmp/apis/
+export DESTDIR=$HOME/tmp/apis/
 mkdir -p $DESTDIR/{images,thumbs,audio,uploads}
 wget -c 'https://github.com/harkwell/khallware/releases/download/v0.9.0/khallware-0.9.0.war' -O $DESTDIR/apis.war
 wget -c 'https://github.com/harkwell/khallware/releases/download/v0.9.0/Khallware-0.9.0.apk' -O $DESTDIR/Khallware.apk
@@ -116,7 +116,7 @@ rm -rf $DESTDIR
 
 ### Or, build and run it locally
 ```shell
-DESTDIR=$HOME/tmp/apis/
+export DESTDIR=$HOME/tmp/apis/
 mkdir -p $DESTDIR/{images,thumbs,audio,uploads}
 git clone https://github.com/harkwell/khallware.git $DESTDIR/khallware
 export MAVEN_REPO=/tmp/delete-me-later
@@ -133,7 +133,7 @@ bash src/scripts/convert-to-sqlite.sh src/scripts/db_load.sql
 sqlite3 $DESTDIR/apis.db <src/scripts/db_schema.sqlite
 sqlite3 $DESTDIR/apis.db <src/scripts/db_load.sqlite
 sqlite3 $DESTDIR/apis.db # prime with guest user and groups
-vi main.properties # customize for your environment like above
+vi $DESTDIR/main.properties # customize for your environment like above
 # build and copy Khallware.apk (optional -for phone app)
 # build and copy import-tool.jar (optional -for content)
 # import data (optional -for content)

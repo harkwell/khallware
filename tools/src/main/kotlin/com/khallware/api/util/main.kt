@@ -145,7 +145,7 @@ fun findPhotos(dir: String) : List<String>
 
 fun findSounds(dir: String) : List<String>
 {
-	return(findFilesWithSuffix(dir,"ogg"))
+	return(findFilesWithSuffix(dir,"ogg","oga"))
 }
 
 fun findVideos(dir: String) : List<String>
@@ -284,10 +284,10 @@ fun md5sumGenerate(filespec: String) : String
 	// logger.trace("generating md5sum for file: '{}'", filespec)
 	try {
 		val md = MessageDigest.getInstance("MD5")
-		val hash = md.digest(Files.readAllBytes(
-			File(filespec).toPath()));
-		val rslt = String.format("%032x", BigInteger(1,hash));
-		// logger.trace("md5sum is {}", rslt)
+		val hash = md.digest(
+			Files.readAllBytes(File(filespec).toPath()));
+		retval = String.format("%032x", BigInteger(1,hash));
+		// logger.trace("md5sum is {}", retval)
 	}
 	catch (e: Exception) {
 		logger.trace("${ e }", e)
@@ -301,8 +301,7 @@ fun md5sumMatches(filespec: String, md5sum: String) : Boolean
 	var retval = false
 	var generated = md5sumGenerate(filespec)
 	logger.debug("md5sum comparison (found={} given={})", generated, md5sum)
-	retval = (!generated.isEmpty() && !md5sum.isEmpty()
-		&& generated.equals(md5sum))
+	retval = (!md5sum.isEmpty() && generated.equals(md5sum))
 	return(retval)
 }
 
@@ -437,8 +436,9 @@ fun searchAndAddBookmarks()
 			}
 		}
 		if (!found) {
-			val b = Bookmark(-1, url, url)
+			val b = Bookmark(-1, url, url.trim())
 			Datastore(props).addBookmark(b, Math.max(1, tagid))
+			logger.info("Added bookmark: {}", b)
 			bookmarks.add(b)
 		}
 	}
@@ -460,10 +460,11 @@ fun searchAndAddFileItems()
 			}
 		}
 		if (!found && File(filespec).isFile()) {
-			val f = FileItem(-1, File(filespec).getName(), filespec,
-				md5sumGenerate(filespec), filespec, "*/*",
-				filespec, -1)
+			val f = FileItem(-1, File(filespec).getName(),
+				filespec.trim(), md5sumGenerate(filespec),
+				filespec, "*/*", filespec, -1)
 			Datastore(props).addFileItem(f, Math.max(1, tagid))
+			logger.info("Added fileitem: {}", f)
 			fileitems.add(f)
 		}
 	}
@@ -485,9 +486,11 @@ fun searchAndAddPhotos()
 		}
 		if (!found) {
 			val md5sum = md5sumGenerate(jpeg)
-			val p = Photo(-1, jpeg, jpeg, md5sum, jpeg)
+			val p = Photo(-1, File(jpeg).getName().trim(),
+				jpeg.trim(), md5sum, jpeg)
 			logger.debug("photo: {}", p)
 			Datastore(props).addPhoto(p, Math.max(1,tagid))
+			logger.info("Added photo: {}", p)
 			photos.add(p)
 		}
 	}
@@ -497,7 +500,7 @@ fun getVorbisComments(oggfile: String) : VorbisComments
 {
 	var retval: VorbisComments = VorbisComments()
 	OggFile(FileInputStream(oggfile)).use {
-		val reader =OggPacketReader(it.getPacketReader() as InputStream)
+		val reader: OggPacketReader = it.getPacketReader()
 		reader.getNextPacket()
 		val vpacket = VorbisPacketFactory.create(reader.getNextPacket())
 		retval = vpacket as VorbisComments
@@ -509,7 +512,7 @@ fun searchAndAddSounds()
 {
 	val sounds = Datastore(props).listSounds()
 
-	for (oggfile in findSounds(props.getProperty("images","/dev/null"))) {
+	for (oggfile in findSounds(props.getProperty("audio","/dev/null"))) {
 		var found = false
 
 		for (sound in sounds) {
@@ -522,11 +525,13 @@ fun searchAndAddSounds()
 		if (!found) {
 			val md5sum = md5sumGenerate(oggfile)
 			val vc = getVorbisComments(oggfile)
-			val s = Sound(-1, oggfile, oggfile, md5sum, oggfile,
+			val s = Sound(-1, File(oggfile).getName().trim(),
+				oggfile.trim(), md5sum, oggfile.trim(),
 				vc.getTitle(), vc.getArtist(), vc.getGenre(),
 				vc.getAlbum(), "", -1)
 			logger.debug("sound: {}", s)
 			Datastore(props).addSound(s, Math.max(1,tagid))
+			logger.info("Added sound: {}", s)
 			sounds.add(s)
 		}
 	}
@@ -548,11 +553,11 @@ fun searchAndAddVideos()
 		}
 		if (!found) {
 			val md5sum = md5sumGenerate(vidfile)
-			val vc = getVorbisComments(vidfile)
-			val v = Video(-1, File(vidfile).getName(), vidfile,
-				md5sum, vidfile, -1)
+			val v = Video(-1, File(vidfile).getName().trim(),
+				vidfile.trim(), md5sum, vidfile, -1)
 			logger.debug("video: {}", v)
 			Datastore(props).addVideo(v, Math.max(1,tagid))
+			logger.info("Added video: {}", v)
 			videos.add(v)
 		}
 	}

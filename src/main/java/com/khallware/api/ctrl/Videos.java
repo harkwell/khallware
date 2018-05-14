@@ -209,7 +209,7 @@ public class Videos extends CrudController<Video>
 		catch (APIException|IOException e) {
 			retval = Util.failRequest(e);
 			logger.trace(""+e, e);
-			logger.warn("{}",e);
+			logger.warn("{}",""+e);
 		}
 		return(retval);
 	}
