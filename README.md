@@ -69,7 +69,7 @@ wget -c 'https://github.com/harkwell/khallware/releases/download/v0.9.0/Khallwar
 
 # download optional software
 wget -c 'https://github.com/harkwell/khallware/releases/download/v0.9.0/apis-0.9.0.db' -O $DESTDIR/apis.db
-wget -c 'https://github.com/harkwell/khallware/releases/download/v0.9.0/import-tool.jar' -O $DESTDIR/import-tool.jar
+wget -c 'https://github.com/harkwell/khallware/releases/download/v0.9.0/import-tool-0.9.0.jar' -O $DESTDIR/import-tool.jar
 wget -c 'http://central.maven.org/maven2/org/eclipse/jetty/jetty-runner/9.4.9.v20180320/jetty-runner-9.4.9.v20180320.jar' -O $DESTDIR/jetty-runner.jar
 wget -c 'http://nilhcem.github.com/FakeSMTP/downloads/fakeSMTP-latest.zip' -qO - |bsdtar -xvf - -C $DESTDIR/
 
@@ -329,6 +329,7 @@ export MAVEN_ANDROID_REPO=/tmp/khallware-android
 rm -rf $MAVEN_ANDROID_REPO
 git clone https://github.com/harkwell/khallware && cd khallware/android
 sed -i -e 's#^sdk.dir=.*$#sdk.dir='$ANDROID_HOME'#g' local.properties
+mvn -Dmaven.repo.local=$MAVEN_ANDROID_REPO install:install-file -Dfile=$ANDROID_HOME/add-ons/addon-google_apis-google-22/libs/maps.jar -DgroupId=google.apis -DartifactId=google.maps -Dversion=2.2 -Dpackaging=jar
 mvn -Dmaven.repo.local=$MAVEN_ANDROID_REPO install:install-file -Dfile=$ANDROID_HOME/add-ons/addon-google_apis-google-22/libs/maps.jar -DgroupId=google.apis -DartifactId=google.maps -Dversion=2.2 -Dpackaging=jar
 mvn -Dmaven.repo.local=$MAVEN_ANDROID_REPO -Dandroid.sdk.path=$ANDROID_HOME \
     package && ls -ld target/Khallware.apk
