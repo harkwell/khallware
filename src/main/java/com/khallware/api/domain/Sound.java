@@ -80,7 +80,16 @@ public class Sound extends AtomEntity
 
 		public Builder genre(String genre)
 		{
-			return(genre(Genre.valueOf(genre)));
+			Genre found = null;
+			try {
+				found = Genre.valueOf(genre);
+			}
+			catch (Exception e) {
+				logger.trace(""+e,e);
+				logger.warn(""+e);
+				found = Genre.unknown;
+			}
+			return(genre(found));
 		}
 
 		public Builder genre(Genre genre)

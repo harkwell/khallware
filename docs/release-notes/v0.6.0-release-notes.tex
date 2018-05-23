@@ -1,0 +1,66 @@
+%-----------------------------------------------------------------------------
+% This is the v0.6.0 release notes for khallware
+%-----------------------------------------------------------------------------
+% sudo apt-get install latex-xcolor
+
+\documentclass[notitlepage]{article}
+
+\usepackage[margin=0.25in]{geometry}
+\usepackage{color,colortbl}
+% #51748e
+\definecolor{myblue}{RGB}{81,116,142}
+
+\newcommand{\releasedate}{2015}
+
+\begin{document}
+
+\begin{center}
+\begin{tabular}{ | l | }
+\hline
+\LARGE\cellcolor{myblue}\textcolor{white}{khallware} v0.6.0 \releasedate{} \\
+\hline
+UI remove old sessions in admin \\
+\hline
+UI search is broken in family.html \\
+\hline
+refactor Datastore.java into separate DAOs (chain pattern) \\
+\hline
+UI develop the admin page \\
+\hline
+provide mechanism to get/set the landing page for group in admin \\
+\hline
+landing page group assignment should be persisted in db, not properties \\
+\hline
+exceptions should go in respective packages, global only if appropriate \\
+\hline
+reconcile policy enforcement concept with validation one \\
+\hline
+admin restful calls should return quota info \\
+\hline
+more unit tests (mockito) \\
+\hline
+captcha text is broken \\
+\hline
+from google earth, save places as "a.kmz", unzip and post doc.kml latlon \\
+\hline
+uploaded file names should not contain spaces or weird characters \\
+\hline
+references to tomcat-server should be configurable \\
+\hline
+fileitems,photos,sounds,etc files should be deleted along with db record \\
+\hline
+fileitems,photos,etc shouldn't be deleted having multiple tags referenced \\
+\hline
+posting the same entity should add it to its tags table only \\
+\hline
+UI posting a new bookmark does not add it to current tag \\
+\hline
+UI utilize a QR code on login page \\
+\hline
+UI add photo or other to multiple tags, delete photo (exception?!) \\
+\hline
+
+\end{tabular}
+\end{center}
+
+\end{document}

@@ -19,9 +19,9 @@ be managed from any android based phone.  Videos, photos and playlists are also
 available.
 
 Khallware utilizes: Android, Bootstrap, JQuery, Javascript, HTTP, Mime, Json,
-Java8, REST/JAX-RS, Jackson, ORMLite, JDBC, c3p0 and Mysql.  Testing is
-performed with fitnesse and jmeter.  Builds and deployments are made with
-maven, tomcat, Docker or Amazon Web Services.
+Java8, REST/JAX-RS, Jackson, ORMLite, JDBC, c3p0, Kotlin and Mysql.  Testing
+and audits are performed with fitnesse, PMD, SonarQube and jmeter.  Builds and
+deployments are made with maven, tomcat, Docker or Amazon Web Services.
 
 USAGE
 ---------------
@@ -58,7 +58,7 @@ curl -i -X POST -H "Accept:application/json" -H "Authorization:Basic Z3Vlc3Q6Z3V
 QUICK START
 ---------------
 ### Run it locally
-(NOTE: recommend using the sqlite database for evaluation purposes only!)
+(NOTE: recommend using the sqlite database for simple evaluation purposes only!)
 
 ```shell
 # download the khallware webapp and phone app
@@ -87,14 +87,28 @@ mail.transport.protocol=smtp
 mail.smtp.port=8025
 mail.smtp.starttls.enable=false
 mail.smtp.starttls.required=false
+registration_url=http://localhost:8080/apis/v1/security/register/
+
+# for sqlite3
 jdbc_user=webapp
 jdbc_pass=webapp
-jdbc_url=jdbc:sqlite:$DESTDIR/apis.db
-jdbc_maxpoolsize=3
-#jdbc_url=jdbc:mysql://127.0.0.1/website?autoReconnect=true
-registration_url=http://localhost:8080/apis/v1/security/register/
+jdbc_maxpoolsize=6
 jdbc_driver=org.sqlite.JDBC
+jdbc_url=jdbc:sqlite:$DESTDIR/apis.db
+
+# for mysql5
+#jdbc_user=api
+#jdbc_pass=khallware
+#jdbc_driver=com.mysql.cj.jdbc.Driver
+#jdbc_url=jdbc:mysql://127.0.0.1/website?autoReconnect=true
+
+# for mysql5 and import-tool.jar
+#jdbc_url=jdbc:mysql://api:khallware@127.0.0.1/website?autoReconnect=true
 EOF
+
+# setting jdbc_maxpoolsize for sqlite too low may cause deadlock
+# setting it too high may cause SQLiteException: [SQLITE_BUSY] exceptions
+# recommend using mysql for sites with any data
 
 # start up the fake email server (optional)
 java -jar $DESTDIR/fakeSMTP*.jar  # use port 8025 and click "Start server"
@@ -128,14 +142,19 @@ mvn org.apache.maven.plugins:maven-dependency-plugin:2.1:get \
     -DrepoUrl=https://mvnrepository.com/ \
     -Dartifact=org.eclipse.jetty:jetty-runner:9.4.9.v20180320
 RUNNER_JAR=$(find $MAVEN_REPO -name \*runner\*jar)
+
+# if you must use sqlite, then perform this:
 bash src/scripts/convert-to-sqlite.sh src/scripts/db_schema.sql fixme
 bash src/scripts/convert-to-sqlite.sh src/scripts/db_load.sql
 sqlite3 $DESTDIR/apis.db <src/scripts/db_schema.sqlite
 sqlite3 $DESTDIR/apis.db <src/scripts/db_load.sqlite
 sqlite3 $DESTDIR/apis.db # prime with guest user and groups
+
 vi $DESTDIR/main.properties # customize for your environment like above
 # build and copy Khallware.apk (optional -for phone app)
 # build and copy import-tool.jar (optional -for content)
+cd tools && mvn -Dmaven.repo.local=$MAVEN_REPO package && cd -
+
 # import data (optional -for content)
 # run the fake smtp server (optional -for registration)
 java -jar $RUNNER_JAR --path /apis target/apis.war
@@ -149,7 +168,7 @@ rm -rf $MAVEN_REPO
 ```shell
 chromium-browser http://aws.amazon.com/  # create a "free-tier" account
 aws configure # use the AccessKey and Secret Access Key from above
-wget -q -c 'https://raw.githubusercontent.com/harkwell/khallware/github/aws/AWS-cloudformation.json' -O - |aws cloudformation create-stack --stack-name khallware --capabilities CAPABILITY_NAMED_IAM --tags 'Key=projects,Value=khallware' --template-body file:///dev/stdin
+wget -q -c 'https://raw.githubusercontent.com/harkwell/khallware/master/aws/AWS-cloudformation.json' -O - |aws cloudformation create-stack --stack-name khallware --capabilities CAPABILITY_NAMED_IAM --tags 'Key=projects,Value=khallware' --template-body file:///dev/stdin
 chromium-browser http://<dns-name-of-aws-ec2-host>/
 ```
 
@@ -163,7 +182,7 @@ docker run -it khall/khallware
 ### Create A MySQL Docker Image (One Time Only)
 ```shell
 mkdir -p /tmp/khallware-mysql && cd /tmp/khallware-mysql
-wget -q -c 'https://raw.githubusercontent.com/harkwell/khallware/github/src/scripts/Docker-mysql' -O - |docker build --no-cache -t khallware-mysql:v1.0 -
+wget -q -c 'https://raw.githubusercontent.com/harkwell/khallware/master/src/scripts/Docker-mysql' -O - |docker build --no-cache -t khallware-mysql:v1.0 -
 ```
 
 ### Create A Tomcat8 Docker Image (One Time Only)
@@ -171,7 +190,7 @@ wget -q -c 'https://raw.githubusercontent.com/harkwell/khallware/github/src/scri
 mkdir -p /tmp/khallware-tomcat8 && cd /tmp/khallware-tomcat8
 # chromium-browser https://tomcat.apache.org/download-80.cgi
 wget -q -c 'http://mirrors.gigenet.com/apache/tomcat/tomcat-8/v8.0.36/bin/apache-tomcat-8.0.36.tar.gz' -O apache-tomcat.tgz
-wget -q -c 'https://raw.githubusercontent.com/harkwell/khallware/github/src/scripts/Docker-tomcat8' -O - |docker build --no-cache -t khallware-tomcat:v1.0 -
+wget -q -c 'https://raw.githubusercontent.com/harkwell/khallware/master/src/scripts/Docker-tomcat8' -O - |docker build --no-cache -t khallware-tomcat:v1.0 -
 ```
 
 ### Create A khallware.com Build Docker Image (One Time Only)
@@ -179,7 +198,7 @@ wget -q -c 'https://raw.githubusercontent.com/harkwell/khallware/github/src/scri
 mkdir -p /tmp/khallware-build && cd /tmp/khallware-build
 
 for x in build.sh Dockerfile; do
-   wget -q -c "https://raw.githubusercontent.com/harkwell/khallware/github/src/scripts/$x"
+   wget -q -c "https://raw.githubusercontent.com/harkwell/khallware/master/src/scripts/$x"
 done
 sed -i -e 's#^rm -rf.*mkdir#mkdir#' build.sh
 docker build --no-cache -t khallware-build:v1.0 .
@@ -205,8 +224,8 @@ GRANT ALL PRIVILEGES ON website.* TO 'api'@'%' WITH GRANT OPTION;
 USE mysql;
 SET PASSWORD FOR 'api'@'%' = PASSWORD('khallware');
 exit
-wget -q -c 'https://raw.githubusercontent.com/harkwell/khallware/github/src/scripts/db_schema.sql' -O - |mysql -uroot website
-wget -q -c 'https://raw.githubusercontent.com/harkwell/khallware/github/src/scripts/db_load.sql' -O - |mysql -uroot website
+wget -q -c 'https://raw.githubusercontent.com/harkwell/khallware/master/src/scripts/db_schema.sql' -O - |mysql -uroot website
+wget -q -c 'https://raw.githubusercontent.com/harkwell/khallware/master/src/scripts/db_load.sql' -O - |mysql -uroot website
 exit
 docker rm $(docker ps -a |grep mysql |cut -d\  -f1)
 ```
@@ -307,8 +326,10 @@ chromium-browser http://tomcat-server:8080/apis/
 ```shell
 export ANDROID_HOME=/usr/local/android
 export MAVEN_ANDROID_REPO=/tmp/khallware-android
+rm -rf $MAVEN_ANDROID_REPO
 git clone https://github.com/harkwell/khallware && cd khallware/android
 sed -i -e 's#^sdk.dir=.*$#sdk.dir='$ANDROID_HOME'#g' local.properties
+mvn -Dmaven.repo.local=$MAVEN_ANDROID_REPO install:install-file -Dfile=$ANDROID_HOME/add-ons/addon-google_apis-google-22/libs/maps.jar -DgroupId=google.apis -DartifactId=google.maps -Dversion=2.2 -Dpackaging=jar
 mvn -Dmaven.repo.local=$MAVEN_ANDROID_REPO -Dandroid.sdk.path=$ANDROID_HOME \
     package && ls -ld target/Khallware.apk
 ```
@@ -330,8 +351,6 @@ $ANDROID_HOME/tools/bin/sdkmanager \
    'system-images;android-24;google_apis;x86_64' \
    'extras;android;m2repository' \
    'add-ons;addon-google_apis-google-22'
-
-mvn -Dmaven.repo.local=$MAVEN_ANDROID_REPO install:install-file -Dfile=$ANDROID_HOME/add-ons/addon-google_apis-google-22/libs/maps.jar -DgroupId=google.apis -DartifactId=google.maps -Dversion=2.2 -Dpackaging=jar
 ```
 
 * via the IDE

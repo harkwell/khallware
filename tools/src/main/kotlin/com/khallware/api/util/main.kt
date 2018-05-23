@@ -437,9 +437,15 @@ fun searchAndAddBookmarks()
 		}
 		if (!found) {
 			val b = Bookmark(-1, url, url.trim())
-			Datastore(props).addBookmark(b, Math.max(1, tagid))
-			logger.info("Added bookmark: {}", b)
-			bookmarks.add(b)
+			try {
+				Datastore(props).addBookmark(
+					b, Math.max(1, tagid))
+				logger.info("Added bookmark: {}", b)
+				bookmarks.add(b)
+			}
+			catch (e: Exception) {
+				logger.error("{}", ""+e, e)
+			}
 		}
 	}
 }
@@ -463,9 +469,15 @@ fun searchAndAddFileItems()
 			val f = FileItem(-1, File(filespec).getName(),
 				filespec.trim(), md5sumGenerate(filespec),
 				filespec, "*/*", filespec, -1)
-			Datastore(props).addFileItem(f, Math.max(1, tagid))
-			logger.info("Added fileitem: {}", f)
-			fileitems.add(f)
+			try {
+				Datastore(props).addFileItem(
+					f, Math.max(1, tagid))
+				logger.info("Added fileitem: {}", f)
+				fileitems.add(f)
+			}
+			catch (e: Exception) {
+				logger.error("{}", ""+e, e)
+			}
 		}
 	}
 }
@@ -489,9 +501,14 @@ fun searchAndAddPhotos()
 			val p = Photo(-1, File(jpeg).getName().trim(),
 				jpeg.trim(), md5sum, jpeg)
 			logger.debug("photo: {}", p)
-			Datastore(props).addPhoto(p, Math.max(1,tagid))
-			logger.info("Added photo: {}", p)
-			photos.add(p)
+			try {
+				Datastore(props).addPhoto(p, Math.max(1,tagid))
+				logger.info("Added photo: {}", p)
+				photos.add(p)
+			}
+			catch (e: Exception) {
+				logger.error("{}", ""+e, e)
+			}
 		}
 	}
 }
@@ -527,12 +544,17 @@ fun searchAndAddSounds()
 			val vc = getVorbisComments(oggfile)
 			val s = Sound(-1, File(oggfile).getName().trim(),
 				oggfile.trim(), md5sum, oggfile.trim(),
-				vc.getTitle(), vc.getArtist(), vc.getGenre(),
+				vc.getTitle(), vc.getArtist(), "unknown",
 				vc.getAlbum(), "", -1)
 			logger.debug("sound: {}", s)
-			Datastore(props).addSound(s, Math.max(1,tagid))
-			logger.info("Added sound: {}", s)
-			sounds.add(s)
+			try {
+				Datastore(props).addSound(s, Math.max(1,tagid))
+				logger.info("Added sound: {}", s)
+				sounds.add(s)
+			}
+			catch (e: Exception) {
+				logger.error("{}", ""+e, e)
+			}
 		}
 	}
 }
@@ -556,9 +578,14 @@ fun searchAndAddVideos()
 			val v = Video(-1, File(vidfile).getName().trim(),
 				vidfile.trim(), md5sum, vidfile, -1)
 			logger.debug("video: {}", v)
-			Datastore(props).addVideo(v, Math.max(1,tagid))
-			logger.info("Added video: {}", v)
-			videos.add(v)
+			try {
+				Datastore(props).addVideo(v, Math.max(1,tagid))
+				logger.info("Added video: {}", v)
+				videos.add(v)
+			}
+			catch (e: Exception) {
+				logger.error("{}", ""+e, e)
+			}
 		}
 	}
 }

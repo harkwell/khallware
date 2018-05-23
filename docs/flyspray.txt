@@ -1,0 +1,65 @@
+##############
+### DOCKER ###
+##############
+### create a mysql docker image (one-time only)
+mkdir -p /tmp/khallware-mysql && cd /tmp/khallware-mysql
+wget -q -c 'https://raw.githubusercontent.com/harkwell/khallware/master/src/scripts/Docker-mysql' -O - |docker build --no-cache -t khallware-mysql:v1.0 -
+
+### create isam files (one-time only)
+mkdir -p $HOME/tmp/flyspray-mysql
+docker run -it -h mysql --name flyspray-mysql -v $HOME/tmp/flyspray-mysql:/var/lib/mysql khallware-mysql:v1.0 bash
+mysql_install_db --user=mysql --ldata=/var/lib/mysql/
+/usr/bin/mysqld_safe &
+mysql -uroot mysql
+CREATE DATABASE flyspray;
+CREATE USER 'api'@'%' IDENTIFIED BY 'khallware';
+GRANT ALL PRIVILEGES ON flyspray.* TO 'api'@'%' WITH GRANT OPTION;
+USE flyspray;
+SET PASSWORD FOR 'api'@'%' = PASSWORD('khallware');
+exit
+docker rm $(docker ps -a |grep mysql |cut -d\  -f1)
+
+
+### deploy flyspray database instance
+docker run -d -h mysql --name flyspray-mysql -p 3306:3306 -v $HOME/tmp/flyspray-mysql:/var/lib/mysql khallware-mysql:v1.0
+echo 'SHOW TABLES;' |mysql -uapi -pkhallware -h 127.0.0.1 flyspray
+mysql -uapi -pkhallware -h 127.0.0.1 flyspray <aws/flyspray/flyspray.mysql
+
+### connect nginx front-end and flyspray webapp
+docker run -it -h flyspray --name flyspray -l flyspray-mysql centos
+yum install -y epel-release
+yum install -y nginx git mysql jq php php-mysql php-fpm wget less telnet
+
+sed -in -e 's#^user =.*$#user = nginx#' -e 's#^group =.*$#group = nginx#' /etc/php-fpm.d/www.conf
+sed -in -e 's#^;date.timezone .*$#date.timezone = America/Chicago#' /etc/php.ini
+mkdir -p /opt/khallware/gitrepo && cd /opt/khallware/gitrepo
+git clone https://github.com/harkwell/khallware.git && cd khallware
+#git checkout dev
+export REPO=$PWD
+unalias cp
+cp -f $REPO/aws/index.html /usr/share/nginx/html/
+cp -f $REPO/aws/nginx-khallware.conf /etc/nginx/conf.d/
+cp -f $REPO/aws/khall-prefs.sh /etc/profile.d/khall-prefs.sh
+sed -i -e "s#XXXX#flyspray#g" /etc/nginx/conf.d/nginx-khallware.conf
+IPADDR=$(docker inspect flyspray |grep IPAddress |head -1 |cut -d\" -f4)
+sed -i -e "s#server_name.*$#server_name $IPADDR;#g" /etc/nginx/conf.d/nginx-khallware.conf
+
+/usr/sbin/php-fpm &
+/usr/sbin/nginx
+
+wget -c 'https://github.com/Flyspray/flyspray/releases/download/v1.0-rc4/flyspray-1.0-rc4_php54.tgz' -O /tmp/flyspray.tgz
+mkdir -p /usr/share/nginx/html/flyspray
+tar zxvf /tmp/flyspray.tgz -C /usr/share/nginx/html/flyspray --strip-components=1
+rm -f /tmp/flyspray.tgz
+chown -R nginx:nginx /usr/share/nginx/html /var/lib/php/
+
+#CONF=/usr/share/nginx/html/flyspray/flyspray.conf.php
+#sed -in -e 's#^dbtype =.*$#dbtype = "mysql"#' $CONF
+#sed -in -e 's#^dbhost =.*$#dbhost = "'flyspray-mysql'"#' $CONF
+#sed -in -e 's#^dbuser =.*$#dbuser = "flyspray"#' $CONF
+#sed -in -e 's#^dbname =.*$#dbname = "flyspray"#' $CONF
+#sed -in -e 's#^dbpass =.*$#dbpass = "khallware"#' $CONF
+
+chromium-browser http://$IPADDR/flyspray/
+
+mysqldump --databases flyspray -h 127.0.0.1 -u api -pkhallware >flyspray.mysql

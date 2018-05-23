@@ -4,6 +4,7 @@ package com.khallware.api.util
 
 import java.sql.DriverManager
 import java.sql.Connection
+import java.sql.Statement
 import java.util.Properties
 import java.math.BigDecimal
 
@@ -50,13 +51,18 @@ class Datastore(props: Properties)
 			     VALUES (?,?,?,?)
 		"""
 		initialize()
-		connection!!.prepareStatement(sql).use {
+		connection!!.prepareStatement(
+				sql, Statement.RETURN_GENERATED_KEYS).use {
 			it.setString(1, tag.name)
 			it.setInt(2, tag.user)
 			it.setInt(3, tag.group)
 			it.setInt(4, parent)
 			it.execute()
-			retval = it.getGeneratedKeys().getInt(1)
+			val rsltset = it.getGeneratedKeys()
+
+			if (rsltset.next()) {
+				retval = rsltset.getInt(1)
+			}
 		}
 		return(retval)
 	}
@@ -102,14 +108,19 @@ class Datastore(props: Properties)
 		"""
 		var id = -1
 		initialize()
-		connection!!.prepareStatement(sql1).use {
+		connection!!.prepareStatement(
+				sql1, Statement.RETURN_GENERATED_KEYS).use {
 			it.setString(1, bookmark.name)
 			it.setInt(2, bookmark.user)
 			it.setString(3, bookmark.url)
 			it.setInt(4, bookmark.group)
 			it.setString(5, bookmark.rating)
 			it.execute()
-			id = it.getGeneratedKeys().getInt(1)
+			val rsltset = it.getGeneratedKeys()
+
+			if (rsltset.next()) {
+				id = rsltset.getInt(1)
+			}
 		}
 		connection!!.prepareStatement(sql2).use {
 			it.setInt(1, id)
@@ -229,7 +240,8 @@ class Datastore(props: Properties)
 		"""
 		var id = -1
 		initialize()
-		connection!!.prepareStatement(sql1).use {
+		connection!!.prepareStatement(
+				sql1, Statement.RETURN_GENERATED_KEYS).use {
 			it.setString(1, photo.name)
 			it.setString(2, photo.path)
 			it.setString(3, photo.md5sum)
@@ -237,7 +249,11 @@ class Datastore(props: Properties)
 			it.setInt(5, photo.group)
 			it.setString(6, photo.desc)
 			it.execute()
-			id = it.getGeneratedKeys().getInt(1)
+			val rsltset = it.getGeneratedKeys()
+
+			if (rsltset.next()) {
+				id = rsltset.getInt(1)
+			}
 		}
 		connection!!.prepareStatement(sql2).use {
 			it.setInt(1, id)
@@ -291,7 +307,8 @@ class Datastore(props: Properties)
 		"""
 		var id = -1
 		initialize()
-		connection!!.prepareStatement(sql1).use {
+		connection!!.prepareStatement(
+				sql1, Statement.RETURN_GENERATED_KEYS).use {
 			it.setString(1, fileitem.name)
 			it.setString(2, fileitem.ext)
 			it.setString(3, fileitem.mime)
@@ -301,7 +318,11 @@ class Datastore(props: Properties)
 			it.setInt(7, fileitem.group)
 			it.setString(8, fileitem.desc)
 			it.execute()
-			id = it.getGeneratedKeys().getInt(1)
+			val rsltset = it.getGeneratedKeys()
+
+			if (rsltset.next()) {
+				id = rsltset.getInt(1)
+			}
 		}
 		connection!!.prepareStatement(sql2).use {
 			it.setInt(1, id)
@@ -324,7 +345,8 @@ class Datastore(props: Properties)
 		"""
 		var id = -1
 		initialize()
-		connection!!.prepareStatement(sql1).use {
+		connection!!.prepareStatement(
+				sql1, Statement.RETURN_GENERATED_KEYS).use {
 			it.setString(1, sound.name)
 			it.setString(2, sound.path)
 			it.setString(3, sound.md5sum)
@@ -337,7 +359,11 @@ class Datastore(props: Properties)
 			it.setString(10, sound.album)
 			it.setString(11, sound.publisher)
 			it.execute()
-			id = it.getGeneratedKeys().getInt(1)
+			val rsltset = it.getGeneratedKeys()
+
+			if (rsltset.next()) {
+				id = rsltset.getInt(1)
+			}
 		}
 		connection!!.prepareStatement(sql2).use {
 			it.setInt(1, id)
@@ -425,7 +451,8 @@ class Datastore(props: Properties)
 		"""
 		var id = -1
 		initialize()
-		connection!!.prepareStatement(sql1).use {
+		connection!!.prepareStatement(
+				sql1, Statement.RETURN_GENERATED_KEYS).use {
 			it.setString(1, video.name)
 			it.setString(2, video.path)
 			it.setString(3, video.md5sum)
@@ -433,7 +460,11 @@ class Datastore(props: Properties)
 			it.setInt(5, video.group)
 			it.setString(6, video.desc)
 			it.execute()
-			id = it.getGeneratedKeys().getInt(1)
+			val rsltset = it.getGeneratedKeys()
+
+			if (rsltset.next()) {
+				id = rsltset.getInt(1)
+			}
 		}
 		connection!!.prepareStatement(sql2).use {
 			it.setInt(1, id)

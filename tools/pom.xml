@@ -13,6 +13,7 @@
         <kotlin.version>1.2.21</kotlin.version>
         <slf4j.version>1.7.25</slf4j.version>
         <sqlite.version>3.21.0.1</sqlite.version>
+        <mysql-version>6.0.6</mysql-version>
         <maven.surefire.version>2.19.1</maven.surefire.version>
         <junit.version>4.12</junit.version>
         <argparser.version>2.0.6</argparser.version>
@@ -46,6 +47,11 @@
             <groupId>org.xerial</groupId>
             <artifactId>sqlite-jdbc</artifactId>
             <version>${sqlite.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>${mysql-version}</version>
         </dependency>
         <dependency>
             <groupId>com.xenomachina</groupId>

@@ -1,0 +1,72 @@
+%-----------------------------------------------------------------------------
+% This is the v0.5.0 release notes for khallware
+%-----------------------------------------------------------------------------
+% sudo apt-get install latex-xcolor
+
+\documentclass[notitlepage]{article}
+
+\usepackage[margin=0.25in]{geometry}
+\usepackage{color,colortbl}
+% #51748e
+\definecolor{myblue}{RGB}{81,116,142}
+
+\newcommand{\releasedate}{2015}
+
+\begin{document}
+
+\begin{center}
+\begin{tabular}{ | l | }
+\hline
+\LARGE\cellcolor{myblue}\textcolor{white}{khallware} v0.5.0 \releasedate{} \\
+\hline
+implement login history \\
+\hline
+write user logout mechanism \\
+\hline
+fix "Unparseable date: 'Thu Feb 20 17:00:00 CST 2014'" at Event.java:111 \\
+\hline
+replace Locations.toLocation with LocationFactory \\
+\hline
+add feature to supply mask and path to file upload \\
+\hline
+design mechanism to limit the users drive capacity to upload files \\
+\hline
+develop an admin page back-end mechanism (groups, sessions, etc.) \\
+\hline
+develop an admin page (groups, sessions, etc.) \\
+\hline
+Datastore.java:search() should utilize parameterized string instead \\
+\hline
+secure the search feature (do not return entities unless permitted to) \\
+\hline
+create view for search instead of piecing queries together \\
+\hline
+add sort column to Pagination \\
+\hline
+fitnesse tests are failing... \\
+\hline
+calling filterOnMode(qb.where(), creds); with no creds may cause IllegalStateException: No where clauses defined \\
+\hline
+when posting new entities, enforce uniqueness (uuid in vcard, etc.) \\
+\hline
+write Contact method that syncs vcard and instance fields \\
+\hline
+handle posting of all contacts within a single vcard \\
+\hline
+UI posting a new contact should not throw exception b/c unknown fields \\
+\hline
+UI fromIndex and toIndex should be page and pageSize \\
+\hline
+scripts (.sh .sql) should not be included in .war(WEB-INF/classes/scripts) \\
+\hline
+need functionality to search all items belonging to a tag \\
+\hline
+vcf file with multiple VCARD stanzas only import the first one \\
+\hline
+users to post jpegs and mp4s where they have permission to (fileupload) \\
+\hline
+
+\end{tabular}
+\end{center}
+
+\end{document}

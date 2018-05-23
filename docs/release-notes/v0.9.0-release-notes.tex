@@ -1,0 +1,49 @@
+%-----------------------------------------------------------------------------
+% This is the v0.9.0 release notes for khallware
+%-----------------------------------------------------------------------------
+% sudo apt-get install latex-xcolor
+
+\documentclass[notitlepage]{article}
+
+\usepackage{enumitem}
+\usepackage[margin=0.25in]{geometry}
+\usepackage{color,colortbl}
+% #51748e
+\definecolor{myblue}{RGB}{81,116,142}
+
+\newcommand{\releasedate}{May 23, 2018}
+
+\begin{document}
+
+\Huge\textbf{\textcolor{myblue}{Release Update khallware - \releasedate{}}}
+
+\small\textsc{version 0.9.0}
+
+\vspace{25px}
+
+\LARGE\textbf{\textcolor{black}{Fixes}}
+\normalsize
+\begin{center}
+\begin{itemize}[label=\raisebox{0.25ex}{\tiny$\bullet$}]
+\item removed dependency on jvorbiscomment
+\item library dependencies version upgrade
+\item sonarqube recommended fixes
+\end{itemize}
+\end{center}
+
+\vspace{25px}
+
+\LARGE\textbf{\textcolor{black}{Improvements}}
+\normalsize
+\begin{center}
+\begin{itemize}[label=\raisebox{0.25ex}{\tiny$\bullet$}]
+\item external properties file overrides internal defaults
+\item serve captcha image via static content controller
+\item sqlite3 compatible
+\item import-tool.jar utility
+\item logout button added
+\item github release artifacts and release notes
+\end{itemize}
+\end{center}
+
+\end{document}

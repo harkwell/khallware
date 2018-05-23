@@ -99,7 +99,10 @@ public class Sounds extends CrudController<Sound>
 		try {
 			Util.enforceSecurity(request);
 			Sound sound = Datastore.DS().getSound(id);
-			File file = Util.resolveFile(sound.getPath(),
+			File file = Util.resolveFile(
+				(sound == null)
+					? "/dev/null"
+					: sound.getPath(),
 				PROP_REPODIR, DEF_REPO_DIR);
 			retval = Response.status(200)
 				.entity(Util.fileContentAsBytes(file))

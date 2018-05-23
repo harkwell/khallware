@@ -1,0 +1,80 @@
+%-----------------------------------------------------------------------------
+% This is the v0.1.0 release notes for khallware
+%-----------------------------------------------------------------------------
+% sudo apt-get install latex-xcolor
+
+\documentclass[notitlepage]{article}
+
+\usepackage[margin=0.25in]{geometry}
+\usepackage{color,colortbl}
+% #51748e
+\definecolor{myblue}{RGB}{81,116,142}
+
+\newcommand{\releasedate}{2013}
+
+\begin{document}
+
+\begin{center}
+%\begin{tabular*}{0.75\textwidth}%
+\begin{tabular}{ | l | }
+%{@{\extracolsep{\fill}}|l|}
+\hline
+\LARGE\cellcolor{myblue}\textcolor{white}{khallware} v0.1.0 \releasedate{} \\
+\hline
+details.html is not very responsive (add progress wheel) \\
+\hline
+should send an email notification to configuable user on registration \\
+\hline
+limit photos to one row (static width) \\
+\hline
+filter user input in posts for html scripts \\
+\hline
+tags.html?tagId=35 is not implemented \\
+\hline
+tidy up look and feel \\
+\hline
+ellipses (...) should not be in every maxlen string \\
+\hline
+enforce\_login() does not seem to work (try to access index.html right away) \\
+\hline
+details.html page load latency, make some calls async? (fixed w/ limit) \\
+\hline
+number of movies listed on details.html surpasses max \\
+\hline
+limit the number of related tags in details.html \\
+\hline
+groups should have optional landing page (family, friends, etc.) \\
+\hline
+session last update time needs to be refreshed each time a request comes in \\
+\hline
+basic auth headers sent, session modified time not updated \\
+\hline
+include date in log4j logs \\
+\hline
+slide-show capability (supersized) \\
+\hline
+details pop-up photo should be full-screen not actual size \\
+\hline
+restrain js logout, connect after timeout, user allowed to continue \\
+\hline
+gui\_helper.js:attach\_content\_and\_functions() - record as current tag also \\
+\hline
+blog entry on details.html needs to include comments \\
+\hline
+atom expiration bug \\
+\hline
+should be able to add one photo to multiple tags on photo table page \\
+\hline
+auto logout timer does not seem to be working \\
+\hline
+table pages should have select all link \\
+\hline
+should be able to sort columns on table pages \\
+\hline
+in photo table, thumb should be cached, only generate if dne and configured \\
+\hline
+
+\end{tabular}
+\end{center}
+
+\end{document}
