@@ -114,6 +114,7 @@ EOF
 java -jar $DESTDIR/fakeSMTP*.jar  # use port 8025 and click "Start server"
 
 # load data into the database (optional)
+wget -c 'https://raw.githubusercontent.com/harkwell/khallware/master/src/main/resources/log4j.properties' -O $DESTDIR/log4j.properties
 JVM_OPTS="-Dlog4j.configuration=file:$DESTDIR/log4j.properties"
 java $JVM_OPTS -jar $DESTDIR/import-tool.jar -a -twebsite -p$DESTDIR/main.properties
 

@@ -7,7 +7,7 @@
     <groupId>com.khallware.api.util</groupId>
     <artifactId>import-tool</artifactId>
     <name>Khallware FS-DB Sync</name>
-    <version>0.1</version>
+    <version>0.10.0</version>
 
     <properties>
         <kotlin.version>1.2.21</kotlin.version>

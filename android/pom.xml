@@ -7,7 +7,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.khallware.api</groupId>
     <artifactId>khallware</artifactId>
-    <version>0.9.0</version>
+    <version>0.10.0</version>
     <packaging>apk</packaging>
     <name>Khallware</name>
     <properties>
