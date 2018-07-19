@@ -1,3 +1,6 @@
+NOTICE: https://github.com DEPRECATION WARNING... USE https://gitlab.com/harkwell/khallware
+=================
+
 Khallware (Mobile Computing Services)
 =================
 Overview
@@ -132,7 +135,7 @@ rm -rf $DESTDIR
 ```shell
 export DESTDIR=$HOME/tmp/apis/
 mkdir -p $DESTDIR/{images,thumbs,audio,uploads}
-git clone https://github.com/harkwell/khallware.git $DESTDIR/khallware
+git clone https://gitlab.com/harkwell/khallware.git $DESTDIR/khallware
 export MAVEN_REPO=/tmp/delete-me-later
 rm -rf $MAVEN_REPO && cd $DESTDIR/khallware
 mvn -Dmaven.repo.local=$MAVEN_REPO package
@@ -168,7 +171,7 @@ rm -rf $MAVEN_REPO
 ```shell
 chromium-browser http://aws.amazon.com/  # create a "free-tier" account
 aws configure # use the AccessKey and Secret Access Key from above
-wget -q -c 'https://raw.githubusercontent.com/harkwell/khallware/master/aws/AWS-cloudformation.json' -O - |aws cloudformation create-stack --stack-name khallware --capabilities CAPABILITY_NAMED_IAM --tags 'Key=projects,Value=khallware' --template-body file:///dev/stdin
+wget -q -c 'https://gitlab.com/harkwell/khallware/raw/master/aws/AWS-cloudformation.json' -O - |aws cloudformation create-stack --stack-name khallware --capabilities CAPABILITY_NAMED_IAM --tags 'Key=projects,Value=khallware' --template-body file:///dev/stdin
 chromium-browser http://<dns-name-of-aws-ec2-host>/
 ```
 
@@ -182,7 +185,7 @@ docker run -it khall/khallware
 ### Create A MySQL Docker Image (One Time Only)
 ```shell
 mkdir -p /tmp/khallware-mysql && cd /tmp/khallware-mysql
-wget -q -c 'https://raw.githubusercontent.com/harkwell/khallware/master/src/scripts/Docker-mysql' -O - |docker build --no-cache -t khallware-mysql:v1.0 -
+wget -q -c 'https://gitlab.com/harkwell/khallware/raw/master/src/scripts/Docker-mysql' -O - |docker build --no-cache -t khallware-mysql:v1.0 -
 ```
 
 ### Create A Tomcat8 Docker Image (One Time Only)
@@ -190,7 +193,7 @@ wget -q -c 'https://raw.githubusercontent.com/harkwell/khallware/master/src/scri
 mkdir -p /tmp/khallware-tomcat8 && cd /tmp/khallware-tomcat8
 # chromium-browser https://tomcat.apache.org/download-80.cgi
 wget -q -c 'http://mirrors.gigenet.com/apache/tomcat/tomcat-8/v8.0.36/bin/apache-tomcat-8.0.36.tar.gz' -O apache-tomcat.tgz
-wget -q -c 'https://raw.githubusercontent.com/harkwell/khallware/master/src/scripts/Docker-tomcat8' -O - |docker build --no-cache -t khallware-tomcat:v1.0 -
+wget -q -c 'https://gitlab.com/harkwell/khallware/raw/master/src/scripts/Docker-tomcat8' -O - |docker build --no-cache -t khallware-tomcat:v1.0 -
 ```
 
 ### Create A khallware.com Build Docker Image (One Time Only)
@@ -198,7 +201,7 @@ wget -q -c 'https://raw.githubusercontent.com/harkwell/khallware/master/src/scri
 mkdir -p /tmp/khallware-build && cd /tmp/khallware-build
 
 for x in build.sh Dockerfile; do
-   wget -q -c "https://raw.githubusercontent.com/harkwell/khallware/master/src/scripts/$x"
+   wget -q -c "wget -q -c 'https://gitlab.com/harkwell/khallware/raw/master/src/scripts/$x"
 done
 sed -i -e 's#^rm -rf.*mkdir#mkdir#' build.sh
 docker build --no-cache -t khallware-build:v1.0 .
@@ -224,8 +227,8 @@ GRANT ALL PRIVILEGES ON website.* TO 'api'@'%' WITH GRANT OPTION;
 USE mysql;
 SET PASSWORD FOR 'api'@'%' = PASSWORD('khallware');
 exit
-wget -q -c 'https://raw.githubusercontent.com/harkwell/khallware/master/src/scripts/db_schema.sql' -O - |mysql -uroot website
-wget -q -c 'https://raw.githubusercontent.com/harkwell/khallware/master/src/scripts/db_load.sql' -O - |mysql -uroot website
+wget -q -c 'https://gitlab.com/harkwell/khallware/raw/master/src/scripts/db_schema.sql' -O - |mysql -uroot website
+wget -q -c 'https://gitlab.com/harkwell/khallware/raw/master/src/scripts/db_load.sql' -O - |mysql -uroot website
 exit
 docker rm $(docker ps -a |grep mysql |cut -d\  -f1)
 ```
@@ -299,8 +302,7 @@ sqlite3 apis.db <db_load.sqlite
 ### Build
 * via maven
 ```shell
-svn export https://github.com/harkwell/khallware/trunk khallware
-cd khallware
+git clone https://gitlab.com/harkwell/khallware.git && cd khallware
 mvn package
 ```
 
@@ -327,7 +329,7 @@ chromium-browser http://tomcat-server:8080/apis/
 export ANDROID_HOME=/usr/local/android
 export MAVEN_ANDROID_REPO=/tmp/khallware-android
 rm -rf $MAVEN_ANDROID_REPO
-git clone https://github.com/harkwell/khallware && cd khallware/android
+git clone https://gitlab.com/harkwell/khallware.git && cd khallware/android
 sed -i -e 's#^sdk.dir=.*$#sdk.dir='$ANDROID_HOME'#g' local.properties
 mvn -Dmaven.repo.local=$MAVEN_ANDROID_REPO install:install-file -Dfile=$ANDROID_HOME/add-ons/addon-google_apis-google-22/libs/maps.jar -DgroupId=google.apis -DartifactId=google.maps -Dversion=2.2 -Dpackaging=jar
 mvn -Dmaven.repo.local=$MAVEN_ANDROID_REPO install:install-file -Dfile=$ANDROID_HOME/add-ons/addon-google_apis-google-22/libs/maps.jar -DgroupId=google.apis -DartifactId=google.maps -Dversion=2.2 -Dpackaging=jar
@@ -363,7 +365,7 @@ android create avd -n khallware --force -k "system-images;android-24;google_apis
 mksdcard 256M ~/tmp/sdcard1.iso
 emulator -list-avds
 cd $ANDROID_HOME/tools && emulator -sdcard ~/tmp/sdcard1.iso -avd khallware
-git clone https://github.com/harkwell/khallware
+git clone https://gitlab.com/harkwell/khallware.git
 cd khallware
 L='com/google/android/support-v4/r6/support-v4-r6.jar
    org/slf4j/slf4j-android/1.6.1-RC1/slf4j-android-1.6.1-RC1.jar

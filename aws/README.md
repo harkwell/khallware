@@ -4,7 +4,7 @@ Provision AWS CloudFormation Stack
 ---------------
 ### Utilizing http://aws.amazon.com/ Website
 ```shell
-chromium-browser https://github.com/harkwell/khallware/blob/github/aws/AWS-cloudformation.json
+chromium-browser https://gitlab.com/harkwell/khallware/blob/master/aws/AWS-cloudformation.json
 # right click on "Raw", "Save link as..."
 chromium-browser http://aws.amazon.com/  # login to console
 # box -> CloudFormation -> "Create New Stack" -> "Choose..." -> "Upload..." -> Choose Filename (from save-as above)

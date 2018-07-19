@@ -11,7 +11,7 @@ http://tomcat-server:8080/apis/v1/static/mobile/Khallware.apk
 ```shell
 export ANDROID_HOME=/usr/local/android
 export MAVEN_ANDROID_REPO=/tmp/khallware-android
-git clone https://github.com/harkwell/khallware && cd khallware/android
+git clone https://gitlab.com/harkwell/khallware.git && cd khallware/android
 sed -i -e 's#^sdk.dir=.*$#sdk.dir='$ANDROID_HOME'#g' local.properties
 mvn -Dmaven.repo.local=$MAVEN_ANDROID_REPO -Dandroid.sdk.path=$ANDROID_HOME \
     package && ls -ld target/Khallware.apk
@@ -47,7 +47,7 @@ android create avd -n khallware --force -k "system-images;android-24;google_apis
 mksdcard 256M ~/tmp/sdcard1.iso
 emulator -list-avds
 cd $ANDROID_HOME/tools && emulator -sdcard ~/tmp/sdcard1.iso -avd khallware
-git clone https://github.com/harkwell/khallware
+git clone https://gitlab.com/harkwell/khallware.git
 cd khallware
 L='com/google/android/support-v4/r6/support-v4-r6.jar
    org/slf4j/slf4j-android/1.6.1-RC1/slf4j-android-1.6.1-RC1.jar

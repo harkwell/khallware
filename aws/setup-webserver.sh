@@ -4,7 +4,7 @@ echo "khallware: init script"
 #-------------------------------------------------------------------------------
 AWSREGION=$(curl http://169.254.169.254/latest/meta-data/placement/availability-zone |sed 's#.$##')
 EC2HOST=$(curl http://169.254.169.254/latest/meta-data/public-hostname)
-RAWROOT=https://raw.githubusercontent.com/harkwell/khallware/dev/aws/
+RAWROOT=https://gitlab.com/harkwell/khallware/raw/master/aws/
 
 
 echo "khallware: setup system"
@@ -19,8 +19,7 @@ systemctl start nginx
 echo "khallware: clone khallware git project"
 #-------------------------------------------------------------------------------
 mkdir -p /opt/khallware/gitrepo && cd /opt/khallware/gitrepo
-git clone https://github.com/harkwell/khallware.git && cd khallware
-git checkout dev  # KDH comment this out when merged into github
+git clone https://gitlab.com/harkwell/khallware.git && cd khallware
 REPO=/opt/khallware/gitrepo/khallware
 
 

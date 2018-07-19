@@ -3,7 +3,7 @@
 ##############
 ### create a mysql docker image (one-time only)
 mkdir -p /tmp/khallware-mysql && cd /tmp/khallware-mysql
-wget -q -c 'https://raw.githubusercontent.com/harkwell/khallware/master/src/scripts/Docker-mysql' -O - |docker build --no-cache -t khallware-mysql:v1.0 -
+wget -q -c 'https://gitlab.com/harkwell/khallware/raw/master/src/scripts/Docker-mysql' -O - |docker build --no-cache -t khallware-mysql:v1.0 -
 
 ### create isam files (one-time only)
 mkdir -p $HOME/tmp/flyspray-mysql
@@ -33,7 +33,7 @@ yum install -y nginx git mysql jq php php-mysql php-fpm wget less telnet
 sed -in -e 's#^user =.*$#user = nginx#' -e 's#^group =.*$#group = nginx#' /etc/php-fpm.d/www.conf
 sed -in -e 's#^;date.timezone .*$#date.timezone = America/Chicago#' /etc/php.ini
 mkdir -p /opt/khallware/gitrepo && cd /opt/khallware/gitrepo
-git clone https://github.com/harkwell/khallware.git && cd khallware
+git clone https://gitlab.com/harkwell/khallware.git && cd khallware
 #git checkout dev
 export REPO=$PWD
 unalias cp

@@ -22,7 +22,7 @@ QUICK START
 ---------------
 ### build it
 ```shell
-git clone https://github.com/harkwell/khallware.git /tmp/khallware
+git clone https://gitlab.com/harkwell/khallware.git /tmp/khallware
 export MAVEN_REPO=/tmp/delete-me-later
 rm -rf $MAVEN_REPO && cd /tmp/khallware/tools
 mvn -Dmaven.repo.local=$MAVEN_REPO package

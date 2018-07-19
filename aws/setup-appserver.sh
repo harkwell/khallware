@@ -3,7 +3,7 @@
 echo "khallware: init script"
 #-------------------------------------------------------------------------------
 export JAVA_HOME=/usr/lib/jvm/jre-1.8.0-openjdk.x86_64/
-RAWROOT=https://raw.githubusercontent.com/harkwell/khallware/dev/aws/
+RAWROOT=https://gitlab.com/harkwell/khallware/raw/master/aws/
 
 
 echo "khallware: setup system"
@@ -26,7 +26,7 @@ rm tmp/tomcat8.tgz
 echo "khallware: clone khallware git project"
 #-------------------------------------------------------------------------------
 mkdir -p /opt/khallware/gitrepo && cd /opt/khallware/gitrepo
-git clone https://github.com/harkwell/khallware.git && cd khallware
+git clone https://gitlab.com/harkwell/khallware.git && cd khallware
 git checkout dev
 REPO=/opt/khallware/gitrepo/khallware
 

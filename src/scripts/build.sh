@@ -1,6 +1,6 @@
 #!/bin/bash
 REPOTOP=$HOME/projects/
-REPOURL=https://github.com/harkwell/khallware.git
+REPOURL=https://gitlab.com/harkwell/khallware.git
 REPO=khallware
 TOP=$HOME/tmp/build/$REPO
 
